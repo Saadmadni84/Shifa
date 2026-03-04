@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shifa-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shifa-backend
+  template:
+    metadata:
+      labels:
+        app: shifa-backend
+    spec:
+      containers:
+        - name: backend
+          image: shifa/backend:latest
+          ports:
+            - containerPort: 8080

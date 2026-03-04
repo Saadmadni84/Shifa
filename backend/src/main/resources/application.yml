@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: shifa-platform
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shifa_db
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.shifa: DEBUG
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
