@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { isLoggedIn, getCachedUser } from '@/api'
 
-export default function ProtectedRoute({ children, requiredRole }) {
+export function ProtectedRoute({ children, requiredRole }) {
   const location = useLocation()
   const loggedIn = isLoggedIn()
   const user = getCachedUser()
