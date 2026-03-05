@@ -1,6 +1,6 @@
 package com.shifa.integration.email;
 
-import com.shifa.domain.user.UserRole;
+import com.shifa.common.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

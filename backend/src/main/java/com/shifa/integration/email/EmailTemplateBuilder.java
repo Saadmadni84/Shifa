@@ -1,6 +1,6 @@
 package com.shifa.integration.email;
 
-import com.shifa.domain.user.UserRole;
+import com.shifa.common.enums.UserRole;
 import org.springframework.stereotype.Component;
 
 @Component

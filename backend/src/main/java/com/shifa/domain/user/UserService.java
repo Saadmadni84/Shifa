@@ -7,7 +7,7 @@ import com.shifa.domain.user.dto.OtpRequest;
 import com.shifa.domain.user.dto.PasswordResetRequest;
 import com.shifa.domain.user.dto.RegisterRequest;
 import com.shifa.security.JwtService;
-import com.shifa.security.OtpService;
+import com.shifa.domain.user.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

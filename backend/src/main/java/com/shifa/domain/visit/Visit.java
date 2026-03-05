@@ -8,7 +8,7 @@ import com.shifa.domain.doctor.Doctor;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.prescription.Prescription;
 import com.shifa.domain.vitals.VitalSigns;
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.JdbcTypeCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,7 +66,7 @@ public class Visit extends AuditableEntity {
     @Column(name = "raw_notes", columnDefinition = "TEXT")
     private String rawNotes;
 
-    @Type(JsonBinaryType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "ai_summary", columnDefinition = "jsonb")
     private VisitSummaryData aiSummary;
 
