@@ -4,6 +4,7 @@ import com.shifa.common.enums.VisitStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,10 @@ public interface VisitRepository extends JpaRepository<Visit, UUID> {
     Optional<Visit> findByPatientPortalToken(String token);
 
     Optional<Visit> findByIdAndDoctorIdAndDeletedFalse(UUID visitId, UUID doctorId);
+
+    @Modifying
+    @Query("UPDATE Visit v SET v.whatsappStatus = :status WHERE v.whatsappMessageId = :messageId")
+    void updateWhatsAppStatus(@Param("messageId") String messageId, @Param("status") WhatsAppStatus status);
 
     @Query("""
         SELECT v FROM Visit v

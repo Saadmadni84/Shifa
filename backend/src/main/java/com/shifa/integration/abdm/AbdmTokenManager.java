@@ -45,7 +45,8 @@ public class AbdmTokenManager {
             throw new AbdmIntegrationException("ABDM token refresh failed");
 
         String token = (String) resp.get("accessToken");
-        int expiry = (Integer) resp.getOrDefault("expiresIn", 1800);
+        Object expiresObj = resp.get("expiresIn");
+        int expiry = (expiresObj instanceof Number) ? ((Number) expiresObj).intValue() : 1800;
         redis.opsForValue().set(TOKEN_KEY, token,
             Duration.ofSeconds(expiry - props.getTokenRefreshBufferSeconds()));
 

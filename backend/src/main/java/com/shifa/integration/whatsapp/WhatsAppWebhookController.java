@@ -84,7 +84,8 @@ public class WhatsAppWebhookController {
         if (status == null || s.getId() == null) return;
 
         visitRepository.updateWhatsAppStatus(s.getId(), status);
-        notificationRepository.updateStatusByExternalId(s.getId(), status.name());
+        com.shifa.common.enums.NotificationStatus notifStatus = com.shifa.common.enums.NotificationStatus.valueOf(status.name());
+        notificationRepository.updateStatusByExternalId(s.getId(), notifStatus);
         log.info("[WhatsApp] Status: id={}, status={}", s.getId(), status);
     }
 

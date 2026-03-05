@@ -20,4 +20,7 @@ public class ErrorResponse {
     private String path;
     private Map<String, String> validationErrors;
 
+    public static ErrorResponse of(String error, String message) {
+        return ErrorResponse.builder().error(error).message(message).status(400).build();
+    }
 }

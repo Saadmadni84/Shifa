@@ -2,6 +2,7 @@ package com.shifa.integration.ocr;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -23,7 +24,7 @@ public class PdfTextExtractor {
     private final OcrLanguageDetector langDetector;
 
     public OcrResult extract(MultipartFile pdfFile) throws IOException {
-        try (PDDocument doc = PDDocument.load(pdfFile.getInputStream())) {
+        try (PDDocument doc = Loader.loadPDF(pdfFile.getBytes())) {
             String layerText = new PDFTextStripper().getText(doc);
 
             if (layerText != null && layerText.trim().length() > 100) {

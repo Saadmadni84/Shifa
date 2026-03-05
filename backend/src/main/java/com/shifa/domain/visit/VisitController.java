@@ -58,7 +58,7 @@ public class VisitController {
     public ResponseEntity<ApiResponse<String>> processWithAI(@PathVariable UUID id) {
         visitService.triggerAIProcessing(id);
         return ResponseEntity.accepted()
-            .body(ApiResponse.of("AI processing started. This takes 15-30 seconds."));
+            .body(ApiResponse.success("AI processing started. This takes 15-30 seconds."));
     }
 
     @PostMapping("/api/visits/{id}/send")

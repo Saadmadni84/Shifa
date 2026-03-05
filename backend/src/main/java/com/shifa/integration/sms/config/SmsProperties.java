@@ -12,4 +12,5 @@ public class SmsProperties {
     @NotBlank private String provider;
     private String fallbackProvider;
     @NotBlank private String senderId;
+    private String smsType;
 }
