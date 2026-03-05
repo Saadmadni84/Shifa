@@ -45,6 +45,7 @@ import { useAuthStore, useLanguageStore, useUiStore } from '@/store'
 const LandingPage      = lazy(() => import('@/pages/LandingPage'))
 const LoginPage        = lazy(() => import('@/pages/LoginPage'))
 const RegisterPage     = lazy(() => import('@/pages/RegisterPage'))
+const PatientLoginPage = lazy(() => import('@/pages/patient/PatientLoginPage'))
 
 // Patient portal — publicly accessible via WhatsApp token link
 const PatientPortalPage = lazy(() => import('@/pages/portal/PatientPortalPage'))
@@ -121,6 +122,7 @@ export default function App() {
         <Route path="/"         element={<HomeRedirect />} />
         <Route path="/login"    element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/patient/login" element={<PatientLoginPage />} />
 
         {/* ── Patient portal — public, token-based, NO auth required ─── */}
         {/*

@@ -140,6 +140,9 @@ export const useAuthStore = create(
                 /** Called by client.js after silent token refresh */
                 setToken: (accessToken) => set({ token: accessToken }),
 
+                /** Quick sync set */
+                setAuth: (user, token) => set({ user, token }),
+
                 /** Called when 'shifa:session-expired' fires */
                 handleSessionExpiry: () => {
                     get()._clearOtpTimer()
