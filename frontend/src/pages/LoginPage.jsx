@@ -14,11 +14,11 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Heart, Eye, EyeOff, AlertCircle, LogIn } from 'lucide-react'
 import { useAuthStore } from '@/store'
-import { LoginForm } from '@/components/forms/LoginForm'
+import LoginForm from '@/components/forms/LoginForm'
 
 export default function LoginPage() {
-  const navigate  = useNavigate()
-  const location  = useLocation()
+  const navigate = useNavigate()
+  const location = useLocation()
   const { isAuthenticated, user } = useAuthStore()
   const sessionExpired = location.state?.sessionExpired
 
@@ -57,7 +57,7 @@ export default function LoginPage() {
             <div key={f} className="flex items-center gap-3 mb-3">
               <div className="w-5 h-5 bg-emerald-400 rounded-full flex items-center justify-center flex-shrink-0">
                 <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                  <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <span className="text-emerald-100 text-sm">{f}</span>
