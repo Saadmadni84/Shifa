@@ -1,8 +1,22 @@
 package com.shifa.common.exception;
 
-public class ShifaException extends RuntimeException {
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
-    public ShifaException(String message) {
+@Getter
+public class ShifaException extends RuntimeException {
+    private final HttpStatus httpStatus;
+    private final String errorCode;
+
+    public ShifaException(String message, HttpStatus httpStatus, String errorCode) {
         super(message);
+        this.httpStatus = httpStatus;
+        this.errorCode = errorCode;
+    }
+
+    public ShifaException(String message, Throwable cause, HttpStatus httpStatus, String errorCode) {
+        super(message, cause);
+        this.httpStatus = httpStatus;
+        this.errorCode = errorCode;
     }
 }

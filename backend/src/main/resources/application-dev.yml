@@ -1,7 +1,44 @@
 spring:
+  config:
+    activate:
+      on-profile: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/shifa_db
     username: postgres
     password: password
-  jpa:
-    show-sql: true
+    hikari:
+      maximum-pool-size: 10
+  redis:
+    host: localhost
+    port: 6379
+    ssl: false
+
+shifa:
+  cors:
+    allowed-origins: "http://localhost:3000,http://localhost:5173"
+  jwt:
+    secret: "eW91ci0yNTYtYml0LXNlY3JldC1rZXktdGhhdC1pcy1hdC1sZWFzdC0zMi1ieXRlcy1sb25n" # replace in actual prod
+    expirationMs: 86400000
+    refreshExpirationMs: 604800000
+  claude:
+    apiKey: "dev-api-key"
+    model: "claude-3-opus-20240229"
+    maxTokens: 1000
+  whatsapp:
+    apiUrl: "https://graph.facebook.com/v19.0"
+    token: "dev-token"
+    phoneNumberId: "123456789"
+  aws:
+    region: "ap-south-1"
+    s3Bucket: "shifa-dev-bucket"
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
