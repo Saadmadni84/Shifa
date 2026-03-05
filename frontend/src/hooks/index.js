@@ -16,6 +16,7 @@ export { useOTP } from './useOTP'
 export { useVisit } from './useVisit'
 export { usePatients, usePatient, usePatientVisits } from './usePatients'
 export { useDoctorDashboard } from './useDoctorDashboard'
+export { useDoctorStats } from './useDoctorStats'
 export { usePublicPortal, TOKEN_STATE } from './usePublicPortal'
 
 // Feature hooks
