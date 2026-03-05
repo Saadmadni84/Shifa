@@ -30,27 +30,27 @@ import org.springframework.web.cors.CorsConfigurationSource;
  * Architecture: fully stateless JWT — no sessions, no cookies for APIs.
  *
  * URL access rules:
- * ┌─────────────────────────────────────────────────────────────────┐
- * │ PUBLIC (no token)                                               │
- * │  POST /api/v1/auth/**            doctor + patient auth          │
- * │  GET  /api/v1/public/**          patient portal (token link)    │
- * │  POST /api/v1/public/*/ask       patient Q&A                    │
- * │  GET  /api/v1/webhooks/**        WhatsApp verify                │
- * │  POST /api/v1/webhooks/**        WhatsApp events                │
- * │  GET  /api/v1/languages          language list                  │
- * │  GET  /actuator/health           ALB health probe               │
- * │  GET  /v3/api-docs/**            Swagger (dev only)             │
- * ├─────────────────────────────────────────────────────────────────┤
- * │ DOCTOR / ADMIN                                                  │
- * │  ALL  /api/v1/visits/**                                         │
- * │  ALL  /api/v1/doctors/**                                        │
- * ├─────────────────────────────────────────────────────────────────┤
- * │ DOCTOR / ADMIN / RECEPTIONIST                                   │
- * │  ALL  /api/v1/patients/**                                       │
- * ├─────────────────────────────────────────────────────────────────┤
- * │ ADMIN only                                                      │
- * │  ALL  /api/v1/admin/**                                          │
- * └─────────────────────────────────────────────────────────────────┘
+ * ------------------------------------------------------------------
+ * PUBLIC (no token)
+ *   POST /api/v1/auth/**            doctor + patient auth
+ *   GET  /api/v1/public/**          patient portal (token link)
+ *   POST /api/v1/public/*/ask       patient Q&A
+ *   GET  /api/v1/webhooks/**        WhatsApp verify
+ *   POST /api/v1/webhooks/**        WhatsApp events
+ *   GET  /api/v1/languages          language list
+ *   GET  /actuator/health           ALB health probe
+ *   GET  /v3/api-docs/**            Swagger (dev only)
+ * ------------------------------------------------------------------
+ * DOCTOR / ADMIN
+ *   ALL  /api/v1/visits/**
+ *   ALL  /api/v1/doctors/**
+ * ------------------------------------------------------------------
+ * DOCTOR / ADMIN / RECEPTIONIST
+ *   ALL  /api/v1/patients/**
+ * ------------------------------------------------------------------
+ * ADMIN only
+ *   ALL  /api/v1/admin/**
+ * ------------------------------------------------------------------
  *
  * @EnableMethodSecurity allows @PreAuthorize on service methods for
  * ownership checks (e.g. doctor can only see their own patients).
