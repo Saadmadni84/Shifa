@@ -70,15 +70,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            // ── No CSRF (stateless), CORS from WebConfig ─────────────────
+            // -- No CSRF (stateless), CORS from WebConfig -----------------
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
-            // ── Stateless — no HTTP session ──────────────────────────────
+            // -- Stateless -- no HTTP session -----------------------------
             .sessionManagement(s ->
                 s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // ── URL authorization rules ──────────────────────────────────
+            // -- URL authorization rules ---------------------------------
             .authorizeHttpRequests(auth -> auth
 
                 // Public GET endpoints
@@ -126,13 +126,13 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // ── JSON 401 / 403 instead of Spring's HTML error pages ──────
+            // -- JSON 401 / 403 instead of Spring's HTML error pages -----
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(authEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
             )
 
-            // ── Security response headers ─────────────────────────────────
+            // -- Security response headers --------------------------------
             .headers(h -> h
                 .frameOptions(f -> f.deny())
                 .contentSecurityPolicy(csp -> csp.policyDirectives(
@@ -147,16 +147,16 @@ public class SecurityConfig {
                         .STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
             )
 
-            // ── JWT filter runs before Spring's username/password filter ──
+            // -- JWT filter runs before Spring's username/password filter --
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
             .build();
     }
 
-    // ─────────────────────────────────────────────────────────────
+    // --------------------------------------------------------------------
     // Auth provider, manager, password encoder
-    // ─────────────────────────────────────────────────────────────
+    // --------------------------------------------------------------------
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
