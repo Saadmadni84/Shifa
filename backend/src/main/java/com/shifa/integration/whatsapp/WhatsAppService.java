@@ -43,7 +43,20 @@ public class WhatsAppService {
 
     public void sendReminder(Notification notification) {
         // Implementation for sending reminder text/template
-        whatsAppClient.sendMessage("patient_placeholder_number", notification.getMessage());
+        if (notification == null || notification.getPatient() == null) {
+            log.warn("Cannot send reminder: notification or patient is null. Notification: {}", notification);
+            return;
+        }
+
+        String phoneNumber = notification.getPatient().getPhoneNumber();
+        String message = notification.getMessage();
+
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            log.warn("Cannot send reminder: patient phone number is missing for notification: {}", notification);
+            return;
+        }
+
+        whatsAppClient.sendMessage(phoneNumber, message);
     }
 
     public void sendTemplateMessage(String phoneNumber, String templateName, List<String> placeholders) {
