@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-script="latin" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- ── Primary Meta ───────────────────────────────────────────── -->
+    <title>Shifa — AI Medical Companion for Indian Patients</title>
+    <meta name="description"
+      content="Shifa converts doctor's notes into simple, clear health summaries in your Indian language — delivered via WhatsApp." />
+    <meta name="keywords"
+      content="medical companion, Indian health app, WhatsApp doctor, Hindi health summary, post-visit care, AI health" />
+    <meta name="author" content="Shifa Health" />
+    <meta name="theme-color" content="#10b981" />
+
+    <!-- ── Favicon ────────────────────────────────────────────────── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- ── PWA Manifest ───────────────────────────────────────────── -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Shifa" />
+
+    <!-- ── Open Graph / WhatsApp Link Preview ─────────────────────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://shifa.health/" />
+    <meta property="og:title"       content="Shifa — Your Post-Visit Health Companion" />
+    <meta property="og:description" content="Doctor's notes in your language, delivered on WhatsApp. Understanding your health just got easier." />
+    <meta property="og:image"       content="/og-image.png" />
+    <meta property="og:locale"      content="en_IN" />
+    <meta property="og:site_name"   content="Shifa" />
+
+    <!-- ── Twitter Card ──────────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Shifa — AI Medical Companion" />
+    <meta name="twitter:description" content="Doctor's notes in Hindi, Tamil, Bengali and 7 more Indian languages." />
+    <meta name="twitter:image"       content="/og-image.png" />
+
+    <!-- ── Preconnect for performance ────────────────────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!--
+      NOTE: Indian script fonts (Devanagari, Tamil, Bengali etc.) are loaded
+      DYNAMICALLY by languageStore._loadNotoFont() only when the user picks
+      that language — avoids loading 8 heavy fonts upfront.
+
+      The base Latin font is loaded here for the default English UI.
+    -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ── Security headers (supplementary — real ones set server-side) -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- ── Splash screen background while JS loads ────────────────── -->
+    <style>
+      /* Prevent flash of unstyled content */
+      html { background: #f0fdf4; }
+      #root:empty::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0fdf4;
+      }
+      /* Initial spinner shown before React hydrates */
+      #splash {
+        position: fixed;
+        inset: 0;
+        background: #f0fdf4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #splash.hidden { opacity: 0; pointer-events: none; }
+      #splash-logo {
+        width: 56px; height: 56px;
+        background: #10b981;
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px;
+        box-shadow: 0 8px 24px rgba(16,185,129,0.35);
+      }
+      #splash-title {
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: #064e3b;
+        letter-spacing: -0.5px;
+      }
+      #splash-dot {
+        width: 8px; height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        animation: splash-pulse 1s ease-in-out infinite;
+      }
+      @keyframes splash-pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50%       { transform: scale(1.4); opacity: 0.5; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ── Splash screen (hidden once React mounts) ──────────────── -->
+    <div id="splash" aria-hidden="true">
+      <div id="splash-logo">🩺</div>
+      <div id="splash-title">Shifa</div>
+      <div id="splash-dot"></div>
+    </div>
+
+    <!-- ── React app root ─────────────────────────────────────────── -->
+    <div id="root"></div>
+
+    <!-- ── Vite entry point ───────────────────────────────────────── -->
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- ── Hide splash once React starts rendering ───────────────── -->
+    <script>
+      // React fires this event when it's done with first render
+      document.addEventListener('shifa:app-ready', function () {
+        const splash = document.getElementById('splash')
+        if (splash) {
+          splash.classList.add('hidden')
+          setTimeout(() => splash.remove(), 400)
+        }
+      })
+    </script>
+  </body>
+</html>

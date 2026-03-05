@@ -1,0 +1,98 @@
+{
+    "app": {
+        "name": "ਸ਼ਿਫਾ",
+        "tagline": "ਹਰ ਡਾਕਟਰ ਮੁਲਾਕਾਤ ਤੋਂ ਬਾਅਦ ਤੁਹਾਡਾ ਸਿਹਤ ਸਾਥੀ",
+        "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
+        "error": "ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ",
+        "retry": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+        "save": "ਸੇਵ ਕਰੋ",
+        "cancel": "ਰੱਦ ਕਰੋ",
+        "yes": "ਹਾਂ",
+        "no": "ਨਹੀਂ",
+        "poweredBy": "Claude AI ਦੁਆਰਾ ਸੰਚਾਲਿਤ"
+    },
+    "nav": {
+        "dashboard": "ਡੈਸ਼ਬੋਰਡ",
+        "patients": "ਮਰੀਜ਼",
+        "visits": "ਮੁਲਾਕਾਤਾਂ",
+        "settings": "ਸੈਟਿੰਗਾਂ",
+        "logout": "ਲੌਗਆਉਟ",
+        "notifications": "ਸੂਚਨਾਵਾਂ"
+    },
+    "auth": {
+        "login": "ਲੌਗਇਨ",
+        "loginWithOtp": "OTP ਨਾਲ ਲੌਗਇਨ",
+        "enterPhone": "ਆਪਣਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਾਖਲ ਕਰੋ",
+        "phonePlaceholder": "10 ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ",
+        "sendOtp": "OTP ਭੇਜੋ",
+        "sendingOtp": "OTP ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
+        "otpSent": "{{phone}} ਨੂੰ OTP ਭੇਜਿਆ",
+        "enterOtp": "OTP ਦਾਖਲ ਕਰੋ",
+        "verifyOtp": "OTP ਦੀ ਜਾਂਚ ਕਰੋ",
+        "verifyingOtp": "ਜਾਂਚ ਹੋ ਰਹੀ ਹੈ...",
+        "resendOtp": "OTP ਦੁਬਾਰਾ ਭੇਜੋ",
+        "resendIn": "{{seconds}} ਸਕਿੰਟਾਂ ਵਿੱਚ ਭੇਜੋ",
+        "otpViaWhatsapp": "WhatsApp ਰਾਹੀਂ OTP",
+        "otpViaSms": "SMS ਰਾਹੀਂ OTP",
+        "attemptsLeft": "{{count}} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ",
+        "accountLocked": "ਖਾਤਾ ਅਸਥਾਈ ਤੌਰ ਤੇ ਬੰਦ ਹੈ। 10 ਮਿੰਟ ਬਾਅਦ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+        "invalidOtp": "ਗਲਤ OTP। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
+    },
+    "visit": {
+        "new": "ਨਵੀਂ ਮੁਲਾਕਾਤ",
+        "chiefComplaint": "ਮੁੱਖ ਸ਼ਿਕਾਇਤ",
+        "clinicalNotes": "ਡਾਕਟਰੀ ਨੋਟਸ",
+        "diagnosis": "ਨਿਦਾਨ",
+        "medications": "ਦਵਾਈਆਂ",
+        "processing": "AI ਪ੍ਰੋਸੈੱਸ ਹੋ ਰਿਹਾ ਹੈ...",
+        "completed": "ਸਾਰ ਤਿਆਰ",
+        "sendToPatient": "ਮਰੀਜ਼ ਨੂੰ ਭੇਜੋ",
+        "sending": "WhatsApp ਰਾਹੀਂ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
+        "sent": "ਭੇਜ ਦਿੱਤਾ ✓",
+        "status": {
+            "draft": "ਖਰੜਾ",
+            "processing": "ਪ੍ਰੋਸੈੱਸਿੰਗ",
+            "completed": "ਤਿਆਰ",
+            "sent": "ਭੇਜਿਆ",
+            "failed": "ਅਸਫਲ"
+        }
+    },
+    "patient": {
+        "summary": "ਮੁਲਾਕਾਤ ਦਾ ਸਾਰ",
+        "diagnosis": "ਡਾਕਟਰ ਨੇ ਕੀ ਪਾਇਆ",
+        "medicines": "ਤੁਹਾਡੀਆਂ ਦਵਾਈਆਂ",
+        "withFood": "ਖਾਣੇ ਨਾਲ",
+        "beforeFood": "ਖਾਣੇ ਤੋਂ ਪਹਿਲਾਂ",
+        "afterFood": "ਖਾਣੇ ਤੋਂ ਬਾਅਦ",
+        "morning": "ਸਵੇਰੇ",
+        "afternoon": "ਦੁਪਹਿਰੇ",
+        "evening": "ਸ਼ਾਮੀਂ",
+        "night": "ਰਾਤ ਨੂੰ",
+        "warnings": "ਚੇਤਾਵਨੀ ਦੇ ਨਿਸ਼ਾਨ",
+        "warningsSubtitle": "ਇਹ ਨਿਸ਼ਾਨ ਦਿਖਣ ਤੇ ਤੁਰੰਤ ਹਸਪਤਾਲ ਜਾਓ:",
+        "followUpIn": "{{days}} ਦਿਨਾਂ ਵਿੱਚ ਵਾਪਸ ਆਓ",
+        "callDoctor": "ਡਾ. {{name}} ਨੂੰ ਕਾਲ ਕਰੋ",
+        "askPlaceholder": "ਆਪਣੀ ਮੁਲਾਕਾਤ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ...",
+        "askSend": "ਭੇਜੋ",
+        "understandMedicines": "ਮੈਨੂੰ ਦਵਾਈਆਂ ਸਮਝ ਆ ਗਈਆਂ",
+        "linkExpired": "ਇਹ ਲਿੰਕ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ"
+    },
+    "errors": {
+        "networkError": "ਨੈੱਟਵਰਕ ਗੜਬੜ। ਕੁਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
+        "generic": "ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
+    },
+    "time": {
+        "justNow": "ਹੁਣੇ",
+        "minutesAgo": "{{count}} ਮਿੰਟ ਪਹਿਲਾਂ",
+        "hoursAgo": "{{count}} ਘੰਟੇ ਪਹਿਲਾਂ",
+        "daysAgo": "{{count}} ਦਿਨ ਪਹਿਲਾਂ",
+        "today": "ਅੱਜ",
+        "yesterday": "ਕੱਲ੍ਹ",
+        "tomorrow": "ਕੱਲ੍ਹ"
+    },
+    "language": {
+        "select": "ਭਾਸ਼ਾ ਚੁਣੋ",
+        "current": "ਮੌਜੂਦਾ ਭਾਸ਼ਾ",
+        "changed": "ਭਾਸ਼ਾ {{language}} ਵਿੱਚ ਬਦਲ ਗਈ"
+    }
+}

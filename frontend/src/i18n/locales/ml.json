@@ -1,0 +1,98 @@
+{
+    "app": {
+        "name": "ഷിഫ",
+        "tagline": "ഓരോ ഡോക്ടർ സന്ദർശനത്തിനു ശേഷവും നിങ്ങളുടെ ആരോഗ്യ സഖി",
+        "loading": "ലോഡ് ആകുന്നു...",
+        "error": "എന്തോ തെറ്റ് സംഭവിച്ചു",
+        "retry": "വീണ്ടും ശ്രമിക്കുക",
+        "save": "സൂക്ഷിക്കുക",
+        "cancel": "റദ്ദാക്കുക",
+        "yes": "അതെ",
+        "no": "ഇല്ല",
+        "poweredBy": "Claude AI ഉപയോഗിച്ച് പ്രവർത്തിക്കുന്നു"
+    },
+    "nav": {
+        "dashboard": "ഡാഷ്ബോർഡ്",
+        "patients": "രോഗികൾ",
+        "visits": "സന്ദർശനങ്ങൾ",
+        "settings": "ക്രമീകരണങ്ങൾ",
+        "logout": "ലോഗ് ഔട്ട്",
+        "notifications": "അറിയിപ്പുകൾ"
+    },
+    "auth": {
+        "login": "ലോഗിൻ",
+        "loginWithOtp": "OTP ഉപയോഗിച്ച് ലോഗിൻ",
+        "enterPhone": "നിങ്ങളുടെ മൊബൈൽ നമ്പർ നൽകുക",
+        "phonePlaceholder": "10 അക്ക മൊബൈൽ നമ്പർ",
+        "sendOtp": "OTP അയക്കുക",
+        "sendingOtp": "OTP അയക്കുന്നു...",
+        "otpSent": "{{phone}} ലേക്ക് OTP അയച്ചു",
+        "enterOtp": "OTP നൽകുക",
+        "verifyOtp": "OTP പരിശോധിക്കുക",
+        "verifyingOtp": "പരിശോധിക്കുന്നു...",
+        "resendOtp": "OTP വീണ്ടും അയക്കുക",
+        "resendIn": "{{seconds}} സെക്കൻഡിൽ അയക്കുക",
+        "otpViaWhatsapp": "WhatsApp വഴി OTP",
+        "otpViaSms": "SMS വഴി OTP",
+        "attemptsLeft": "{{count}} ശ്രമം ബാക്കി",
+        "accountLocked": "അക്കൗണ്ട് താൽക്കാലികമായി ലോക്ക് ചെയ്തിരിക്കുന്നു. 10 മിനിറ്റ് കഴിഞ്ഞ് ശ്രമിക്കുക.",
+        "invalidOtp": "തെറ്റായ OTP. വീണ്ടും ശ്രമിക്കുക."
+    },
+    "visit": {
+        "new": "പുതിയ സന്ദർശനം",
+        "chiefComplaint": "പ്രധാന പരാതി",
+        "clinicalNotes": "ക്ലിനിക്കൽ കുറിപ്പുകൾ",
+        "diagnosis": "രോഗനിർണ്ണയം",
+        "medications": "മരുന്നുകൾ",
+        "processing": "AI പ്രോസസ്സ് ചെയ്യുന്നു...",
+        "completed": "സംഗ്രഹം തയ്യാർ",
+        "sendToPatient": "രോഗിക്ക് അയക്കുക",
+        "sending": "WhatsApp വഴി അയക്കുന്നു...",
+        "sent": "അയച്ചു ✓",
+        "status": {
+            "draft": "ഡ്രാഫ്റ്റ്",
+            "processing": "പ്രോസസ്സിംഗ്",
+            "completed": "തയ്യാർ",
+            "sent": "അയച്ചു",
+            "failed": "പരാജയം"
+        }
+    },
+    "patient": {
+        "summary": "സന്ദർശന സംഗ്രഹം",
+        "diagnosis": "ഡോക്ടർ കണ്ടെത്തിയത്",
+        "medicines": "നിങ്ങളുടെ മരുന്നുകൾ",
+        "withFood": "ഭക്ഷണത്തോടൊപ്പം",
+        "beforeFood": "ഭക്ഷണത്തിന് മുൻപ്",
+        "afterFood": "ഭക്ഷണത്തിന് ശേഷം",
+        "morning": "രാവിലെ",
+        "afternoon": "ഉച്ചക്ക്",
+        "evening": "വൈകിട്ട്",
+        "night": "രാത്രി",
+        "warnings": "മുന്നറിയിപ്പ് ലക്ഷണങ്ങൾ",
+        "warningsSubtitle": "ഈ ലക്ഷണങ്ങൾ കണ്ടാൽ ഉടൻ ആശുപത്രിയിൽ പോകുക:",
+        "followUpIn": "{{days}} ദിവസത്തിനുള്ളിൽ വീണ്ടും വരൂ",
+        "callDoctor": "ഡോ. {{name}} നെ വിളിക്കുക",
+        "askPlaceholder": "നിങ്ങളുടെ സന്ദർശനത്തെക്കുറിച്ച് എന്തും ചോദിക്കുക...",
+        "askSend": "അയക്കുക",
+        "understandMedicines": "എനിക്ക് മരുന്നുകൾ മനസ്സിലായി",
+        "linkExpired": "ഈ ലിങ്ക് കാലഹരണപ്പെട്ടു"
+    },
+    "errors": {
+        "networkError": "നെറ്റ്വർക്ക് പിശക്. കണക്ഷൻ പരിശോധിക്കുക.",
+        "generic": "എന്തോ തെറ്റ് സംഭവിച്ചു. വീണ്ടും ശ്രമിക്കുക."
+    },
+    "time": {
+        "justNow": "ഇപ്പോൾ",
+        "minutesAgo": "{{count}} മിനിറ്റ് മുൻപ്",
+        "hoursAgo": "{{count}} മണിക്കൂർ മുൻപ്",
+        "daysAgo": "{{count}} ദിവസം മുൻപ്",
+        "today": "ഇന്ന്",
+        "yesterday": "ഇന്നലെ",
+        "tomorrow": "നാളെ"
+    },
+    "language": {
+        "select": "ഭാഷ തിരഞ്ഞെടുക്കുക",
+        "current": "നിലവിലെ ഭാഷ",
+        "changed": "ഭാഷ {{language}} ആക്കി മാറ്റി"
+    }
+}
