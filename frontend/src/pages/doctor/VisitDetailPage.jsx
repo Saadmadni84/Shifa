@@ -42,7 +42,7 @@ import { RefreshCw, Send, ChevronLeft, MoreVertical, Trash2, Edit3 } from 'lucid
 import DoctorLayout         from '@/components/layout/DoctorLayout'
 import PageHeader           from '@/components/common/PageHeader'
 import Tabs                 from '@/components/ui/Tabs'
-import { Button }           from '@/components/ui/Button'
+import Button               from '@/components/ui/Button'
 import { SkeletonCard }     from '@/components/ui/Spinner'
 import EmptyState           from '@/components/ui/EmptyState'
 import Modal, { ConfirmModal } from '@/components/ui/Modal'
@@ -63,12 +63,12 @@ import MedicineSchedule     from '@/components/patient/MedicineSchedule'
 import RedFlagAlerts        from '@/components/patient/RedFlagAlerts'
 import DiagnosisCard        from '@/components/patient/DiagnosisCard'
 
-import { SendToPatientForm } from '@/components/forms/SendToPatientForm'
-import { AIStatusBadge }     from '@/components/doctor/AIStatusBadge'
-import { WhatsAppStatusBadge } from '@/components/doctor/WhatsAppStatusBadge'
-import Avatar                from '@/components/ui/Avatar'
+import SendToPatientForm     from '@/components/forms/SendToPatientForm'
+import AIStatusBadge           from '@/components/doctor/AIStatusBadge'
+import WhatsAppStatusBadge     from '@/components/doctor/WhatsAppStatusBadge'
+import Avatar                  from '@/components/ui/Avatar'
 
-import { useVisit }          from '@/hooks/useVisits'
+import { useVisit }          from '@/hooks/useVisit'
 
 // ─── Tab config ──────────────────────────────────────────────────────────────
 const VISIT_TABS = [

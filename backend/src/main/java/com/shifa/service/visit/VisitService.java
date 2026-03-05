@@ -12,7 +12,6 @@ import com.shifa.service.dto.VisitSummaryData;
 import com.shifa.service.dto.VisitUpdateRequest;
 import com.shifa.service.event.VisitProcessedEvent;
 import com.shifa.service.event.VisitSentEvent;
-import com.shifa.service.exception.AIProcessingException;
 import com.shifa.service.exception.InvalidVisitStateException;
 import com.shifa.service.exception.VisitNotFoundException;
 import com.shifa.service.language.LanguageService;
@@ -48,7 +47,7 @@ public class VisitService {
     @PhiAccess(action = "CREATE_VISIT", resource = "VISIT")
     public Visit createVisit(VisitCreateRequest request, UUID doctorId) {
         Patient patient = patientRepository.findById(request.getPatientId())
-                .orElseThrow(() -> new com.shifa.service.exception.PatientNotFoundException(request.getPatientId().toString()));
+                .orElseThrow(() -> new com.shifa.service.exception.PatientNotFoundException(request.getPatientId()));
 
         Doctor doctor = doctorRepository.findByUserId(doctorId)
                 .orElseThrow(() -> new IllegalStateException("Doctor profile not found"));

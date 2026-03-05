@@ -90,3 +90,28 @@ export async function getPatientConsents(patientId) {
 	const { data } = await apiClient.get(`/patients/${patientId}/consents`)
 	return data
 }
+
+export const patientsApi = {
+	registerPatient,
+	getPatient,
+	updatePatient,
+	deletePatient,
+	searchPatients,
+	getDoctorPatients,
+	getPatientVisits,
+	getPatientConditions,
+	getPatientHealthRecord,
+	getPatientVitalsHistory,
+	exportPatientData,
+	requestPatientErasure,
+	recordConsent,
+	getPatientConsents,
+	// Aliases for hook compatibility
+	list: searchPatients,
+	create: registerPatient,
+	update: updatePatient,
+	get: getPatient,
+	getVisitHistory: getPatientVisits,
+}
+
+

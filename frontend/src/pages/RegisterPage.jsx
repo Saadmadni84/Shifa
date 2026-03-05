@@ -14,7 +14,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Heart, ArrowLeft, ArrowRight, CheckCircle, User, Building2, Stethoscope } from 'lucide-react'
-import { DoctorRegisterForm } from '@/components/forms/DoctorRegisterForm'
+import DoctorRegisterForm from '@/components/forms/DoctorRegisterForm'
 
 const STEPS = [
   { id: 1, label: 'Your Details', icon: User },

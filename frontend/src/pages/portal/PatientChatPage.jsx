@@ -27,8 +27,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Send, Heart, Mic, MicOff, RotateCcw } from 'lucide-react'
-import { Spinner } from '@/components/ui/Spinner'
-import { getPortalVisit, askPatientQuestion } from '@/api/public'
+import Spinner from '@/components/ui/Spinner'
+import { getPortalVisit, askFollowUpQuestion } from '@/api/public'
 
 // ─── Suggested questions per language ────────────────────────────────────────
 const SUGGESTED_QUESTIONS = {
@@ -193,10 +193,7 @@ export default function PatientChatPage() {
     setIsTyping(true)
 
     try {
-      const response = await askPatientQuestion(token, {
-        question,
-        language: lang,
-      })
+      const response = await askFollowUpQuestion(token, question)
       setMessages(prev => [...prev, {
         id: `a-${Date.now()}`,
         role: 'assistant',

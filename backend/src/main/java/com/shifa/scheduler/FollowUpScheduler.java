@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -62,7 +61,7 @@ public class FollowUpScheduler {
                         List.of(
                                 patient.getName(),
                                 doctor.getName(),
-                                ISTTimeUtil.format(visit.getVisitDate())));
+                                ISTTimeUtil.format(visit.getVisitDate().atStartOfDay())));
                 log.info("[FollowUpScheduler] Tomorrow reminder sent \u2014 visitId={} patientId={}",
                         visit.getId(), patient.getId());
             } catch (Exception e) {
@@ -93,13 +92,11 @@ public class FollowUpScheduler {
         List<Visit> missedFollowUps = visitRepository.findMissedFollowUps(threeDaysAgo);
         for (Visit visit : missedFollowUps) {
             try {
-                Optional<Patient> patientOpt = patientRepository.findById(visit.getPatientId());
-                Optional<Doctor> doctorOpt = doctorRepository.findById(visit.getDoctorId());
-                if (patientOpt.isEmpty() || doctorOpt.isEmpty())
+                if (visit.getPatient() == null || visit.getDoctor() == null)
                     continue;
 
-                Patient patient = patientOpt.get();
-                Doctor doctor = doctorOpt.get();
+                Patient patient = visit.getPatient();
+                Doctor doctor = visit.getDoctor();
                 whatsAppService.sendTemplateMessage(
                         patient.getPhoneNumber(),
                         "shifa_followup_missed",

@@ -46,7 +46,7 @@ import RedFlagAlerts      from '@/components/patient/RedFlagAlerts'
 import DietAdvice         from '@/components/patient/DietAdvice'
 import FollowUpReminder   from '@/components/patient/FollowUpReminder'
 import VisitHeader        from '@/components/patient/VisitHeader'
-import { Spinner }        from '@/components/ui/Spinner'
+import Spinner            from '@/components/ui/Spinner'
 
 import { getPortalVisit, getPortalVisitInLanguage } from '@/api/public'
 
