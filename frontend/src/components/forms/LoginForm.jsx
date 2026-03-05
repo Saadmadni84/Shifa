@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 export default function LoginForm({ onSuccess }) {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -18,17 +19,22 @@ export default function LoginForm({ onSuccess }) {
 
   const submit = async (data) => {
     setLoading(true)
+
     try {
       const res = await loginDoctor(data)
+
       toast.success('Welcome back, Doctor!')
-      onSuccess?.(res)
+      if (onSuccess) onSuccess(res)
+
     } catch (err) {
+
       if (err.isShifaError && err.status === 401) {
         setError('email', { message: 'Invalid email or password' })
         setError('password', { message: 'Invalid email or password' })
       } else {
         toast.error(err.message ?? 'Login failed')
       }
+
     } finally {
       setLoading(false)
     }
@@ -36,6 +42,7 @@ export default function LoginForm({ onSuccess }) {
 
   return (
     <form onSubmit={handleSubmit(submit)} className="space-y-4" noValidate>
+
       <Input
         label="Email"
         type="email"
@@ -46,7 +53,10 @@ export default function LoginForm({ onSuccess }) {
         error={errors.email?.message}
         {...register('email', {
           required: 'Email is required',
-          pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+          pattern: {
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: 'Invalid email',
+          },
         })}
       />
 
@@ -58,17 +68,28 @@ export default function LoginForm({ onSuccess }) {
         placeholder="Your password"
         leftIcon={<Lock size={15} />}
         rightIcon={
-          <button type="button" onClick={() => setShowPw((o) => !o)} className="p-0.5">
+          <button
+            type="button"
+            onClick={() => setShowPw(!showPw)}
+            className="p-0.5"
+          >
             {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
         }
         error={errors.password?.message}
-        {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 characters' } })}
+        {...register('password', {
+          required: 'Password is required',
+          minLength: {
+            value: 6,
+            message: 'Min 6 characters',
+          },
+        })}
       />
 
       <Button type="submit" loading={loading} fullWidth size="lg">
         Sign In
       </Button>
+
     </form>
   )
 }
