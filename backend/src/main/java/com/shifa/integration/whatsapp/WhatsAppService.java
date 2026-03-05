@@ -23,8 +23,8 @@ public class WhatsAppService {
     public String sendVisitSummary(com.shifa.domain.visit.Visit visit) {
         String phoneNumber = visit.getPatient().getPhoneNumber();
         String message = "Visit summary placeholder"; // TODO: generate actual summary
-        whatsAppClient.sendMessage(phoneNumber, message);
-        return "mock_message_id"; // TODO: return actual message ID
+        String messageId = whatsAppClient.sendMessage(phoneNumber, message);
+        return messageId;
     }
 
     private String redactPhoneNumber(String phoneNumber) {
