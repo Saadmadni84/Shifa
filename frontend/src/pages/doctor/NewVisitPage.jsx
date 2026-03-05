@@ -19,26 +19,26 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { UserPlus, ArrowLeft, ChevronRight } from 'lucide-react'
 
-import DoctorLayout            from '@/components/layout/DoctorLayout'
-import PageHeader              from '@/components/common/PageHeader'
-import PatientSearch           from '@/components/doctor/PatientSearch'
-import { NewVisitForm }        from '@/components/forms/NewVisitForm'
-import { PatientQuickAddForm } from '@/components/forms/PatientQuickAddForm'
-import { Button }              from '@/components/ui/Button'
-import Modal                   from '@/components/ui/Modal'
-import Avatar                  from '@/components/ui/Avatar'
-import Badge                   from '@/components/ui/Badge'
+import DoctorLayout from '@/components/layout/DoctorLayout'
+import PageHeader from '@/components/common/PageHeader'
+import PatientSearch from '@/components/doctor/PatientSearch'
+import NewVisitForm from '@/components/forms/NewVisitForm'
+import PatientQuickAddForm from '@/components/forms/PatientQuickAddForm'
+import { Button } from '@/components/ui/Button'
+import Modal from '@/components/ui/Modal'
+import Avatar from '@/components/ui/Avatar'
+import Badge from '@/components/ui/Badge'
 
 export default function NewVisitPage() {
-  const navigate      = useNavigate()
-  const [params]      = useSearchParams()
-  const preloadedId   = params.get('patientId')
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const preloadedId = params.get('patientId')
 
   // ── State ────────────────────────────────────────────────────────────────
-  const [selectedPatient, setSelectedPatient]   = useState(null)
-  const [showSearch, setShowSearch]             = useState(!preloadedId)
-  const [showAddPatient, setShowAddPatient]      = useState(false)
-  const [step, setStep]                         = useState(preloadedId ? 2 : 1)
+  const [selectedPatient, setSelectedPatient] = useState(null)
+  const [showSearch, setShowSearch] = useState(!preloadedId)
+  const [showAddPatient, setShowAddPatient] = useState(false)
+  const [step, setStep] = useState(preloadedId ? 2 : 1)
   // step 1 = select patient
   // step 2 = fill visit form
 

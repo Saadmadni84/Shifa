@@ -63,7 +63,7 @@ import MedicineSchedule from '@/components/patient/MedicineSchedule'
 import RedFlagAlerts from '@/components/patient/RedFlagAlerts'
 import DiagnosisCard from '@/components/patient/DiagnosisCard'
 
-import { SendToPatientForm } from '@/components/forms/SendToPatientForm'
+import SendToPatientForm from '@/components/forms/SendToPatientForm'
 import { AIStatusBadge } from '@/components/doctor/AIStatusBadge'
 import { WhatsAppStatusBadge } from '@/components/doctor/WhatsAppStatusBadge'
 import Avatar from '@/components/ui/Avatar'
