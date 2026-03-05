@@ -16,11 +16,9 @@ public interface VisitRepository extends JpaRepository<Visit, UUID> {
     Optional<Visit> findByPatientPortalToken(String token);
 
     // Doctor-based queries using UUID
-    @Query("SELECT v FROM Visit v WHERE v.doctor.user.id = :doctorUserId AND v.deleted = false")
-    List<Visit> findByDoctorUserIdAndDeletedFalse(@Param("doctorUserId") UUID doctorUserId, Pageable pageable);
+    Page<Visit> findByDoctorUserIdAndDeletedFalse(UUID doctorUserId, Pageable pageable);
 
-    @Query("SELECT v FROM Visit v WHERE v.patient.id = :patientId AND v.doctor.user.id = :doctorUserId AND v.deleted = false")
-    List<Visit> findByPatientIdAndDoctorUserIdAndDeletedFalse(@Param("patientId") Long patientId, @Param("doctorUserId") UUID doctorUserId, Pageable pageable);
+    Page<Visit> findByPatientIdAndDoctorUserIdAndDeletedFalse(Long patientId, UUID doctorUserId, Pageable pageable);
 
     @Query("SELECT v FROM Visit v WHERE v.id = :visitId")
     Optional<Visit> findAIStatusById(@Param("visitId") UUID visitId);

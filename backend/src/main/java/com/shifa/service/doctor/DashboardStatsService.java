@@ -38,7 +38,7 @@ public class DashboardStatsService {
                 .totalPatients(visitRepository.countDistinctPatientsByDoctorUserId(doctorId))
                 .totalVisits(visitRepository.countByDoctorUserIdAndDeletedFalse(doctorId))
                 .whatsappReadRate(calculateReadRate(doctorId))
-                .topLanguage(visitRepository.findTopPatientLanguageByDoctorUserId(doctorId).orElse("hi"))
+                .topLanguage(visitRepository.findTopPatientLanguageByDoctorUserId(doctorId).stream().findFirst().map(arr -> (String)arr[0]).orElse("hi"))
                 .build();
     }
 

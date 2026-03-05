@@ -11,9 +11,8 @@ public class ClaudeClient {
         return response;
     }
 
-    public ClaudeResponse sendMessage(String message, String context) {
-        ClaudeResponse response = new ClaudeResponse();
-        response.setSummary("AI response placeholder for: " + message);
-        return response;
+    public String sendMessage(String message, String context) {
+        // Placeholder implementation
+        return "AI response placeholder for: " + message;
     }
 }

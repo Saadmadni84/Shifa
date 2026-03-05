@@ -55,7 +55,7 @@ public class VisitQueryService {
     }
 
     @Transactional(readOnly = true)
-    public AIStatusResponse getAIStatus(UUID visitId) {
+    public Visit getAIStatus(UUID visitId) {
         return visitRepository.findAIStatusById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException(visitId));
     }
