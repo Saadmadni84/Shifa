@@ -50,7 +50,7 @@ public class VisitService {
         Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new com.shifa.service.exception.PatientNotFoundException(request.getPatientId()));
 
-        Doctor doctor = doctorRepository.findByUser_Id(doctorId)
+        Doctor doctor = doctorRepository.findByUserId(doctorId)
                 .orElseThrow(() -> new IllegalStateException("Doctor profile not found"));
 
         Visit visit = new Visit();
@@ -118,7 +118,7 @@ public class VisitService {
     }
 
     @Async("aiProcessingExecutor")
-    protected void triggerAIProcessingAsync(UUID visitId) {
+    protected void triggerAIProcessingAsync(Long visitId) {
         log.info("[VisitService] Starting async AI processing: visitId={}", visitId);
 
         Visit visit = visitRepository.findById(visitId)
@@ -195,7 +195,7 @@ public class VisitService {
         log.info("[VisitService] Visit soft-deleted: visitId={}", visitId);
     }
 
-    private Visit findAndVerifyOwnership(UUID visitId, UUID doctorId) {
+    private Visit findAndVerifyOwnership(Long visitId, UUID doctorId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException(visitId));
 

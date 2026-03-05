@@ -31,7 +31,7 @@ public class VisitQueryService {
 
     @Transactional(readOnly = true)
     @PhiAccess(action = "VIEW_VISIT", resource = "VISIT")
-    public Visit getVisitForDoctor(UUID visitId, UUID doctorId) {
+    public Visit getVisitForDoctor(Long visitId, UUID doctorId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException(visitId));
 

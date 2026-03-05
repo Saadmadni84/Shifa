@@ -1,18 +1,30 @@
 package com.shifa.integration.whatsapp;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.shifa.domain.notification.Notification;
+import com.shifa.domain.visit.Visit;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class WhatsAppService {
 
+    private static final Logger log = LoggerFactory.getLogger(WhatsAppService.class);
+
     private final WhatsAppClient whatsAppClient;
 
     public void sendVisitSummary(String phoneNumber, String message) {
         whatsAppClient.sendMessage(phoneNumber, message);
+    }
+
+    public String sendVisitSummary(com.shifa.domain.visit.Visit visit) {
+        String phoneNumber = visit.getPatient().getPhoneNumber();
+        String message = "Visit summary placeholder"; // TODO: generate actual summary
+        whatsAppClient.sendMessage(phoneNumber, message);
+        return "mock_message_id"; // TODO: return actual message ID
     }
 
     public void sendOTP(String phoneNumber, String otp) {

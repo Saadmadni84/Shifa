@@ -10,4 +10,10 @@ public class ClaudeClient {
         response.setSummary("Structured summary placeholder");
         return response;
     }
+
+    public ClaudeResponse sendMessage(String message, String context) {
+        ClaudeResponse response = new ClaudeResponse();
+        response.setSummary("AI response placeholder for: " + message);
+        return response;
+    }
 }

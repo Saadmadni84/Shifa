@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import com.shifa.domain.patient.Patient;
+import com.shifa.domain.visit.Visit;
 
 @Entity
 @Table(name = "notifications")
@@ -18,7 +20,16 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long patientId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id")
+    private Patient patient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "visit_id")
+    private Visit visit;
+
+    private String title;
+
     private String channel;
     private String status;
 
@@ -26,6 +37,8 @@ public class Notification {
     private String message;
 
     private LocalDateTime sentAt;
+
+    private LocalDateTime createdAt;
 
     private String type; // MEDICINE_REMINDER | FOLLOW_UP | TEST_REMINDER
 
@@ -48,4 +61,8 @@ public class Notification {
 
     @Column(name = "retry_count")
     private int retryCount = 0;
+
+    // Legacy field
+    @Deprecated
+    private Long patientId;
 }
