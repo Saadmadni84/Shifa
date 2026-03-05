@@ -1,0 +1,558 @@
+/* ============================================================
+   index.css — Shifa Global Stylesheet
+   ============================================================
+   Sections:
+     1. Tailwind directives
+     2. CSS custom properties (light + dark theme)
+     3. Indian script typography
+     4. Base / reset overrides
+     5. Scrollbar styling
+     6. Utility classes (animations, glass, patterns)
+     7. Component-level globals (toasts, modals)
+     8. Responsive & PWA safe-area helpers
+   ============================================================ */
+
+
+/* ─── 1. Tailwind ──────────────────────────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ─── 2. CSS Custom Properties ─────────────────────────────────────────── */
+
+:root {
+  /* Brand */
+  --shifa-green-50:   #f0fdf4;
+  --shifa-green-100:  #dcfce7;
+  --shifa-green-200:  #bbf7d0;
+  --shifa-green-400:  #4ade80;
+  --shifa-green-500:  #10b981;   /* primary */
+  --shifa-green-600:  #059669;
+  --shifa-green-700:  #047857;
+  --shifa-green-800:  #065f46;
+  --shifa-green-900:  #064e3b;
+
+  /* WhatsApp green (used for WA send buttons) */
+  --whatsapp:         #25D366;
+  --whatsapp-dark:    #1da851;
+
+  /* Semantic tokens — light mode */
+  --color-bg:           #f9fafb;
+  --color-surface:      #ffffff;
+  --color-surface-2:    #f3f4f6;
+  --color-border:       #e5e7eb;
+  --color-border-soft:  #f0f0f0;
+  --color-text-primary: #111827;
+  --color-text-secondary:#6b7280;
+  --color-text-muted:   #9ca3af;
+  --color-primary:      #10b981;
+  --color-primary-hover:#059669;
+  --color-danger:       #ef4444;
+  --color-warning:      #f59e0b;
+  --color-info:         #3b82f6;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-xl:  0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.03);
+  --shadow-glow:0 0 0 3px rgba(16,185,129,0.15);
+
+  /* Radius */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-2xl: 28px;
+
+  /* Typography */
+  --font-sans:  'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono:  'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Transitions */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index scale */
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-modal:    300;
+  --z-toast:    400;
+  --z-splash:   9999;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --color-bg:            #0f172a;
+  --color-surface:       #1e293b;
+  --color-surface-2:     #273549;
+  --color-border:        #334155;
+  --color-border-soft:   #2a3a4e;
+  --color-text-primary:  #f1f5f9;
+  --color-text-secondary:#94a3b8;
+  --color-text-muted:    #64748b;
+  --shadow-sm:  0 1px 2px 0 rgba(0,0,0,0.3);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.2);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.2);
+}
+
+
+/* ─── 3. Indian Script Typography ──────────────────────────────────────── */
+
+/*
+  Each script gets its own font override when the user selects that language.
+  languageStore._loadNotoFont() injects the <link> and sets data-script on <html>.
+*/
+[data-script="devanagari"] {
+  --font-script: 'Noto Sans Devanagari', var(--font-sans);
+}
+[data-script="tamil"] {
+  --font-script: 'Noto Sans Tamil', var(--font-sans);
+}
+[data-script="telugu"] {
+  --font-script: 'Noto Sans Telugu', var(--font-sans);
+}
+[data-script="bengali"] {
+  --font-script: 'Noto Sans Bengali', var(--font-sans);
+}
+[data-script="gujarati"] {
+  --font-script: 'Noto Sans Gujarati', var(--font-sans);
+}
+[data-script="kannada"] {
+  --font-script: 'Noto Sans Kannada', var(--font-sans);
+}
+[data-script="malayalam"] {
+  --font-script: 'Noto Sans Malayalam', var(--font-sans);
+}
+[data-script="gurmukhi"] {
+  --font-script: 'Noto Sans Gurmukhi', var(--font-sans);
+}
+
+/* Apply script font to patient-facing content blocks */
+.patient-text,
+.lang-content {
+  font-family: var(--font-script, var(--font-sans));
+  font-size: 1.0625rem;   /* 17px — slightly larger for readability */
+  line-height: 1.75;
+}
+
+/* Larger for low-literacy patients */
+.patient-text-xl {
+  font-family: var(--font-script, var(--font-sans));
+  font-size: 1.25rem;
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+
+/* ─── 4. Base / Reset ───────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family:              var(--font-sans);
+  font-feature-settings:    "kern" 1, "liga" 1, "calt" 1;
+  -webkit-font-smoothing:   antialiased;
+  -moz-osx-font-smoothing:  grayscale;
+  text-rendering:           optimizeLegibility;
+  scroll-behavior:          smooth;
+  background-color:         var(--color-bg);
+  color:                    var(--color-text-primary);
+}
+
+body {
+  margin:           0;
+  padding:          0;
+  min-height:       100dvh;
+  background-color: var(--color-bg);
+  color:            var(--color-text-primary);
+  font-size:        0.9375rem;  /* 15px */
+  line-height:      1.6;
+  overflow-x:       hidden;
+}
+
+#root {
+  min-height: 100dvh;
+  display:    flex;
+  flex-direction: column;
+}
+
+/* Remove default button styles */
+button {
+  cursor:     pointer;
+  background: none;
+  border:     none;
+  padding:    0;
+  font:       inherit;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline:        2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius:  var(--radius-sm);
+}
+
+/* Remove focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Smooth image rendering */
+img, video {
+  max-width:     100%;
+  height:        auto;
+  display:       block;
+  border-radius: inherit;
+}
+
+/* Links */
+a {
+  color:           var(--color-primary);
+  text-decoration: none;
+  transition:      color var(--transition-fast);
+}
+a:hover { color: var(--color-primary-hover); }
+
+/* Selection highlight */
+::selection {
+  background: rgba(16,185,129,0.2);
+  color:      var(--color-text-primary);
+}
+
+/* Placeholder */
+::placeholder { color: var(--color-text-muted); opacity: 1; }
+
+/* Inputs */
+input, textarea, select {
+  font-family: var(--font-sans);
+  font-size:   inherit;
+  color:       var(--color-text-primary);
+  background:  var(--color-surface);
+}
+
+
+/* ─── 5. Scrollbars ─────────────────────────────────────────────────────── */
+
+/* Thin scrollbar — webkit */
+::-webkit-scrollbar              { width: 6px; height: 6px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: #d1d5db; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover  { background: #9ca3af; }
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb       { background: #334155; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover  { background: #475569; }
+
+/* Firefox */
+* { scrollbar-width: thin; scrollbar-color: #d1d5db transparent; }
+[data-theme="dark"] * { scrollbar-color: #334155 transparent; }
+
+/* Hide scrollbar class (for horizontal tab bars etc.) */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+/* ─── 6. Utility Classes ────────────────────────────────────────────────── */
+
+/* ── Glassmorphism ───────────────────────────────── */
+.glass {
+  background:     rgba(255, 255, 255, 0.75);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:         1px solid rgba(255,255,255,0.4);
+}
+[data-theme="dark"] .glass {
+  background:     rgba(30, 41, 59, 0.8);
+  border-color:   rgba(255,255,255,0.08);
+}
+
+/* ── Gradient backgrounds ────────────────────────── */
+.gradient-primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+}
+.gradient-soft {
+  background: linear-gradient(135deg, var(--shifa-green-50) 0%, #ecfdf5 100%);
+}
+.gradient-whatsapp {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+}
+
+/* ── Card base ───────────────────────────────────── */
+.card {
+  background:    var(--color-surface);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow:    var(--shadow-sm);
+}
+.card-hover {
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+}
+.card-hover:hover {
+  box-shadow:   var(--shadow-md);
+  transform:    translateY(-1px);
+  border-color: #d1d5db;
+}
+
+/* ── Status dot ──────────────────────────────────── */
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot.online  { background: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+.status-dot.offline { background: #9ca3af; }
+.status-dot.busy    { background: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.25); }
+.status-dot.error   { background: #ef4444; box-shadow: 0 0 0 2px rgba(239,68,68,0.25); }
+
+/* ── Animations ──────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 10px rgba(16,185,129,0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-fade-in        { animation: fade-in        0.3s ease both; }
+.animate-fade-in-up     { animation: fade-in-up     0.35s ease both; }
+.animate-fade-in-down   { animation: fade-in-down   0.35s ease both; }
+.animate-slide-in-right { animation: slide-in-right 0.3s ease both; }
+.animate-slide-in-left  { animation: slide-in-left  0.3s ease both; }
+.animate-scale-in       { animation: scale-in       0.2s ease both; }
+.animate-pulse-ring     { animation: pulse-ring      2s  ease infinite; }
+.animate-spin-slow      { animation: spin-slow        3s linear infinite; }
+
+/* Staggered children */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 60ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 180ms; }
+.stagger > *:nth-child(5) { animation-delay: 240ms; }
+.stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+/* ── Skeleton loader ─────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #273549 50%, #1e293b 75%);
+  background-size: 200% 100%;
+}
+
+/* ── AI processing indicator ─────────────────────── */
+.ai-thinking {
+  background: linear-gradient(90deg,
+    var(--shifa-green-500) 0%,
+    #6366f1 33%,
+    var(--shifa-green-500) 66%,
+    #6366f1 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── WhatsApp ripple (on send button) ────────────── */
+.whatsapp-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.whatsapp-ripple::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 2px solid rgba(37,211,102,0.4);
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+
+/* ─── 7. Component Globals ──────────────────────────────────────────────── */
+
+/* ── React Hot Toast overrides ───────────────────── */
+[data-sonner-toaster],
+.react-hot-toast-wrapper {
+  --toast-bg:      var(--color-surface);
+  --toast-color:   var(--color-text-primary);
+  --toast-border:  var(--color-border);
+  font-family:     var(--font-sans) !important;
+  font-size:       0.875rem !important;
+}
+
+/* ── Modal backdrop ──────────────────────────────── */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+/* ── Form helpers ────────────────────────────────── */
+.form-label {
+  display:       block;
+  font-size:     0.8125rem;
+  font-weight:   600;
+  color:         var(--color-text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
+.form-error {
+  font-size:  0.8125rem;
+  color:      var(--color-danger);
+  margin-top: 4px;
+  display:    flex;
+  align-items: center;
+  gap:        4px;
+}
+.form-hint {
+  font-size:  0.8125rem;
+  color:      var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* ── Input base ──────────────────────────────────── */
+.input-base {
+  width:         100%;
+  padding:       0.5625rem 0.875rem;
+  border:        1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background:    var(--color-surface);
+  color:         var(--color-text-primary);
+  font-size:     0.9375rem;
+  transition:    border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline:       none;
+}
+.input-base:hover  { border-color: #9ca3af; }
+.input-base:focus  { border-color: var(--color-primary); box-shadow: var(--shadow-glow); }
+.input-base.error  { border-color: var(--color-danger);  box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
+
+/* ── Doctor sidebar nav active ───────────────────── */
+.nav-link-active {
+  background: var(--shifa-green-50);
+  color:      var(--shifa-green-700);
+  font-weight: 600;
+}
+[data-theme="dark"] .nav-link-active {
+  background: rgba(16,185,129,0.12);
+  color:      #34d399;
+}
+
+/* ── Patient portal card ─────────────────────────── */
+.portal-card {
+  background:    var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow:    var(--shadow-md);
+  padding:       1.5rem;
+  border:        1px solid var(--color-border-soft);
+}
+
+/* ── Red flag warning block ──────────────────────── */
+.red-flag-block {
+  background:    #fef2f2;
+  border:        1.5px solid #fecaca;
+  border-radius: var(--radius-lg);
+  padding:       1rem 1.25rem;
+}
+[data-theme="dark"] .red-flag-block {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.25);
+}
+
+/* ── Medicine card ───────────────────────────────── */
+.medicine-card {
+  display:       flex;
+  gap:           12px;
+  align-items:   flex-start;
+  padding:       14px 16px;
+  background:    var(--color-surface);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition:    border-color var(--transition-fast);
+}
+.medicine-card.critical {
+  border-left: 3px solid var(--color-danger);
+  background:  #fffbfb;
+}
+
+/* ── Steps indicator (visit flow) ────────────────── */
+.step-connector {
+  flex: 1;
+  height: 2px;
+  margin: 0 8px;
+  background: var(--color-border);
+  transition: background var(--transition-normal);
+}
+.step-connector.complete { background: var(--color-primary); }
+
+
+/* ─── 8. Responsive & PWA Safe Areas ───────────────────────────────────── */
+
+/* iOS safe area for bottom nav */
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.safe-top {
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
+/* Full-height on iOS Safari */
+.h-screen-safe {
+  height: 100dvh;
+}
+.min-h-screen-safe {
+  min-height: 100dvh;
+}
+
+/* Mobile-first breakpoint helpers */
+@media (max-width: 640px) {
+  .hide-mobile { display: none !important; }
+  body { font-size: 0.9375rem; }
+}
+@media (min-width: 1024px) {
+  .hide-desktop { display: none !important; }
+}
+
+/* Print: hide UI chrome, show content only */
+@media print {
+  .no-print, nav, aside, header, footer, button { display: none !important; }
+  body { background: white; color: black; font-size: 12pt; }
+  .patient-text { font-size: 12pt; line-height: 1.6; }
+}

@@ -1,0 +1,90 @@
+{
+    "app": {
+        "name": "ଶିଫା",
+        "tagline": "ପ୍ରତ୍ୟେକ ଡ଼ାକ୍ତର ଭ୍ରମଣ ପରେ ଆପଣଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ସଙ୍ଗୀ",
+        "loading": "ଲୋଡ ହେଉଛି...",
+        "error": "କିଛି ଭୁଲ ହୋଇଗଲା",
+        "retry": "ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ",
+        "save": "ସଞ୍ଚୟ କରନ୍ତୁ",
+        "cancel": "ବାତିଲ କରନ୍ତୁ",
+        "yes": "ହଁ",
+        "no": "ନା",
+        "poweredBy": "Claude AI ଦ୍ୱାରା ଚାଳିତ"
+    },
+    "nav": {
+        "dashboard": "ଡ୍ୟାଶ୍ବୋର୍ଡ",
+        "patients": "ରୋଗୀ",
+        "visits": "ଭ୍ରମଣ",
+        "settings": "ସେଟିଂ",
+        "logout": "ଲଗ ଆଉଟ",
+        "notifications": "ବିଜ୍ଞପ୍ତି"
+    },
+    "auth": {
+        "login": "ଲଗ ଇନ",
+        "loginWithOtp": "OTP ସହ ଲଗ ଇନ",
+        "enterPhone": "ଆପଣଙ୍କ ମୋବାଇଲ ନମ୍ବର ଦିଅନ୍ତୁ",
+        "phonePlaceholder": "10 ଅଙ୍କ ମୋବାଇଲ ନମ୍ବର",
+        "sendOtp": "OTP ପଠାନ୍ତୁ",
+        "otpSent": "{{phone}} କୁ OTP ପଠାଯାଇଛି",
+        "enterOtp": "OTP ଦିଅନ୍ତୁ",
+        "verifyOtp": "OTP ଯାଞ୍ଚ କରନ୍ତୁ",
+        "resendOtp": "OTP ପୁଣି ପଠାନ୍ତୁ",
+        "otpViaWhatsapp": "WhatsApp ମାଧ୍ୟମରେ OTP",
+        "otpViaSms": "SMS ମାଧ୍ୟମରେ OTP",
+        "attemptsLeft": "{{count}} ଚେଷ୍ଟା ଅଛି",
+        "accountLocked": "ଆକାଉଣ୍ଟ ସ୍ଥାୟୀ ଭାବରେ ବନ୍ଦ। 10 ମିନିଟ ପରେ ଚେଷ୍ଟା କରନ୍ତୁ।",
+        "invalidOtp": "ଭୁଲ OTP। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।"
+    },
+    "visit": {
+        "new": "ନୂଆ ଭ୍ରମଣ",
+        "chiefComplaint": "ମୁଖ୍ୟ ଅଭିଯୋଗ",
+        "clinicalNotes": "ଡ଼ାକ୍ତରୀ ଟିପ୍ପଣୀ",
+        "diagnosis": "ରୋଗ ନିର୍ଣ୍ଣୟ",
+        "medications": "ଔଷଧ",
+        "processing": "AI ପ୍ରକ୍ରିୟା...",
+        "completed": "ସାରାଂଶ ପ୍ରସ୍ତୁତ",
+        "sendToPatient": "ରୋଗୀଙ୍କୁ ପଠାନ୍ତୁ",
+        "sent": "ପଠାଯାଇଛି ✓",
+        "status": {
+            "draft": "ଖସଡ଼ା",
+            "processing": "ପ୍ରକ୍ରିୟା",
+            "completed": "ପ୍ରସ୍ତୁତ",
+            "sent": "ପଠାଯାଇଛି",
+            "failed": "ବିଫଳ"
+        }
+    },
+    "patient": {
+        "summary": "ଭ୍ରମଣ ସାରାଂଶ",
+        "diagnosis": "ଡ଼ାକ୍ତର ଯାହା ଜାଣିଲେ",
+        "medicines": "ଆପଣଙ୍କ ଔଷଧ",
+        "morning": "ସକାଳ",
+        "afternoon": "ଦୁପୁର",
+        "evening": "ସନ୍ଧ୍ୟା",
+        "night": "ରାତ୍ରୀ",
+        "warnings": "ସତର୍କ ଚିହ୍ନ",
+        "warningsSubtitle": "ଏହି ଚିହ୍ନ ଦେଖିଲେ ଏକଦମ ଡ଼ାକ୍ତରଖାନା ଯାଆନ୍ତୁ:",
+        "followUpIn": "{{days}} ଦିନ ମଧ୍ୟରେ ଫେରି ଆସନ୍ତୁ",
+        "callDoctor": "ଡ଼ା. {{name}} କୁ ଫୋନ କରନ୍ତୁ",
+        "askSend": "ପଠାନ୍ତୁ",
+        "understandMedicines": "ମୁଁ ମୋ ଔଷଧ ବୁଝିଲି",
+        "linkExpired": "ଏହି ଲିଙ୍କ ଶେଷ ହୋଇଗଲା"
+    },
+    "errors": {
+        "networkError": "ନେଟ୍ୱାର୍କ ତ୍ରୁଟି। ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ।",
+        "generic": "କିଛି ଭୁଲ ହୋଇଗଲା। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।"
+    },
+    "time": {
+        "justNow": "ଏଇ ମାତ୍ରେ",
+        "minutesAgo": "{{count}} ମିନିଟ ଆଗରୁ",
+        "hoursAgo": "{{count}} ଘଣ୍ଟା ଆଗରୁ",
+        "daysAgo": "{{count}} ଦିନ ଆଗରୁ",
+        "today": "ଆଜି",
+        "yesterday": "ଗତକାଲି",
+        "tomorrow": "ଆସନ୍ତାକାଲି"
+    },
+    "language": {
+        "select": "ଭାଷା ଚୟନ କରନ୍ତୁ",
+        "current": "ବର୍ତ୍ତମାନ ଭାଷା",
+        "changed": "ଭାଷା {{language}} ରେ ପରିବର୍ତ୍ତନ ହୋଇଛି"
+    }
+}
