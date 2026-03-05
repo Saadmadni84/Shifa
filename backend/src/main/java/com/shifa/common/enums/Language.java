@@ -1,29 +1,41 @@
 package com.shifa.common.enums;
 
-import lombok.Getter;
+import java.util.Arrays;
 
-@Getter
 public enum Language {
-    ENGLISH("en", "English", "English"),
-    HINDI("hi", "Hindi", "हिंदी"),
-    BENGALI("bn", "Bengali", "বাংলা"),
-    TELUGU("te", "Telugu", "తెలుగు"),
-    MARATHI("mr", "Marathi", "मराठी"),
-    TAMIL("ta", "Tamil", "தமிழ்"),
-    URDU("ur", "Urdu", "اردو"),
-    GUJARATI("gu", "Gujarati", "ગુજરાતી"),
-    KANNADA("kn", "Kannada", "ಕನ್ನಡ"),
-    ODIA("or", "Odia", "ଓଡ଼ିଆ"),
-    MALAYALAM("ml", "Malayalam", "മലയാളം"),
-    PUNJABI("pa", "Punjabi", "ਪੰਜਾਬੀ");
+    EN("English", "en"),
+    HI("Hindi", "hi"),
+    TA("Tamil", "ta"),
+    TE("Telugu", "te"),
+    BN("Bengali", "bn"),
+    MR("Marathi", "mr"),
+    GU("Gujarati", "gu"),
+    KN("Kannada", "kn"),
+    ML("Malayalam", "ml"),
+    PA("Punjabi", "pa"),
+    UR("Urdu", "ur"),
+    OR("Odia", "or");
 
+    private final String displayName;
     private final String code;
-    private final String englishName;
-    private final String nativeName;
 
-    Language(String code, String englishName, String nativeName) {
+    Language(String displayName, String code) {
+        this.displayName = displayName;
         this.code = code;
-        this.englishName = englishName;
-        this.nativeName = nativeName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public static Language fromCode(String code) {
+        return Arrays.stream(values())
+            .filter(l -> l.code.equalsIgnoreCase(code))
+            .findFirst()
+            .orElse(EN);
     }
 }

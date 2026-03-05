@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class ShifaException extends RuntimeException {
-    private final HttpStatus httpStatus;
-    private final String errorCode;
-
-    public ShifaException(String message, HttpStatus httpStatus, String errorCode) {
+    public ShifaException(String message) {
         super(message);
         this.httpStatus = httpStatus;
         this.errorCode = errorCode;

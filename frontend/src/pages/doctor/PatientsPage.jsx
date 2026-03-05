@@ -19,21 +19,21 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Search, Users, SlidersHorizontal } from 'lucide-react'
 
-import DoctorLayout           from '@/components/layout/DoctorLayout'
-import PageHeader             from '@/components/common/PageHeader'
-import PatientCard            from '@/components/doctor/PatientCard'
-import { Button }             from '@/components/ui/Button'
-import { Input }              from '@/components/ui/Input'
-import { SkeletonCard }       from '@/components/ui/Spinner'
-import EmptyState             from '@/components/ui/EmptyState'
-import Modal                  from '@/components/ui/Modal'
-import { PatientQuickAddForm } from '@/components/forms/PatientQuickAddForm'
+import DoctorLayout from '@/components/layout/DoctorLayout'
+import PageHeader from '@/components/common/PageHeader'
+import PatientCard from '@/components/doctor/PatientCard'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { SkeletonCard } from '@/components/ui/Spinner'
+import EmptyState from '@/components/ui/EmptyState'
+import Modal from '@/components/ui/Modal'
+import PatientQuickAddForm from '@/components/forms/PatientQuickAddForm'
 
-import { usePatients }        from '@/hooks/usePatients'
+import { usePatients } from '@/hooks/usePatients'
 
 // ─── Language filter options ──────────────────────────────────────────────────
 const LANGUAGE_OPTIONS = [
-  { value: '',   label: 'All Languages' },
+  { value: '', label: 'All Languages' },
   { value: 'hi', label: 'Hindi' },
   { value: 'ta', label: 'Tamil' },
   { value: 'te', label: 'Telugu' },
@@ -49,8 +49,8 @@ export default function PatientsPage() {
   const navigate = useNavigate()
 
   const [showAddPatient, setShowAddPatient] = useState(false)
-  const [langFilter, setLangFilter]         = useState('')
-  const [showFilters, setShowFilters]       = useState(false)
+  const [langFilter, setLangFilter] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
 
   const {
     patients,
@@ -98,11 +98,10 @@ export default function PatientsPage() {
           </div>
           <button
             onClick={() => setShowFilters((p) => !p)}
-            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
-              langFilter
+            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors ${langFilter
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
                 : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-            }`}
+              }`}
           >
             <SlidersHorizontal size={14} />
             <span className="hidden sm:inline">Filter</span>
@@ -117,11 +116,10 @@ export default function PatientsPage() {
               <button
                 key={opt.value}
                 onClick={() => setLangFilter(opt.value)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                  langFilter === opt.value
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${langFilter === opt.value
                     ? 'bg-emerald-500 text-white border-emerald-500'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-300'
-                }`}
+                  }`}
               >
                 {opt.label}
               </button>

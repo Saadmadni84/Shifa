@@ -1,10 +1,6 @@
 package com.shifa.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -14,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
@@ -38,103 +35,34 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
-@EnableCaching
-@EnableRedisRepositories
-@RequiredArgsConstructor
 public class RedisConfig {
 
-    private final ObjectMapper objectMapper;
-
-    // ─────────────────────────────────────────────────────────────
-    // RedisTemplate<String, Object> — for direct Redis operations
-    // ─────────────────────────────────────────────────────────────
-
-    /**
-     * Primary template used by OtpService, JwtService, RateLimitAspect.
-     * Keys: String  Values: JSON-serialized objects
-     */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
-
-        StringRedisSerializer keySerializer = new StringRedisSerializer();
-        GenericJackson2JsonRedisSerializer valueSerializer =
-            new GenericJackson2JsonRedisSerializer(objectMapper);
-
-        template.setKeySerializer(keySerializer);
-        template.setHashKeySerializer(keySerializer);
-        template.setValueSerializer(valueSerializer);
-        template.setHashValueSerializer(valueSerializer);
-
-        template.afterPropertiesSet();
-        return template;
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory cf) {
+        RedisTemplate<String, String> t = new RedisTemplate<>();
+        t.setConnectionFactory(cf);
+        t.setKeySerializer(new StringRedisSerializer());
+        t.setValueSerializer(new StringRedisSerializer());
+        t.afterPropertiesSet();
+        return t;
     }
 
-    /**
-     * String-only template — for INCR counters, OTP codes, and JWT blocklist flags
-     * where the value is a plain string (no JSON overhead needed).
-     */
-    @Bean(name = "stringRedisTemplate")
-    public RedisTemplate<String, String> stringRedisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
-
-        StringRedisSerializer serializer = new StringRedisSerializer();
-        template.setKeySerializer(serializer);
-        template.setValueSerializer(serializer);
-        template.setHashKeySerializer(serializer);
-        template.setHashValueSerializer(serializer);
-
-        template.afterPropertiesSet();
-        return template;
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // Spring CacheManager (@Cacheable / @CacheEvict)
-    // ─────────────────────────────────────────────────────────────
-
-    /**
-     * Per-cache TTL configuration:
-     *
-     *  Cache name        TTL      Contents
-     *  ─────────────────────────────────────────────────────────
-     *  languages         24 h     Supported language list
-     *  doctors           30 min   DoctorResponse by doctor UUID
-     *  patients          10 min   PatientResponse by patient UUID
-     *  visit-portal      30 min   Patient portal data by token
-     *  visit-summaries    1 h     AI-generated visit summary
-     *  (default)         10 min   Any other @Cacheable method
-     *
-     * Key prefix: "shifa:" — isolates Shifa keys in a shared Redis instance.
-     * Null values are never cached (disableCachingNullValues).
-     */
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory factory) {
-
-        GenericJackson2JsonRedisSerializer jsonSerializer =
-            new GenericJackson2JsonRedisSerializer(objectMapper);
-
-        RedisCacheConfiguration defaults = RedisCacheConfiguration
-            .defaultCacheConfig()
+    public CacheManager cacheManager(RedisConnectionFactory cf) {
+        RedisCacheConfiguration base = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(10))
-            .disableCachingNullValues()
-            .prefixCacheNameWith("shifa:")
-            .serializeKeysWith(RedisSerializationContext.SerializationPair
-                .fromSerializer(new StringRedisSerializer()))
-            .serializeValuesWith(RedisSerializationContext.SerializationPair
-                .fromSerializer(jsonSerializer));
+            .serializeKeysWith(pair(new StringRedisSerializer()))
+            .serializeValuesWith(pair(new GenericJackson2JsonRedisSerializer()));
 
-        return RedisCacheManager.builder(factory)
-            .cacheDefaults(defaults)
-            .withInitialCacheConfigurations(Map.of(
-                "languages",        defaults.entryTtl(Duration.ofHours(24)),
-                "doctors",          defaults.entryTtl(Duration.ofMinutes(30)),
-                "patients",         defaults.entryTtl(Duration.ofMinutes(10)),
-                "visit-portal",     defaults.entryTtl(Duration.ofMinutes(30)),
-                "visit-summaries",  defaults.entryTtl(Duration.ofHours(1))
-            ))
-            .transactionAware()
+        return RedisCacheManager.builder(cf)
+            .cacheDefaults(base)
+            .withCacheConfiguration("doctors",      base.entryTtl(Duration.ofHours(1)))
+            .withCacheConfiguration("languages",    base.entryTtl(Duration.ofDays(1)))
+            .withCacheConfiguration("translations", base.entryTtl(Duration.ofDays(7)))
             .build();
+    }
+
+    private static <T> RedisSerializationContext.SerializationPair<T> pair(RedisSerializer<T> s) {
+        return RedisSerializationContext.SerializationPair.fromSerializer(s);
     }
 }
