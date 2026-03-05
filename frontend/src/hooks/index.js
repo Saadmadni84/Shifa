@@ -14,8 +14,11 @@ export { useOTP } from './useOTP'
 
 // Data hooks (TanStack Query-backed)
 export { useVisit } from './useVisit'
+export { useVisits } from './useVisits'
 export { usePatients, usePatient, usePatientVisits } from './usePatients'
 export { useDoctorDashboard } from './useDoctorDashboard'
+export { useDoctor } from './useDoctor'
+export { useDoctorStats } from './useDoctorStats'
 export { usePublicPortal, TOKEN_STATE } from './usePublicPortal'
 
 // Feature hooks

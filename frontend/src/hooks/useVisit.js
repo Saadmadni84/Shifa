@@ -41,7 +41,7 @@ export function useVisit(visitId) {
         refetch,
     } = useQuery({
         queryKey: ['visit', visitId],
-        queryFn: () => visitsApi.getVisit(visitId).then(r => r.data),
+        queryFn: () => visitsApi.getVisit(visitId),
         enabled: !!visitId,
         staleTime: 10_000,   // 10 s — don't refetch if data is fresh
         gcTime: 5 * 60_000,
@@ -75,17 +75,17 @@ export function useVisit(visitId) {
 
             const fresh = await qc.fetchQuery({
                 queryKey: ['visit', visitId],
-                queryFn: () => visitsApi.getVisit(visitId).then(r => r.data),
+                queryFn: () => visitsApi.getVisit(visitId),
                 staleTime: 0,
             })
 
-            if (TERMINAL_STATUSES.has(fresh?.data?.aiStatus)) {
+            if (TERMINAL_STATUSES.has(fresh?.aiStatus)) {
                 clearInterval(id)
                 pollEnabledRef.current = false
 
-                if (fresh?.data?.aiStatus === 'COMPLETED') {
+                if (fresh?.aiStatus === 'COMPLETED') {
                     toast.success('✅ AI summary is ready!')
-                } else if (fresh?.data?.aiStatus === 'FAILED') {
+                } else if (fresh?.aiStatus === 'FAILED') {
                     toast.error('AI processing failed. You can re-try below.')
                 }
             }

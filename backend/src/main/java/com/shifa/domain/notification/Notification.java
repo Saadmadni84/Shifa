@@ -20,6 +20,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import com.shifa.domain.patient.Patient;
+import com.shifa.domain.visit.Visit;
 
 @Entity
 @Table(name = "notifications", indexes = {
@@ -35,8 +37,17 @@ public class Notification extends AuditableEntity {
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id")
+    private Patient patient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visit_id")
     private Visit visit;
+
+    private String title;
+
+    private String channel;
+    private String status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
@@ -62,21 +73,31 @@ public class Notification extends AuditableEntity {
     @Column(name = "sent_at")
     private LocalDateTime sentAt;
 
+    private LocalDateTime createdAt;
+
+    private String type; // MEDICINE_REMINDER | FOLLOW_UP | TEST_REMINDER
+
+    private LocalDateTime scheduledFor;
+
+    @Column(name = "meta_message_id")
+    private String metaMessageId;
+
+    @Column(name = "delivery_status")
+    private String deliveryStatus;
+
     @Column(name = "delivered_at")
     private LocalDateTime deliveredAt;
 
     @Column(name = "read_at")
     private LocalDateTime readAt;
 
+    @Column(name = "error_message", columnDefinition = "TEXT")
+    private String errorMessage;
+
     @Column(name = "retry_count")
     private int retryCount = 0;
 
-    @Column(name = "next_retry_at")
-    private LocalDateTime nextRetryAt;
-
-    @Column(name = "failure_reason", length = 500)
-    private String failureReason;
-
-    @Column(name = "language_code", length = 5)
-    private String languageCode;
+    // Legacy field
+    @Deprecated
+    private Long patientId;
 }

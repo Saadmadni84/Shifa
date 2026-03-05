@@ -29,8 +29,10 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.UUID;
+import com.shifa.domain.patient.Patient;
+import com.shifa.domain.doctor.Doctor;
 
 @Entity
 @Table(name = "visits", indexes = {
@@ -43,86 +45,81 @@ import java.util.Map;
 @Getter @Setter @NoArgsConstructor
 public class Visit extends AuditableEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(name = "patient_id")
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id", nullable = false)
+    @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    @Column(name = "visit_date", nullable = false)
-    private LocalDate visitDate;
-
-    @Column(name = "visit_type", length = 50)
-    private String visitType;
-
-    @Column(name = "chief_complaint", columnDefinition = "TEXT")
-    private String chiefComplaint;
-
-    @Column(name = "diagnosis", columnDefinition = "TEXT")
-    private String diagnosis;
-
-    @Column(name = "raw_notes", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String rawNotes;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "ai_summary", columnDefinition = "jsonb")
-    private VisitSummaryData aiSummary;
+    @Column(columnDefinition = "TEXT")
+    private String chiefComplaint;
 
-    @OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKey(name = "languageCode")
-    private Map<String, VisitPatientSummary> patientSummaries = new HashMap<>();
+    @Column(columnDefinition = "TEXT")
+    private String vitalSigns;
+
+    @Column(columnDefinition = "TEXT")
+    private String diagnosis;
+
+    @Column(columnDefinition = "TEXT")
+    private String aiSummaryJson;
+
+    private LocalDate visitDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
     private VisitStatus status = VisitStatus.DRAFT;
 
-    @Column(name = "ai_processed_at")
-    private LocalDateTime aiProcessedAt;
-
-    @Column(name = "sent_to_patient_at")
-    private LocalDateTime sentToPatientAt;
-
-    @Column(name = "follow_up_date")
-    private LocalDate followUpDate;
-
-    @Column(name = "follow_up_notes", columnDefinition = "TEXT")
-    private String followUpNotes;
-
-    @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Prescription prescription;
-
-    @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private VitalSigns vitalSigns;
-
-    @Column(name = "whatsapp_message_id", length = 100)
-    private String whatsappMessageId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "whatsapp_status")
-    private WhatsAppStatus whatsappStatus = WhatsAppStatus.NOT_SENT;
-
-    @Column(name = "whatsapp_sent_at")
-    private LocalDateTime whatsappSentAt;
-
-    @Column(name = "patient_portal_token", unique = true)
     private String patientPortalToken;
 
-    @Column(name = "portal_token_expires_at")
     private LocalDateTime portalTokenExpiresAt;
 
-    public boolean isPortalAccessValid() {
-        return patientPortalToken != null &&
-            portalTokenExpiresAt != null &&
-            portalTokenExpiresAt.isAfter(LocalDateTime.now());
-    }
+    private LocalDateTime aiProcessedAt;
 
-    public String getPatientSummaryText(Language lang) {
-        VisitPatientSummary summary = patientSummaries.get(lang.name().toLowerCase());
-        if (summary == null) {
-            summary = patientSummaries.get("en");
-        }
-        return summary != null ? summary.getSummaryText() : null;
-    }
+    private String aiErrorMessage;
+
+    private LocalDateTime whatsappSentAt;
+
+    private String whatsappMetaMessageId;
+
+    private String whatsappDeliveryStatus;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime deletedAt;
+
+    private boolean deleted = false;
+
+    // Legacy fields for backward compatibility
+    @Deprecated
+    private Long patientId;
+
+    @Deprecated
+    private Long doctorId;
+
+    @Deprecated
+    @Column(columnDefinition = "TEXT")
+    private String clinicalNotes;
+
+    @Deprecated
+    @Column(columnDefinition = "TEXT")
+    private String structuredSummary;
+
+    @Deprecated
+    private LocalDateTime visitAt;
+
+    @Deprecated
+    private LocalDate followUpDate;
+
+    @Deprecated
+    private String statusString;
 }

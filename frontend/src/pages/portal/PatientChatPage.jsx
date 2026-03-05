@@ -192,10 +192,7 @@ export default function PatientChatPage() {
     setIsTyping(true)
 
     try {
-      const response = await askFollowUpQuestion(token, {
-        question,
-        language: lang,
-      })
+      const response = await askFollowUpQuestion(token, question)
       setMessages(prev => [...prev, {
         id: `a-${Date.now()}`,
         role: 'assistant',

@@ -23,34 +23,43 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.AllArgsConstructor;
+import com.shifa.domain.user.User;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "patients", indexes = {
-    @Index(name = "idx_patient_phone", columnList = "phone_number", unique = true),
-    @Index(name = "idx_patient_abha", columnList = "abha_id"),
-    @Index(name = "idx_patient_name", columnList = "first_name, last_name")
-})
-@Getter @Setter @NoArgsConstructor
-public class Patient extends AuditableEntity {
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
+@Table(name = "patients")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Patient {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    @Column(name = "phone_number", unique = true, nullable = false, length = 15)
-    private String phoneNumber;
+    private String name; // Legacy field
+
+    public String getFullName() {
+        if (firstName != null && lastName != null) {
+            return firstName + " " + lastName;
+        }
+        return name;
+    }
+
+    private Integer age;
+
+    private String abhaId;
+
+    @Column(unique = true)
+    private String phoneNumber; // For WhatsApp
 
     @Column(name = "email", length = 255)
     private String email;
@@ -58,64 +67,33 @@ public class Patient extends AuditableEntity {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
-    private Gender gender;
+    private String gender; // M, F, O
 
-    @Column(name = "abha_id", unique = true, length = 17)
-    private String abhaId;
+    private String preferredLanguage; // en, hi, ta, etc.
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "preferred_language", nullable = false)
-    private Language preferredLanguage = Language.HI;
+    private String address;
 
-    @Column(name = "city", length = 100)
-    private String city;
+    private String knownConditions;
 
-    @Column(name = "state", length = 100)
-    private String state;
+    private String allergies;
 
-    @Column(name = "pincode", length = 10)
-    private String pincode;
+    private LocalDateTime createdAt;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "patient_allergies",
-        joinColumns = @JoinColumn(name = "patient_id"))
-    @Column(name = "allergy")
-    private List<String> allergies = new ArrayList<>();
+    private LocalDateTime updatedAt;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "patient_chronic_conditions",
-        joinColumns = @JoinColumn(name = "patient_id"))
-    @Column(name = "condition_name")
-    private List<String> chronicConditions = new ArrayList<>();
+    private boolean deleted = false;
 
-    @Column(name = "blood_group", length = 5)
-    private String bloodGroup;
+    private LocalDateTime deletedAt;
 
-    @Column(name = "emergency_contact_name", length = 100)
-    private String emergencyContactName;
+    private String deleteReason;
 
-    @Column(name = "emergency_contact_phone", length = 15)
-    private String emergencyContactPhone;
-
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
-    @OrderBy("visitDate DESC")
-    private List<Visit> visits = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "patient_doctors",
-        joinColumns = @JoinColumn(name = "patient_id"),
-        inverseJoinColumns = @JoinColumn(name = "doctor_id"))
-    private List<Doctor> doctors = new ArrayList<>();
-
-    public int getAge() {
-        return dateOfBirth != null
-            ? (int) ChronoUnit.YEARS.between(dateOfBirth, LocalDate.now())
-            : 0;
+    // Computed methods
+    public String getKnownConditionsText() {
+        return knownConditions != null ? knownConditions : "";
     }
 
-    public String getFullName() {
-        return firstName + " " + lastName;
+    public String getCurrentMedicinesText() {
+        // TODO: implement based on prescriptions
+        return "";
     }
 }

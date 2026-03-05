@@ -18,6 +18,25 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+shifa:
+  scheduler:
+    enabled: true
+    pool-size: 5
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:8f8a1e2f5b6d9c7e4a3b1c5d9e8f2a4c6b7d1e3f5a8c9b2d4e6f1a3b5c7d9e2}
+    expiry-ms: 900000
+    refresh-expiry-ms: 604800000
+    
+  otp:
+    ttl-minutes: 5
+    max-attempts: 5
+    lockout-minutes: 15
+    resend-cooldown-sec: 60
+
+spring.task.scheduling.pool.size: 5
+
 server:
   port: 8080
 

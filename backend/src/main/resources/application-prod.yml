@@ -7,38 +7,38 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
-      maximum-pool-size: 50
-  redis:
-    host: ${REDIS_HOST}
-    port: 6379
-    ssl: true
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      leak-detection-threshold: 60000
+      data-source-properties:
+        reWriteBatchedInserts: true
+        prepareThreshold: 5
+        preparedStatementCacheQueries: 256
+        ssl: true
+        sslmode: require
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.batch_size: 50
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+        format_sql: false
+        default_batch_fetch_size: 20
+    open-in-view: false
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    out-of-order: false
+    locations: classpath:db/migration
 
 shifa:
-  cors:
-    allowed-origins: "https://app.shifa.com"
-  jwt:
-    secret: ${JWT_SECRET}
-    expirationMs: 86400000
-    refreshExpirationMs: 604800000
-  claude:
-    apiKey: ${CLAUDE_API_KEY}
-    model: ${CLAUDE_MODEL:claude-3-opus-20240229}
-    maxTokens: 1000
-  whatsapp:
-    apiUrl: ${WHATSAPP_API_URL}
-    token: ${WHATSAPP_TOKEN}
-    phoneNumberId: ${WHATSAPP_PHONE_NUMBER_ID}
-  aws:
-    region: ${AWS_REGION:ap-south-1}
-    s3Bucket: ${AWS_S3_BUCKET}
-
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
-
-server:
-  error:
-    include-message: never
-    include-binding-errors: never
+  scheduler:
+    enabled: true
+    pool-size: 8

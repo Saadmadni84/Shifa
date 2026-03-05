@@ -39,14 +39,14 @@ import {
   AlertTriangle, ChevronDown, RefreshCw
 } from 'lucide-react'
 
-import PatientLayout from '@/components/layout/PatientLayout'
-import DiagnosisCard from '@/components/patient/DiagnosisCard'
-import MedicineSchedule from '@/components/patient/MedicineSchedule'
-import RedFlagAlerts from '@/components/patient/RedFlagAlerts'
-import DietAdvice from '@/components/patient/DietAdvice'
-import FollowUpReminder from '@/components/patient/FollowUpReminder'
-import VisitHeader from '@/components/patient/VisitHeader'
-import Spinner from '@/components/ui/Spinner'
+import PatientLayout      from '@/components/layout/PatientLayout'
+import DiagnosisCard      from '@/components/patient/DiagnosisCard'
+import MedicineSchedule   from '@/components/patient/MedicineSchedule'
+import RedFlagAlerts      from '@/components/patient/RedFlagAlerts'
+import DietAdvice         from '@/components/patient/DietAdvice'
+import FollowUpReminder   from '@/components/patient/FollowUpReminder'
+import VisitHeader        from '@/components/patient/VisitHeader'
+import Spinner            from '@/components/ui/Spinner'
 
 import { getPortalVisit, getPortalVisitInLanguage } from '@/api/public'
 
