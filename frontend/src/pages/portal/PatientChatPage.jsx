@@ -27,8 +27,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Send, Heart, Mic, MicOff, RotateCcw } from 'lucide-react'
-import { Spinner } from '@/components/ui/Spinner'
-import { getPortalVisit, askPatientQuestion } from '@/api/public'
+import Spinner from '@/components/ui/Spinner'
+import { getPortalVisit, askFollowUpQuestion } from '@/api/public'
 
 // ─── Suggested questions per language ────────────────────────────────────────
 const SUGGESTED_QUESTIONS = {
@@ -90,11 +90,10 @@ function ChatBubble({ message }) {
         </div>
       )}
       <div className={`max-w-[78%] ${isUser ? 'items-end' : 'items-start'} flex flex-col`}>
-        <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-          isUser
-            ? 'bg-emerald-500 text-white rounded-br-sm'
-            : 'bg-white text-gray-800 rounded-bl-sm border border-gray-100 shadow-sm'
-        }`}>
+        <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser
+          ? 'bg-emerald-500 text-white rounded-br-sm'
+          : 'bg-white text-gray-800 rounded-bl-sm border border-gray-100 shadow-sm'
+          }`}>
           <p className="whitespace-pre-wrap">{message.content}</p>
         </div>
         <span className="text-xs text-gray-400 mt-1 px-1">
@@ -131,21 +130,21 @@ function TypingIndicator() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PatientChatPage() {
-  const { token }   = useParams()
-  const navigate    = useNavigate()
+  const { token } = useParams()
+  const navigate = useNavigate()
 
-  const [visitData, setVisitData]   = useState(null)
-  const [loading, setLoading]       = useState(true)
-  const [messages, setMessages]     = useState([])
-  const [inputText, setInputText]   = useState('')
-  const [isTyping, setIsTyping]     = useState(false)
-  const [sending, setSending]       = useState(false)
-  const [error, setError]           = useState(null)
+  const [visitData, setVisitData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [messages, setMessages] = useState([])
+  const [inputText, setInputText] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState(null)
   const [showSuggestions, setShowSuggestions] = useState(true)
 
-  const bottomRef    = useRef(null)
-  const inputRef     = useRef(null)
-  const lang         = visitData?.patient?.preferredLanguage ?? 'en'
+  const bottomRef = useRef(null)
+  const inputRef = useRef(null)
+  const lang = visitData?.patient?.preferredLanguage ?? 'en'
 
   // ── Load visit metadata ──────────────────────────────────────────────────
   useEffect(() => {
@@ -193,10 +192,7 @@ export default function PatientChatPage() {
     setIsTyping(true)
 
     try {
-      const response = await askPatientQuestion(token, {
-        question,
-        language: lang,
-      })
+      const response = await askFollowUpQuestion(token, question)
       setMessages(prev => [...prev, {
         id: `a-${Date.now()}`,
         role: 'assistant',
@@ -313,10 +309,10 @@ export default function PatientChatPage() {
               onKeyDown={handleKeyDown}
               placeholder={
                 lang === 'hi' ? 'अपना सवाल टाइप करें…' :
-                lang === 'ta' ? 'உங்கள் கேள்வியை தட்டச்சு செய்யுங்கள்…' :
-                lang === 'te' ? 'మీ ప్రశ్నను టైప్ చేయండి…' :
-                lang === 'bn' ? 'আপনার প্রশ্ন লিখুন…' :
-                'Type your question…'
+                  lang === 'ta' ? 'உங்கள் கேள்வியை தட்டச்சு செய்யுங்கள்…' :
+                    lang === 'te' ? 'మీ ప్రశ్నను టైప్ చేయండి…' :
+                      lang === 'bn' ? 'আপনার প্রশ্ন লিখুন…' :
+                        'Type your question…'
               }
               className="flex-1 bg-transparent text-gray-800 text-sm placeholder-gray-400 outline-none resize-none leading-relaxed"
               style={{ maxHeight: '120px' }}

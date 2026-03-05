@@ -101,3 +101,21 @@ export async function searchVisits(query, { page = 0, size = 10 } = {}) {
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export const visitsApi = {
+	getVisit,
+	createVisit,
+	updateVisit,
+	deleteVisit,
+	processVisit: processVisitWithAI,
+	sendToPatient: sendVisitToPatient,
+	updateVisitStatus,
+	getVisitAISummary,
+	generateSummaryInLanguage,
+	pollVisitUntilReady,
+	recordVitals,
+	getVitals,
+	getDoctorVisits,
+	searchVisits,
+}
+

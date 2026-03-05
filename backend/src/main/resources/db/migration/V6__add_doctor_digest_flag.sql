@@ -1,0 +1,2 @@
+ALTER TABLE doctors ADD COLUMN digest_enabled BOOLEAN DEFAULT TRUE;
+ALTER TABLE doctors ADD COLUMN phone_number VARCHAR(255);

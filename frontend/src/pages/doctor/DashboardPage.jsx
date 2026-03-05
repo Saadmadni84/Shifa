@@ -23,11 +23,11 @@ import PageHeader                from '@/components/common/PageHeader'
 import StatsGrid                 from '@/components/doctor/StatsGrid'
 import VisitRow                  from '@/components/doctor/VisitRow'
 import PatientSearch             from '@/components/doctor/PatientSearch'
-import { Button }                from '@/components/ui/Button'
+import Button                    from '@/components/ui/Button'
 import { SkeletonCard }          from '@/components/ui/Spinner'
 import EmptyState                from '@/components/ui/EmptyState'
 import Modal, { ConfirmModal }   from '@/components/ui/Modal'
-import { PatientQuickAddForm }   from '@/components/forms/PatientQuickAddForm'
+import PatientQuickAddForm       from '@/components/forms/PatientQuickAddForm'
 
 import { useDoctorStats }  from '@/hooks/useDoctorStats'
 import { useVisits }       from '@/hooks/useVisits'
@@ -58,10 +58,10 @@ function QuickActionCard({ icon, title, desc, colorClass, onClick }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const navigate = useNavigate()
-  const { user }  = useAuthStore()
+  const { user } = useAuthStore()
 
   const [showAddPatient, setShowAddPatient] = useState(false)
-  const [showSearch, setShowSearch]         = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
 
   const { stats, isLoading: statsLoading, refetch: refetchStats } = useDoctorStats()
   const {
