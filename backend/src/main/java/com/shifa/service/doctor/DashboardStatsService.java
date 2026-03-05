@@ -34,7 +34,7 @@ public class DashboardStatsService {
                 .monthNewPatients((int)visitRepository.countNewPatientsByDoctorSince(doctorId, monthStart))
                 .pendingAiProcessing((int)visitRepository.countByDoctorUserIdAndStatus(doctorId, VisitStatus.NOTES_TAKEN))
                 .pendingSendToPatient((int)visitRepository.countByDoctorUserIdAndStatus(doctorId, VisitStatus.REVIEWED))
-                .failedNotifications(notificationRepository.countFailedNotificationsSince(weekAgo))
+                .failedNotifications((int)notificationRepository.countFailedNotificationsSince(weekAgo))
                 .totalPatients((int)visitRepository.countDistinctPatientsByDoctorUserId(doctorId))
                 .totalVisits((int)visitRepository.countByDoctorUserIdAndDeletedFalse(doctorId))
                 .whatsappReadRate(calculateReadRate(doctorId))

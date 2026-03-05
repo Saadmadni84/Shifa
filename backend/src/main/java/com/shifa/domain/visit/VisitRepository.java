@@ -56,6 +56,8 @@ public interface VisitRepository extends JpaRepository<Visit, UUID> {
     List<Visit> findByFollowUpDate(LocalDate followUpDate);
 
     @Query("SELECT v FROM Visit v " +
+            "JOIN FETCH v.patient " +
+            "JOIN FETCH v.doctor " +
             "WHERE v.followUpDate = :missedDate " +
             "AND v.deleted = false " +
             "AND NOT EXISTS (" +

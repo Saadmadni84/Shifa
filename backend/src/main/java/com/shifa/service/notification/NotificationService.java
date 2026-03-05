@@ -48,7 +48,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public int cancelPatientReminders(Long patientId) {
+    public int cancelPatientReminders(java.util.UUID patientId) {
         int count = notificationRepository.cancelPatientNotifications(patientId);
         log.info("[NotificationService] Cancelled {} reminders for patientId={}", count, patientId);
         return count;

@@ -2,9 +2,7 @@ package com.shifa.scheduler;
 
 import com.shifa.integration.whatsapp.WhatsAppService;
 import com.shifa.domain.patient.Patient;
-import com.shifa.domain.patient.PatientRepository;
 import com.shifa.domain.doctor.Doctor;
-import com.shifa.domain.doctor.DoctorRepository;
 import com.shifa.scheduler.annotation.SchedulerLock;
 import com.shifa.scheduler.config.SchedulerConfig;
 import com.shifa.scheduler.util.ISTTimeUtil;
@@ -26,8 +24,6 @@ import java.util.Optional;
 public class FollowUpScheduler {
 
     private final VisitRepository visitRepository;
-    private final PatientRepository patientRepository;
-    private final DoctorRepository doctorRepository;
     private final WhatsAppService whatsAppService;
     private final SchedulerConfig schedulerConfig;
 
@@ -62,7 +58,7 @@ public class FollowUpScheduler {
                         List.of(
                                 patient.getName(),
                                 doctor.getName(),
-                                ISTTimeUtil.format(visit.getVisitDate())));
+                                ISTTimeUtil.format(visit.getVisitDate().atStartOfDay())));
                 log.info("[FollowUpScheduler] Tomorrow reminder sent \u2014 visitId={} patientId={}",
                         visit.getId(), patient.getId());
             } catch (Exception e) {
@@ -93,8 +89,8 @@ public class FollowUpScheduler {
         List<Visit> missedFollowUps = visitRepository.findMissedFollowUps(threeDaysAgo);
         for (Visit visit : missedFollowUps) {
             try {
-                Optional<Patient> patientOpt = patientRepository.findById(visit.getPatientId());
-                Optional<Doctor> doctorOpt = doctorRepository.findById(visit.getDoctorId());
+                Optional<Patient> patientOpt = Optional.ofNullable(visit.getPatient());
+                Optional<Doctor> doctorOpt = Optional.ofNullable(visit.getDoctor());
                 if (patientOpt.isEmpty() || doctorOpt.isEmpty())
                     continue;
 

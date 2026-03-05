@@ -52,29 +52,25 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countFailedNotificationsSince(@Param("since") LocalDateTime since);
 
     @Query("SELECT COUNT(n) FROM Notification n " +
-            "WHERE n.patientId IN (" +
-            "    SELECT v.patientId FROM Visit v WHERE v.doctorId = :doctorId" +
-            ") " +
+            "WHERE n.visit.doctor.user.id = :doctorId " +
             "AND n.status = 'FAILED' " +
             "AND n.sentAt >= :since")
     int countFailedSinceYesterday(
-            @Param("doctorId") Long doctorId,
+            @Param("doctorId") java.util.UUID doctorId,
             @Param("since") LocalDateTime since);
 
     @Query("SELECT COUNT(n) FROM Notification n " +
-            "WHERE n.patientId IN (" +
-            "    SELECT v.patientId FROM Visit v WHERE v.doctorId = :doctorId" +
-            ") " +
+            "WHERE n.visit.doctor.user.id = :doctorId " +
             "AND n.status = 'PENDING' " +
             "AND CAST(n.scheduledFor AS java.time.LocalDate) = :today")
     int countScheduledForToday(
-            @Param("doctorId") Long doctorId,
+            @Param("doctorId") java.util.UUID doctorId,
             @Param("today") LocalDate today);
 
     @Modifying
     @Query("UPDATE Notification n " +
             "SET n.status = 'CANCELLED' " +
-            "WHERE n.patientId = :patientId " +
+            "WHERE n.patient.id = :patientId " +
             "AND n.status = 'PENDING'")
-    int cancelPatientNotifications(@Param("patientId") Long patientId);
+    int cancelPatientNotifications(@Param("patientId") java.util.UUID patientId);
 }

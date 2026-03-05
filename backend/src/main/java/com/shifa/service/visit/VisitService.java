@@ -48,7 +48,7 @@ public class VisitService {
     @PhiAccess(action = "CREATE_VISIT", resource = "VISIT")
     public Visit createVisit(VisitCreateRequest request, UUID doctorId) {
         Patient patient = patientRepository.findById(request.getPatientId())
-                .orElseThrow(() -> new com.shifa.service.exception.PatientNotFoundException(request.getPatientId().toString()));
+                .orElseThrow(() -> new com.shifa.service.exception.PatientNotFoundException(request.getPatientId()));
 
         Doctor doctor = doctorRepository.findByUserId(doctorId)
                 .orElseThrow(() -> new IllegalStateException("Doctor profile not found"));
