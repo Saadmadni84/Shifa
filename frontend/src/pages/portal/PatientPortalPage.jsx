@@ -39,31 +39,31 @@ import {
   AlertTriangle, ChevronDown, RefreshCw
 } from 'lucide-react'
 
-import PatientLayout      from '@/components/layout/PatientLayout'
-import DiagnosisCard      from '@/components/patient/DiagnosisCard'
-import MedicineSchedule   from '@/components/patient/MedicineSchedule'
-import RedFlagAlerts      from '@/components/patient/RedFlagAlerts'
-import DietAdvice         from '@/components/patient/DietAdvice'
-import FollowUpReminder   from '@/components/patient/FollowUpReminder'
-import VisitHeader        from '@/components/patient/VisitHeader'
-import { Spinner }        from '@/components/ui/Spinner'
+import PatientLayout from '@/components/layout/PatientLayout'
+import DiagnosisCard from '@/components/patient/DiagnosisCard'
+import MedicineSchedule from '@/components/patient/MedicineSchedule'
+import RedFlagAlerts from '@/components/patient/RedFlagAlerts'
+import DietAdvice from '@/components/patient/DietAdvice'
+import FollowUpReminder from '@/components/patient/FollowUpReminder'
+import VisitHeader from '@/components/patient/VisitHeader'
+import Spinner from '@/components/ui/Spinner'
 
 import { getPortalVisit, getPortalVisitInLanguage } from '@/api/public'
 
 // ─── Language options ─────────────────────────────────────────────────────────
 const LANGUAGES = [
-  { code: 'en', name: 'English',    native: 'English'   },
-  { code: 'hi', name: 'Hindi',      native: 'हिंदी'      },
-  { code: 'ta', name: 'Tamil',      native: 'தமிழ்'      },
-  { code: 'te', name: 'Telugu',     native: 'తెలుగు'     },
-  { code: 'bn', name: 'Bengali',    native: 'বাংলা'      },
-  { code: 'mr', name: 'Marathi',    native: 'मराठी'      },
-  { code: 'gu', name: 'Gujarati',   native: 'ગુજરાતી'    },
-  { code: 'kn', name: 'Kannada',    native: 'ಕನ್ನಡ'      },
-  { code: 'ml', name: 'Malayalam',  native: 'മലയാളം'     },
-  { code: 'pa', name: 'Punjabi',    native: 'ਪੰਜਾਬੀ'     },
-  { code: 'ur', name: 'Urdu',       native: 'اردو'       },
-  { code: 'or', name: 'Odia',       native: 'ଓଡ଼ିଆ'      },
+  { code: 'en', name: 'English', native: 'English' },
+  { code: 'hi', name: 'Hindi', native: 'हिंदी' },
+  { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
+  { code: 'te', name: 'Telugu', native: 'తెలుగు' },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা' },
+  { code: 'mr', name: 'Marathi', native: 'मराठी' },
+  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી' },
+  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളം' },
+  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
+  { code: 'ur', name: 'Urdu', native: 'اردو' },
+  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ' },
 ]
 
 // ─── Language switcher ────────────────────────────────────────────────────────
@@ -90,11 +90,10 @@ function LanguageSwitcher({ current, available, onChange }) {
                 <button
                   key={lang.code}
                   onClick={() => { onChange(lang.code); setOpen(false) }}
-                  className={`text-left px-3 py-2 rounded-xl text-sm transition-colors ${
-                    lang.code === current
+                  className={`text-left px-3 py-2 rounded-xl text-sm transition-colors ${lang.code === current
                       ? 'bg-emerald-500 text-white font-semibold'
                       : 'hover:bg-gray-50 text-gray-700'
-                  }`}
+                    }`}
                 >
                   {lang.native}
                 </button>
@@ -112,9 +111,8 @@ function ErrorScreen({ type }) {
   const isExpired = type === 'expired'
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
-      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 text-3xl ${
-        isExpired ? 'bg-amber-100' : 'bg-red-100'
-      }`}>
+      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 text-3xl ${isExpired ? 'bg-amber-100' : 'bg-red-100'
+        }`}>
         {isExpired ? '⏰' : '❌'}
       </div>
       <h1 className="text-xl font-extrabold text-gray-900 mb-2">
@@ -135,14 +133,14 @@ function ErrorScreen({ type }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PatientPortalPage() {
-  const { token }   = useParams()
-  const navigate    = useNavigate()
+  const { token } = useParams()
+  const navigate = useNavigate()
 
-  const [visitData, setVisitData]     = useState(null)
-  const [loading, setLoading]         = useState(true)
+  const [visitData, setVisitData] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [langLoading, setLangLoading] = useState(false)
-  const [error, setError]             = useState(null) // 'not_found' | 'expired' | 'error'
-  const [activeLang, setActiveLang]   = useState(null)
+  const [error, setError] = useState(null) // 'not_found' | 'expired' | 'error'
+  const [activeLang, setActiveLang] = useState(null)
 
   // ── Load visit on mount ──────────────────────────────────────────────────
   useEffect(() => {
@@ -328,10 +326,10 @@ export default function PatientPortalPage() {
             >
               <MessageCircle size={20} />
               {activeLang === 'hi' ? 'सवाल पूछें' :
-               activeLang === 'ta' ? 'கேள்விகள் கேளுங்கள்' :
-               activeLang === 'te' ? 'ప్రశ్నలు అడగండి' :
-               activeLang === 'bn' ? 'প্রশ্ন করুন' :
-               'Ask a question about your visit'}
+                activeLang === 'ta' ? 'கேள்விகள் கேளுங்கள்' :
+                  activeLang === 'te' ? 'ప్రశ్నలు అడగండి' :
+                    activeLang === 'bn' ? 'প্রশ্ন করুন' :
+                      'Ask a question about your visit'}
             </button>
             <p className="text-center text-xs text-gray-400 mt-2">
               AI-powered · Powered by Shifa
