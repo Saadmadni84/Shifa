@@ -28,15 +28,15 @@ public class DashboardStatsService {
         LocalDate monthStart = today.withDayOfMonth(1);
 
         return DashboardStatsDTO.builder()
-                .todayVisits(visitRepository.countByDoctorUserIdAndVisitDate(doctorId, today))
-                .todayFollowUps(visitRepository.countFollowUpsByDoctorAndDate(doctorId, today))
-                .monthVisits(visitRepository.countByDoctorUserIdAndVisitDateAfter(doctorId, monthStart))
-                .monthNewPatients(visitRepository.countNewPatientsByDoctorSince(doctorId, monthStart))
-                .pendingAiProcessing(visitRepository.countByDoctorUserIdAndStatus(doctorId, VisitStatus.NOTES_TAKEN))
-                .pendingSendToPatient(visitRepository.countByDoctorUserIdAndStatus(doctorId, VisitStatus.REVIEWED))
+                .todayVisits((int)visitRepository.countByDoctorUserIdAndVisitDate(doctorId, today))
+                .todayFollowUps((int)visitRepository.countFollowUpsByDoctorAndDate(doctorId, today))
+                .monthVisits((int)visitRepository.countByDoctorUserIdAndVisitDateAfter(doctorId, monthStart))
+                .monthNewPatients((int)visitRepository.countNewPatientsByDoctorSince(doctorId, monthStart))
+                .pendingAiProcessing((int)visitRepository.countByDoctorUserIdAndStatus(doctorId, VisitStatus.NOTES_TAKEN))
+                .pendingSendToPatient((int)visitRepository.countByDoctorUserIdAndStatus(doctorId, VisitStatus.REVIEWED))
                 .failedNotifications(notificationRepository.countFailedNotificationsSince(weekAgo))
-                .totalPatients(visitRepository.countDistinctPatientsByDoctorUserId(doctorId))
-                .totalVisits(visitRepository.countByDoctorUserIdAndDeletedFalse(doctorId))
+                .totalPatients((int)visitRepository.countDistinctPatientsByDoctorUserId(doctorId))
+                .totalVisits((int)visitRepository.countByDoctorUserIdAndDeletedFalse(doctorId))
                 .whatsappReadRate(calculateReadRate(doctorId))
                 .topLanguage(visitRepository.findTopPatientLanguageByDoctorUserId(doctorId).stream().findFirst().map(arr -> (String)arr[0]).orElse("hi"))
                 .build();
