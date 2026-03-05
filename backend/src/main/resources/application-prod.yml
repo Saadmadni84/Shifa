@@ -35,3 +35,8 @@ spring:
     validate-on-migrate: true
     out-of-order: false
     locations: classpath:db/migration
+
+shifa:
+  scheduler:
+    enabled: true
+    pool-size: 8

@@ -5,3 +5,7 @@ spring:
     password: password
   jpa:
     show-sql: true
+
+shifa:
+  scheduler:
+    enabled: false

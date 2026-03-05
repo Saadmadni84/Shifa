@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "visits")
@@ -28,4 +29,10 @@ public class Visit {
     private String structuredSummary;
 
     private LocalDateTime visitAt;
+
+    private LocalDate followUpDate;
+
+    private String status = "COMPLETED"; // 'DRAFT', etc.
+
+    private boolean deleted = false;
 }
