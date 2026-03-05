@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -94,8 +93,8 @@ public class FollowUpScheduler {
                 if (patientOpt.isEmpty() || doctorOpt.isEmpty())
                     continue;
 
-                Patient patient = patientOpt.get();
-                Doctor doctor = doctorOpt.get();
+                Patient patient = visit.getPatient();
+                Doctor doctor = visit.getDoctor();
                 whatsAppService.sendTemplateMessage(
                         patient.getPhoneNumber(),
                         "shifa_followup_missed",

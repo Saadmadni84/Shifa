@@ -12,7 +12,6 @@ import com.shifa.service.dto.VisitSummaryData;
 import com.shifa.service.dto.VisitUpdateRequest;
 import com.shifa.service.event.VisitProcessedEvent;
 import com.shifa.service.event.VisitSentEvent;
-import com.shifa.service.exception.AIProcessingException;
 import com.shifa.service.exception.InvalidVisitStateException;
 import com.shifa.service.exception.VisitNotFoundException;
 import com.shifa.service.language.LanguageService;

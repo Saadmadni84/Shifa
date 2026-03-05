@@ -42,52 +42,52 @@ import { RefreshCw, Send, ChevronLeft, MoreVertical, Trash2, Edit3 } from 'lucid
 import DoctorLayout         from '@/components/layout/DoctorLayout'
 import PageHeader           from '@/components/common/PageHeader'
 import Tabs                 from '@/components/ui/Tabs'
-import { Button }           from '@/components/ui/Button'
+import Button               from '@/components/ui/Button'
 import { SkeletonCard }     from '@/components/ui/Spinner'
 import EmptyState           from '@/components/ui/EmptyState'
 import Modal, { ConfirmModal } from '@/components/ui/Modal'
 
 // Visit-specific components
-import AIProcessingStatus   from '@/components/visit/AIProcessingStatus'
-import AISummaryReview      from '@/components/doctor/AISummaryReview'
-import QuickSummary         from '@/components/visit/QuickSummary'
-import SOAPSection          from '@/components/visit/SOAPSection'
+import AIProcessingStatus from '@/components/visit/AIProcessingStatus'
+import AISummaryReview from '@/components/doctor/AISummaryReview'
+import QuickSummary from '@/components/visit/QuickSummary'
+import SOAPSection from '@/components/visit/SOAPSection'
 import NextActionsChecklist from '@/components/visit/NextActionsChecklist'
-import ChatPanel            from '@/components/visit/ChatPanel'
-import AttachmentCard       from '@/components/visit/AttachmentCard'
-import ScribeRecorder       from '@/components/visit/ScribeRecorder'
-import LanguageBanner       from '@/components/visit/LanguageBanner'
+import ChatPanel from '@/components/visit/ChatPanel'
+import AttachmentCard from '@/components/visit/AttachmentCard'
+import ScribeRecorder from '@/components/visit/ScribeRecorder'
+import LanguageBanner from '@/components/visit/LanguageBanner'
 
 // Patient-facing components used in doctor preview
-import MedicineSchedule     from '@/components/patient/MedicineSchedule'
-import RedFlagAlerts        from '@/components/patient/RedFlagAlerts'
-import DiagnosisCard        from '@/components/patient/DiagnosisCard'
+import MedicineSchedule from '@/components/patient/MedicineSchedule'
+import RedFlagAlerts from '@/components/patient/RedFlagAlerts'
+import DiagnosisCard from '@/components/patient/DiagnosisCard'
 
-import { SendToPatientForm } from '@/components/forms/SendToPatientForm'
-import { AIStatusBadge }     from '@/components/doctor/AIStatusBadge'
-import { WhatsAppStatusBadge } from '@/components/doctor/WhatsAppStatusBadge'
-import Avatar                from '@/components/ui/Avatar'
+import SendToPatientForm     from '@/components/forms/SendToPatientForm'
+import AIStatusBadge           from '@/components/doctor/AIStatusBadge'
+import WhatsAppStatusBadge     from '@/components/doctor/WhatsAppStatusBadge'
+import Avatar                  from '@/components/ui/Avatar'
 
-import { useVisit }          from '@/hooks/useVisits'
+import { useVisit }          from '@/hooks/useVisit'
 
 // ─── Tab config ──────────────────────────────────────────────────────────────
 const VISIT_TABS = [
-  { id: 'summary',     label: 'AI Summary'   },
-  { id: 'soap',        label: 'SOAP Notes'   },
-  { id: 'attachments', label: 'Attachments'  },
-  { id: 'chat',        label: 'Patient Chat' },
+  { id: 'summary', label: 'AI Summary' },
+  { id: 'soap', label: 'SOAP Notes' },
+  { id: 'attachments', label: 'Attachments' },
+  { id: 'chat', label: 'Patient Chat' },
 ]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function VisitDetailPage() {
-  const { id }       = useParams()
-  const navigate     = useNavigate()
-  const location     = useLocation()
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  const justCreated  = location.state?.justCreated
+  const justCreated = location.state?.justCreated
 
-  const [activeTab, setActiveTab]         = useState('summary')
-  const [showSend, setShowSend]           = useState(false)
+  const [activeTab, setActiveTab] = useState('summary')
+  const [showSend, setShowSend] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const {
@@ -138,7 +138,7 @@ export default function VisitDetailPage() {
   }
 
   const isProcessing = visit.aiStatus === 'PENDING' || visit.aiStatus === 'PROCESSING'
-  const hasAI        = visit.aiStatus === 'COMPLETED' && visit.aiSummary
+  const hasAI = visit.aiStatus === 'COMPLETED' && visit.aiSummary
 
   return (
     <DoctorLayout>

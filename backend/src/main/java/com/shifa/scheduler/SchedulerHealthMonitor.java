@@ -4,7 +4,6 @@ import com.shifa.domain.notification.NotificationRepository;
 import com.shifa.scheduler.config.SchedulerConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
