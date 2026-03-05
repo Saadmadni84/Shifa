@@ -47,13 +47,11 @@ public class FollowUpScheduler {
 
         for (Visit visit : tomorrowFollowUps) {
             try {
-                Optional<Patient> patientOpt = patientRepository.findById(visit.getPatientId());
-                Optional<Doctor> doctorOpt = doctorRepository.findById(visit.getDoctorId());
-                if (patientOpt.isEmpty() || doctorOpt.isEmpty())
+                if (visit.getPatient() == null || visit.getDoctor() == null)
                     continue;
 
-                Patient patient = patientOpt.get();
-                Doctor doctor = doctorOpt.get();
+                Patient patient = visit.getPatient();
+                Doctor doctor = visit.getDoctor();
 
                 String templateName = "shifa_followup_tomorrow_"
                         + (patient.getPreferredLanguage() != null ? patient.getPreferredLanguage().toLowerCase()
@@ -64,7 +62,7 @@ public class FollowUpScheduler {
                         List.of(
                                 patient.getName(),
                                 doctor.getName(),
-                                ISTTimeUtil.format(visit.getVisitAt())));
+                                ISTTimeUtil.format(visit.getVisitDate())));
                 log.info("[FollowUpScheduler] Tomorrow reminder sent \u2014 visitId={} patientId={}",
                         visit.getId(), patient.getId());
             } catch (Exception e) {
@@ -76,13 +74,11 @@ public class FollowUpScheduler {
         List<Visit> todayFollowUps = visitRepository.findByFollowUpDate(today);
         for (Visit visit : todayFollowUps) {
             try {
-                Optional<Patient> patientOpt = patientRepository.findById(visit.getPatientId());
-                Optional<Doctor> doctorOpt = doctorRepository.findById(visit.getDoctorId());
-                if (patientOpt.isEmpty() || doctorOpt.isEmpty())
+                if (visit.getPatient() == null || visit.getDoctor() == null)
                     continue;
 
-                Patient patient = patientOpt.get();
-                Doctor doctor = doctorOpt.get();
+                Patient patient = visit.getPatient();
+                Doctor doctor = visit.getDoctor();
                 whatsAppService.sendTemplateMessage(
                         patient.getPhoneNumber(),
                         "shifa_followup_today",

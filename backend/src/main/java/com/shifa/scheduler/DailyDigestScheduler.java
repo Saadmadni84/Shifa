@@ -41,11 +41,11 @@ public class DailyDigestScheduler {
 
         for (Doctor doctor : doctors) {
             try {
-                int followUpsToday = visitRepository.countFollowUpsByDoctorAndDate(doctor.getUser().getId(), today);
-                int pendingDrafts = visitRepository.countDraftVisitsByDoctor(doctor.getUser().getId());
-                int failedNotifs = notificationRepository.countFailedSinceYesterday(doctor.getUser().getId(),
+                int followUpsToday = (int) visitRepository.countFollowUpsByDoctorAndDate(doctor.getUser().getId(), today);
+                int pendingDrafts = (int) visitRepository.countDraftVisitsByDoctor(doctor.getUser().getId());
+                int failedNotifs = (int) notificationRepository.countFailedSinceYesterday(doctor.getUser().getId(),
                         today.atStartOfDay());
-                int remindersGoingOut = notificationRepository.countScheduledForToday(doctor.getUser().getId(), today);
+                int remindersGoingOut = (int) notificationRepository.countScheduledForToday(doctor.getUser().getId(), today);
 
                 if (followUpsToday == 0 && pendingDrafts == 0 && failedNotifs == 0) {
                     continue;

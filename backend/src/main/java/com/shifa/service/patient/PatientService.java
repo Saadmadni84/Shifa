@@ -56,9 +56,9 @@ public class PatientService {
 
     @Transactional(readOnly = true)
     @PhiAccess(action = "VIEW_PATIENT", resource = "PATIENT")
-    public Patient getPatient(Long patientId) {
+    public Patient getPatient(UUID patientId) {
         return patientRepository.findById(patientId)
-                .orElseThrow(() -> new PatientNotFoundException(UUID.randomUUID())); // TODO FIX parameter for ID type
+                .orElseThrow(() -> new PatientNotFoundException(patientId));
     }
 
     @Transactional(readOnly = true)
@@ -81,7 +81,7 @@ public class PatientService {
 
     @Transactional
     @PhiAccess(action = "UPDATE_PATIENT", resource = "PATIENT")
-    public Patient updatePatient(Long patientId, PatientCreateRequest request) {
+    public Patient updatePatient(UUID patientId, PatientCreateRequest request) {
         Patient patient = getPatient(patientId);
 
         if (request.getFirstName() != null)
@@ -106,7 +106,7 @@ public class PatientService {
     }
 
     @Transactional
-    public void deletePatient(Long patientId) {
+    public void deletePatient(UUID patientId) {
         Patient patient = getPatient(patientId);
         patient.setDeleted(true);
         patient.setDeletedAt(LocalDateTime.now());

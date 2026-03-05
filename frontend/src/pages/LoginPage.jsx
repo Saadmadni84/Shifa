@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Heart, Eye, EyeOff, AlertCircle, LogIn } from 'lucide-react'
 import { useAuthStore } from '@/store'
-import { LoginForm } from '@/components/forms/LoginForm'
+import LoginForm from '@/components/forms/LoginForm'
 
 export default function LoginPage() {
   const navigate  = useNavigate()
