@@ -31,7 +31,7 @@ public class VisitQueryService {
 
     @Transactional(readOnly = true)
     @PhiAccess(action = "VIEW_VISIT", resource = "VISIT")
-    public Visit getVisitForDoctor(Long visitId, UUID doctorId) {
+    public Visit getVisitForDoctor(UUID visitId, UUID doctorId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException(visitId));
 
@@ -78,11 +78,11 @@ public class VisitQueryService {
                 .visitId(visit.getId())
                 .visitDate(visit.getVisitDate().toString())
                 .doctorName(
-                        visit.getDoctor().getUser().getFirstName() + " " + visit.getDoctor().getUser().getLastName())
+                        visit.getDoctor().getFirstName() + " " + visit.getDoctor().getLastName())
                 .doctorSpecialization(visit.getDoctor().getSpecialization())
                 .clinicName(visit.getDoctor().getClinicName())
-                .clinicPhone(visit.getDoctor().getClinicPhone())
-                .patientFirstName(visit.getPatient().getFirstName())
+                .clinicPhone(visit.getDoctor().getPhoneNumber())
+                .patientFirstName(visit.getPatient().getName())
                 .preferredLanguage(visit.getPatient().getPreferredLanguage())
                 .aiSummary(summary)
                 .patientFriendlyText(summary != null ? summary.getPatientFriendlyText() : null)

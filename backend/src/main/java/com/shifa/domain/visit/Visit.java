@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.UUID;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.doctor.Doctor;
 
@@ -18,8 +19,8 @@ import com.shifa.domain.doctor.Doctor;
 public class Visit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id")

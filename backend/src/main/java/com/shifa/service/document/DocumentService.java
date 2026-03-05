@@ -21,7 +21,7 @@ public class DocumentService {
     private final VisitRepository visitRepository;
 
     @Transactional
-    public String uploadDocument(Long visitId, MultipartFile file, UUID doctorId) {
+    public String uploadDocument(UUID visitId, MultipartFile file, UUID doctorId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException(visitId));
 
@@ -40,7 +40,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public void deleteDocument(Long visitId, String documentId, UUID doctorId) {
+    public void deleteDocument(UUID visitId, String documentId, UUID doctorId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException(visitId));
 

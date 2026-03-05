@@ -118,7 +118,7 @@ public class VisitService {
     }
 
     @Async("aiProcessingExecutor")
-    protected void triggerAIProcessingAsync(Long visitId) {
+    protected void triggerAIProcessingAsync(UUID visitId) {
         log.info("[VisitService] Starting async AI processing: visitId={}", visitId);
 
         Visit visit = visitRepository.findById(visitId)
@@ -195,7 +195,7 @@ public class VisitService {
         log.info("[VisitService] Visit soft-deleted: visitId={}", visitId);
     }
 
-    private Visit findAndVerifyOwnership(Long visitId, UUID doctorId) {
+    private Visit findAndVerifyOwnership(UUID visitId, UUID doctorId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException(visitId));
 
