@@ -27,8 +27,18 @@ public class WhatsAppService {
         return "mock_message_id"; // TODO: return actual message ID
     }
 
+    private String redactPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.length() <= 4) {
+            return "****";
+        }
+        int visibleDigits = 4;
+        String suffix = phoneNumber.substring(phoneNumber.length() - visibleDigits);
+        return "****" + suffix;
+    }
+
     public void sendOTP(String phoneNumber, String otp) {
-        log.info("Sending WhatsApp OTP to {}: {}", phoneNumber, otp);
+        String redactedPhone = redactPhoneNumber(phoneNumber);
+        log.info("Sending WhatsApp OTP to {}", redactedPhone);
     }
 
     public void sendReminder(Notification notification) {
