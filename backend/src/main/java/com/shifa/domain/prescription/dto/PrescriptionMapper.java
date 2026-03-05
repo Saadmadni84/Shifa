@@ -32,14 +32,11 @@ public interface PrescriptionMapper {
     @Mapping(target = "visitId", source = "visit.id")
     PrescriptionResponse toResponse(Prescription prescription);
 
-    @Mapping(target = "scheduleText", qualifiedByName = "scheduleText")
+    @Mapping(target = "scheduleText", expression = "java(medication.getScheduleText())")
+    @Mapping(target = "sideEffectsToWatch", expression = "java(java.util.Arrays.asList(medication.getSideEffectsToWatch() != null ? medication.getSideEffectsToWatch().split(\",\") : new String[0]))")
     MedicationResponse toMedicationResponse(Medication medication);
 
     List<MedicationResponse> toMedicationResponseList(List<Medication> medications);
 
-    @Named("scheduleText")
-    default String scheduleText(Medication m) {
-        if (m == null) return null;
-        return m.getScheduleText();
-    }
+
 }

@@ -46,10 +46,10 @@ public interface VisitMapper {
 
     @Mapping(target = "patient", source = "patient")
     @Mapping(target = "doctor", source = "doctor")
-    @Mapping(target = "aiSummaryStatus", qualifiedByName = "aiStatus")
-    @Mapping(target = "patientPortalUrl", qualifiedByName = "portalUrl")
+    @Mapping(target = "aiSummaryStatus", source = "visit", qualifiedByName = "aiStatus")
+    @Mapping(target = "patientPortalUrl", source = "visit", qualifiedByName = "portalUrl")
     @Mapping(target = "portalAccessValid", expression = "java(visit.isPortalAccessValid())")
-    @Mapping(target = "patientSummaries", qualifiedByName = "summaryMap")
+    @Mapping(target = "patientSummaries", source = "visit", qualifiedByName = "summaryMap")
     @Mapping(target = "vitals", source = "vitalSigns")
     @Mapping(target = "whatsappDeliveredAt", ignore = true)
     @Mapping(target = "whatsappReadAt", ignore = true)
@@ -59,7 +59,7 @@ public interface VisitMapper {
     @Mapping(target = "patientName", source = "patient", qualifiedByName = "patientFullName")
     @Mapping(target = "patientPhone", source = "patient.phoneNumber")
     @Mapping(target = "patientAge", source = "patient", qualifiedByName = "patientAge")
-    @Mapping(target = "aiStatus", qualifiedByName = "aiStatus")
+    @Mapping(target = "aiStatus", source = "visit", qualifiedByName = "aiStatus")
     @Mapping(target = "summaryRead", expression = "java(visit.getWhatsappStatus() == com.shifa.common.enums.WhatsAppStatus.READ)")
     @Mapping(target = "portalAccessValid", expression = "java(visit.isPortalAccessValid())")
     VisitListResponse toListResponse(Visit visit);

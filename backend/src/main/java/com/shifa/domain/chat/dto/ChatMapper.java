@@ -15,16 +15,13 @@ public interface ChatMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
-    @Mapping(target = "patient", ignore = true)
-    @Mapping(target = "visit", ignore = true)
-    @Mapping(target = "messages", ignore = true)
-    @Mapping(target = "active", constant = "true")
-    @Mapping(target = "startedAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "lastActivityAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "patientLanguage", ignore = true)
+    @Mapping(target = "totalMessages", constant = "0")
+    @Mapping(target = "lastMessageAt", expression = "java(java.time.LocalDateTime.now())")
     ChatSession toSessionEntity(ChatSessionRequest request);
 
     @Mapping(target = "visitId", source = "visit.id")
-    @Mapping(target = "patientId", source = "patient.id")
+    @Mapping(target = "patientId", source = "visit.patient.id")
     @Mapping(target = "recentMessages", ignore = true)
     ChatSessionResponse toSessionResponse(ChatSession session);
 

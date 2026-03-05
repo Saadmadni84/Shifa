@@ -15,7 +15,7 @@ public interface ConsentMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "patient", ignore = true)
-    @Mapping(target = "recordedAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "grantedAt", expression = "java(java.time.LocalDateTime.now())")
     PatientConsent toEntity(ConsentRequest request);
 
     @Mapping(target = "patientId", source = "patient.id")

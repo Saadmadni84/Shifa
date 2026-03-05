@@ -32,7 +32,7 @@ public interface PatientMapper {
              expression = "java(patient.getPreferredLanguage().getDisplayName())")
     @Mapping(target = "totalVisits",
              expression = "java(patient.getVisits() != null ? patient.getVisits().size() : 0)")
-    @Mapping(target = "lastVisitDate", qualifiedByName = "lastVisitDate")
+    @Mapping(target = "lastVisitDate", source = "patient", qualifiedByName = "lastVisitDate")
     @Mapping(target = "lastDiagnosis", ignore = true)
     PatientResponse toResponse(Patient patient);
 
@@ -42,7 +42,7 @@ public interface PatientMapper {
              expression = "java(patient.getChronicConditions() != null && !patient.getChronicConditions().isEmpty())")
     @Mapping(target = "totalVisits",
              expression = "java(patient.getVisits() != null ? patient.getVisits().size() : 0)")
-    @Mapping(target = "lastVisitDate", qualifiedByName = "lastVisitDate")
+    @Mapping(target = "lastVisitDate", source = "patient", qualifiedByName = "lastVisitDate")
     @Mapping(target = "lastDiagnosis", ignore = true)
     PatientSummaryResponse toSummaryResponse(Patient patient);
 

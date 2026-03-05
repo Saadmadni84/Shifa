@@ -15,16 +15,15 @@ public interface ReminderMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "patient", ignore = true)
-    @Mapping(target = "visit", ignore = true)
-    @Mapping(target = "prescription", ignore = true)
+    @Mapping(target = "medication", ignore = true)
     @Mapping(target = "active", constant = "true")
     @Mapping(target = "lastSentAt", ignore = true)
-    @Mapping(target = "nextRunTime", ignore = true)
+    @Mapping(target = "timesSent", constant = "0")
     Reminder toEntity(ReminderCreateRequest request);
 
     @Mapping(target = "patientId", source = "patient.id")
-    @Mapping(target = "visitId", source = "visit.id")
-    @Mapping(target = "prescriptionId", source = "prescription.id")
+    @Mapping(target = "visitId", source = "medication.prescription.visit.id")
+    @Mapping(target = "prescriptionId", source = "medication.prescription.id")
     ReminderResponse toResponse(Reminder reminder);
 
     List<ReminderResponse> toResponseList(List<Reminder> reminders);

@@ -12,7 +12,7 @@ public interface DocumentMapper {
 
     @Mapping(target = "patientId", source = "patient.id")
     @Mapping(target = "visitId", source = "visit.id")
-    @Mapping(target = "url", source = "s3Url")
+    @Mapping(target = "url", source = "s3Key")
     @Mapping(target = "uploadedAt", source = "createdAt")
     DocumentResponse toResponse(UploadedDocument document);
 

@@ -20,7 +20,7 @@ public interface VitalsMapper {
     @Mapping(target = "visitId", source = "visit.id")
     @Mapping(target = "visitDate", source = "visit.visitDate")
     @Mapping(target = "bloodPressure", expression = "java(vitalSigns.getBpSystolic() != null && vitalSigns.getBpDiastolic() != null ? vitalSigns.getBpSystolic() + \"/\" + vitalSigns.getBpDiastolic() + \" mmHg\" : null)")
-    @Mapping(target = "bmiCategory", qualifiedByName = "calculateBmiCategory")
+    @Mapping(target = "bmiCategory", source = "vitalSigns", qualifiedByName = "calculateBmiCategory")
     @Mapping(target = "bpAbnormal", expression = "java(vitalSigns.getBpSystolic() != null && (vitalSigns.getBpSystolic() > 140 || vitalSigns.getBpSystolic() < 90))")
     @Mapping(target = "tempAbnormal", expression = "java(vitalSigns.getTemperature() != null && vitalSigns.getTemperature().compareTo(new java.math.BigDecimal(\"37.5\")) > 0)")
     @Mapping(target = "spo2Abnormal", expression = "java(vitalSigns.getSpo2() != null && vitalSigns.getSpo2() < 95)")
