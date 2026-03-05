@@ -30,15 +30,15 @@ import Avatar                  from '@/components/ui/Avatar'
 import Badge                   from '@/components/ui/Badge'
 
 export default function NewVisitPage() {
-  const navigate      = useNavigate()
-  const [params]      = useSearchParams()
-  const preloadedId   = params.get('patientId')
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const preloadedId = params.get('patientId')
 
   // ── State ────────────────────────────────────────────────────────────────
-  const [selectedPatient, setSelectedPatient]   = useState(null)
-  const [showSearch, setShowSearch]             = useState(!preloadedId)
-  const [showAddPatient, setShowAddPatient]      = useState(false)
-  const [step, setStep]                         = useState(preloadedId ? 2 : 1)
+  const [selectedPatient, setSelectedPatient] = useState(null)
+  const [showSearch, setShowSearch] = useState(!preloadedId)
+  const [showAddPatient, setShowAddPatient] = useState(false)
+  const [step, setStep] = useState(preloadedId ? 2 : 1)
   // step 1 = select patient
   // step 2 = fill visit form
 

@@ -58,10 +58,10 @@ function QuickActionCard({ icon, title, desc, colorClass, onClick }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const navigate = useNavigate()
-  const { user }  = useAuthStore()
+  const { user } = useAuthStore()
 
   const [showAddPatient, setShowAddPatient] = useState(false)
-  const [showSearch, setShowSearch]         = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
 
   const { stats, isLoading: statsLoading, refetch: refetchStats } = useDoctorStats()
   const {

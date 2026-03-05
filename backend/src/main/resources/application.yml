@@ -43,9 +43,96 @@ server:
 logging:
   level:
     com.shifa: DEBUG
-    
+
 management:
   endpoints:
     web:
       exposure:
         include: health,info,prometheus
+
+integration:
+  claude:
+    api-key: ${CLAUDE_API_KEY:dummy_key}
+    base-url: https://api.anthropic.com/v1
+    model: claude-sonnet-4-20250514
+    max-tokens: 4096
+    timeout-seconds: 60
+    retry-max-attempts: 3
+    retry-initial-delay-ms: 2000
+    rate-limit-per-doctor-per-day: 200
+
+  whatsapp:
+    token: ${WHATSAPP_TOKEN:dummy_token}
+    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:dummy_id}
+    waba-id: ${WHATSAPP_WABA_ID:dummy_id}
+    verify-token: ${WHATSAPP_VERIFY_TOKEN:dummy_token}
+    base-url: https://graph.facebook.com/v19.0
+    timeout-seconds: 30
+    max-message-length: 4096
+    retry-max-attempts: 3
+    retry-delay-ms: 5000
+
+  sms:
+    provider: twilio
+    fallback-provider: aws-sns
+    sender-id: SHIFA
+
+  twilio:
+    account-sid: ${TWILIO_ACCOUNT_SID:dummy_sid}
+    auth-token: ${TWILIO_AUTH_TOKEN:dummy_token}
+    from-number: ${TWILIO_FROM_NUMBER:dummy_number}
+    base-url: https://api.twilio.com/2010-04-01
+
+  aws-sns:
+    region: ap-south-1
+    sms-type: Transactional
+
+  ses:
+    region: ap-south-1
+    from-address: noreply@shifa.health
+    from-name: Shifa Healthcare
+    reply-to: support@shifa.health
+    configuration-set: shifa-transactional
+
+  s3:
+    bucket: shifa-documents-${spring.profiles.active}
+    region: ap-south-1
+    presigned-url-expiry-minutes: 60
+    max-file-size-bytes: 10485760
+    allowed-mime-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+      - application/pdf
+
+  tesseract:
+    data-path: /usr/share/tessdata
+    default-languages: eng+hin
+    min-confidence-threshold: 30
+    ocr-timeout-seconds: 30
+
+  abdm:
+    enabled: false
+    base-url: https://dev.abdm.gov.in
+    client-id: ${ABDM_CLIENT_ID:}
+    client-secret: ${ABDM_CLIENT_SECRET:}
+    hip-id: ${ABDM_HIP_ID:}
+    token-refresh-buffer-seconds: 60
+
+  deepl:
+    enabled: false
+    api-key: ${DEEPL_API_KEY:}
+    base-url: https://api-free.deepl.com/v2
+    cache-ttl-hours: 168
+
+  fcm:
+    enabled: false
+    service-account-json: ${FCM_SERVICE_ACCOUNT_JSON:}
+    project-id: ${FCM_PROJECT_ID:shifa-healthcare}
+
+  razorpay:
+    enabled: false
+    key-id: ${RAZORPAY_KEY_ID:}
+    key-secret: ${RAZORPAY_KEY_SECRET:}
+    currency: INR
+    webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}

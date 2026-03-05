@@ -1,5 +1,6 @@
 package com.shifa.integration.whatsapp;
 
+import com.shifa.common.enums.Language;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,10 @@ import com.shifa.domain.notification.Notification;
 import com.shifa.domain.visit.Visit;
 import java.util.List;
 
+import java.time.LocalDate;
+
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class WhatsAppService {
 
@@ -16,8 +20,14 @@ public class WhatsAppService {
 
     private final WhatsAppClient whatsAppClient;
 
-    public void sendVisitSummary(String phoneNumber, String message) {
-        whatsAppClient.sendMessage(phoneNumber, message);
+    public void sendMedicationReminder(String to, String medName, String timing, String dosage, Language lang) {
+        String message = formatter.buildMedicationReminder(medName, timing, dosage, lang);
+        client.sendTextMessage(to, message);
+    }
+    
+    // Abstract method implementations for sending template message as an example
+    public void sendWelcomeTemplate(String to, String templateName, String langCode) {
+        client.sendTemplateMessage(to, templateName, langCode, java.util.List.of());
     }
 
     public String sendVisitSummary(com.shifa.domain.visit.Visit visit) {

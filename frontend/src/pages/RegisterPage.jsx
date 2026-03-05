@@ -24,7 +24,7 @@ const STEPS = [
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const [step, setStep]           = useState(1)
+  const [step, setStep] = useState(1)
   const [registeredName, setRegisteredName] = useState('')
 
   const handleSuccess = (name) => {
@@ -60,23 +60,21 @@ export default function RegisterPage() {
         <div className="space-y-4">
           {STEPS.map((s) => {
             const Icon = s.icon
-            const done    = step > s.id
+            const done = step > s.id
             const current = step === s.id
             return (
               <div key={s.id} className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all ${
-                  done    ? 'bg-emerald-500 border-emerald-500'  :
-                  current ? 'border-emerald-400 bg-emerald-400/10' :
-                            'border-gray-700 bg-gray-800'
-                }`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all ${done ? 'bg-emerald-500 border-emerald-500' :
+                    current ? 'border-emerald-400 bg-emerald-400/10' :
+                      'border-gray-700 bg-gray-800'
+                  }`}>
                   {done
                     ? <CheckCircle size={14} className="text-white" />
                     : <Icon size={14} className={current ? 'text-emerald-400' : 'text-gray-600'} />
                   }
                 </div>
-                <span className={`text-sm font-medium ${
-                  current ? 'text-white' : done ? 'text-emerald-400' : 'text-gray-600'
-                }`}>
+                <span className={`text-sm font-medium ${current ? 'text-white' : done ? 'text-emerald-400' : 'text-gray-600'
+                  }`}>
                   {s.label}
                 </span>
               </div>
@@ -99,11 +97,10 @@ export default function RegisterPage() {
         <div className="flex items-center gap-2 mb-6 lg:hidden">
           {STEPS.map((s, i) => (
             <div key={s.id} className="flex items-center">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step > s.id  ? 'bg-emerald-500 text-white' :
-                step === s.id ? 'bg-emerald-500 text-white' :
-                                'bg-gray-200 text-gray-500'
-              }`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step > s.id ? 'bg-emerald-500 text-white' :
+                  step === s.id ? 'bg-emerald-500 text-white' :
+                    'bg-gray-200 text-gray-500'
+                }`}>
                 {step > s.id ? '✓' : s.id}
               </div>
               {i < STEPS.length - 1 && (

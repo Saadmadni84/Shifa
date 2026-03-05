@@ -1,7 +1,21 @@
 package com.shifa.domain.doctor;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import com.shifa.common.audit.AuditableEntity;
+import com.shifa.common.enums.Language;
+import com.shifa.domain.user.User;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import com.shifa.domain.user.User;
@@ -33,6 +47,10 @@ public class Doctor {
     @Column(unique = true)
     private String email;
 
+    @Column(name = "registration_number", unique = true, length = 50)
+    private String registrationNumber;
+
+    @Column(name = "specialization", length = 100)
     private String specialization;
 
     private String licenseNumber;
