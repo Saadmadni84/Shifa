@@ -1,10 +1,28 @@
 package com.shifa.security.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+import java.util.UUID;
+
+@Value
+@Builder
 public class AuthResponse {
-    private String token;
+
+    String accessToken;
+    String refreshToken;
+    long accessExpiresIn;
+
+    UUID userId;
+    String email;
+    String phoneNumber;
+    String role;
+    String displayName;
+    String preferredLanguage;
+
+    String specialization;
+    String clinicName;
+    String registrationNumber;
+
+    String abhaId;
 }

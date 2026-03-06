@@ -1,7 +1,14 @@
 spring:
+  config:
+    activate:
+      on-profile: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/shifa_db
     username: postgres
     password: password
   jpa:
     show-sql: true
+
+shifa:
+  scheduler:
+    enabled: false

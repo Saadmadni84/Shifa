@@ -1,7 +1,6 @@
-
 /**
- * App.jsx — Shifa Root Component
- * ─────────────────────────────────────────────────────────────────────────
+ * App.jsx � Shifa Root Component
+ * -------------------------------------------------------------------------
  * Responsibilities:
  *   1. Define ALL application routes (doctor + patient + public)
  *   2. Lazy-load every page (code-split by route)
@@ -11,23 +10,23 @@
  *
  * Route map:
  *   PUBLIC (no auth)
- *     /                         → LandingPage
- *     /login                    → LoginPage
- *     /register                 → RegisterPage
- *     /portal/:token            → PatientPortalPage   ← WhatsApp link target
- *     /portal/:token/chat       → PatientChatPage
+ *     /                         ? LandingPage
+ *     /login                    ? LoginPage
+ *     /register                 ? RegisterPage
+ *     /portal/:token            ? PatientPortalPage   ? WhatsApp link target
+ *     /portal/:token/chat       ? PatientChatPage
  *
  *   DOCTOR (role = DOCTOR)
- *     /doctor/dashboard         → DashboardPage
- *     /doctor/visits/new        → NewVisitPage
- *     /doctor/visits/:id        → VisitDetailPage
- *     /doctor/patients          → PatientsPage
- *     /doctor/patients/:id      → PatientDetailPage
- *     /doctor/profile           → ProfilePage
+ *     /doctor/dashboard         ? DashboardPage
+ *     /doctor/visits/new        ? NewVisitPage
+ *     /doctor/visits/:id        ? VisitDetailPage
+ *     /doctor/patients          ? PatientsPage
+ *     /doctor/patients/:id      ? PatientDetailPage
+ *     /doctor/profile           ? ProfilePage
  *
  *   FALLBACK
- *     *                         → NotFoundPage
- * ─────────────────────────────────────────────────────────────────────────
+ *     *                         ? NotFoundPage
+ * -------------------------------------------------------------------------
  */
 
 import { useEffect } from 'react'
@@ -36,26 +35,25 @@ import AppRouter from '@/router'
 
 import { useLanguageStore, useUiStore } from '@/store'
 
-
-// ─── App Component ────────────────────────────────────────────────────────
+// --- App Component --------------------------------------------------------
 export default function App() {
   const navigate      = useNavigate()
   const { uiLanguage, setUiLanguage } = useLanguageStore()
   const { theme }     = useUiStore()
 
-  // ── 1. Hydrate theme on mount ──────────────────────────────────────────
+  // -- 1. Hydrate theme on mount ------------------------------------------
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  // ── 2. Hydrate language / font direction on mount ─────────────────────
+  // -- 2. Hydrate language / font direction on mount ---------------------
   useEffect(() => {
     // This re-runs the DOM side-effects (data-language, data-script, dir)
-    // that were set in the store's onRehydrateStorage — safe to call twice.
+    // that were set in the store's onRehydrateStorage � safe to call twice.
     setUiLanguage(uiLanguage)
   }, []) // eslint-disable-line
 
-  // ── 3. Listen for global session expiry → redirect to /login ──────────
+  // -- 3. Listen for global session expiry ? redirect to /login ----------
   useEffect(() => {
     const handleExpiry = () => {
       navigate('/login', { replace: true, state: { sessionExpired: true } })
