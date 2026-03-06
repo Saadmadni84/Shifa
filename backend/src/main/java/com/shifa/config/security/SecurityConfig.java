@@ -27,7 +27,8 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
-    private final ShifaSecurityHandlers securityHandlers;
+    private final ShifaAuthEntryPoint authEntryPoint;
+    private final ShifaAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,8 +41,8 @@ public class SecurityConfig {
                 .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
             )
             .exceptionHandling(handling -> handling
-                .authenticationEntryPoint(securityHandlers)
-                .accessDeniedHandler(securityHandlers)
+                .authenticationEntryPoint(authEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health", "/error").permitAll()

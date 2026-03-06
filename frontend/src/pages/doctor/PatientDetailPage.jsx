@@ -47,7 +47,7 @@ import Modal              from '@/components/ui/Modal'
 
 // Patient component imports
 import VitalsGrid         from '@/components/patient/VitalsGrid'
-import { VitalCard }      from '@/components/patient/VitalCard'
+import VitalCard      from '@/components/patient/VitalCard'
 import FollowUpReminder   from '@/components/patient/FollowUpReminder'
 
 // Chart imports
@@ -58,8 +58,8 @@ import BloodSugarChart    from '@/components/charts/BloodSugarChart'
 
 // Visit row
 import VisitRow           from '@/components/doctor/VisitRow'
-import { AIStatusBadge }  from '@/components/doctor/AIStatusBadge'
-import { WhatsAppStatusBadge } from '@/components/doctor/WhatsAppStatusBadge'
+import AIStatusBadge  from '@/components/doctor/AIStatusBadge'
+import WhatsAppStatusBadge from '@/components/doctor/WhatsAppStatusBadge'
 
 import { usePatient, usePatientVisits } from '@/hooks/usePatients'
 

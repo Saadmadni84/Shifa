@@ -1,28 +1,141 @@
-import { Routes, Route } from 'react-router-dom'
-import Landing from '../pages/Landing'
-import Login from '../pages/auth/Login'
-import Register from '../pages/auth/Register'
-import Dashboard from '../pages/doctor/Dashboard'
-import NewVisit from '../pages/doctor/NewVisit'
-import VisitScribe from '../pages/doctor/VisitScribe'
-import PatientList from '../pages/doctor/PatientList'
-import VisitSummary from '../pages/patient/VisitSummary'
-import MyHealth from '../pages/patient/MyHealth'
-import Vitals from '../pages/patient/Vitals'
+/**
+ * AppRouter.jsx — Shifa React Router v6 Tree
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Builds the full <Routes> tree from the route definitions in routes.js.
+ * All pages are lazy-loaded. Scroll is restored on every navigation.
+ * Page <title> is updated on every route change.
+ * Session expiry events redirect to /login with a state flag.
+ *
+ * Layout hierarchy:
+ *   BrowserRouter (main.jsx)
+ *     └─ AppRouter
+ *          ├─ ScrollRestoration
+ *          ├─ PageTitleManager
+ *          ├─ SessionExpiryGuard
+ *          └─ Routes
+ *               ├─ /                     PublicLayout → LandingPage
+ *               ├─ /login                PublicLayout → LoginPage
+ *               ├─ /register             PublicLayout → RegisterPage
+ *               ├─ /portal/:token        PatientLayout → PatientPortalPage
+ *               ├─ /portal/:token/chat   PatientLayout → PatientChatPage
+ *               ├─ /doctor               DoctorLayout (nested)
+ *               │    ├─ dashboard        DashboardPage
+ *               │    ├─ visits/new       NewVisitPage
+ *               │    ├─ visits/:id       VisitDetailPage
+ *               │    ├─ patients         PatientsPage
+ *               │    ├─ patients/:id     PatientDetailPage
+ *               │    └─ profile          ProfilePage
+ *               ├─ /doctor →redirect→ /doctor/dashboard
+ *               └─ *                     NotFoundPage
+ */
 
+import { Suspense, lazy, useEffect, memo }  from 'react'
+import {
+  Routes, Route, Navigate,
+  useLocation, useNavigate,
+}                                           from 'react-router-dom'
+import { useAuthStore, useLanguageStore, useUiStore } from '@/store'
+import { ALL_ROUTES, REDIRECT_ROUTES }      from './routes'
+import { ROUTE_COMPONENTS }                 from './lazyComponents'
+import ProtectedRoute                       from './ProtectedRoute'
+import ScrollRestoration                    from './ScrollRestoration'
+import PageTitleManager                     from './PageTitleManager'
+import RouteTransition                      from './RouteTransition'
+import DoctorLayout                         from '@/components/layout/DoctorLayout'
+import PatientLayout                        from '@/components/layout/PatientLayout'
+import { PageLoader }                       from '@/components/ui/Spinner'
+
+const DashboardPage = ROUTE_COMPONENTS.doctorDashboardPage;
+const NewVisitPage = ROUTE_COMPONENTS.doctorNewVisitPage;
+const VisitDetailPage = ROUTE_COMPONENTS.doctorVisitDetailPage;
+const PatientsPage = ROUTE_COMPONENTS.doctorPatientsPage;
+const PatientDetailPage = ROUTE_COMPONENTS.doctorPatientDetailPage;
+const ProfilePage = ROUTE_COMPONENTS.doctorProfilePage;
+
+// ─── Page-level loading fallback ──────────────────────────────────────────────
+function PageFallback() {
+  return (
+    <div className="min-h-[100dvh] flex items-center justify-center bg-[var(--color-bg)]">
+      <PageLoader />
+    </div>
+  )
+}
+
+// ─── Nested doctor routes ─────────────────────────────────────────────────────
+// All doctor pages share DoctorLayout (sidebar + topbar).
+// Using a nested Route with element=<DoctorLayout /> so layout is not re-mounted
+// on every navigation within the doctor section.
+function DoctorRoutes() {
+  return (
+    <ProtectedRoute requiredRole="DOCTOR">
+      <DoctorLayout>
+        <Routes>
+          <Route path="dashboard"      element={<DashboardPage />} />
+          <Route path="visits/new"     element={<NewVisitPage />} />
+          <Route path="visits/:id"     element={<VisitDetailPage />} />
+          <Route path="patients"       element={<PatientsPage />} />
+          <Route path="patients/:id"   element={<PatientDetailPage />} />
+          <Route path="profile"        element={<ProfilePage />} />
+          {/* /doctor with no sub-path → dashboard */}
+          <Route index element={<Navigate to="dashboard" replace />} />
+          {/* Any unknown /doctor/... path → 404 */}
+          <Route path="*" element={<ROUTE_COMPONENTS.NotFoundPage />} />
+        </Routes>
+      </DoctorLayout>
+    </ProtectedRoute>
+  )
+}
+
+// ─── Smart home redirect ───────────────────────────────────────────────────────
+// If a logged-in doctor navigates to '/', redirect to dashboard.
+function SmartHome() {
+  const { isAuthenticated, user } = useAuthStore()
+  if (!isAuthenticated()) return <ROUTE_COMPONENTS.LandingPage />
+  if (user?.role === 'DOCTOR') return <Navigate to="/doctor/dashboard" replace />
+  return <ROUTE_COMPONENTS.LandingPage />
+}
+
+// ─── AppRouter ────────────────────────────────────────────────────────────────
 export default function AppRouter() {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/doctor/dashboard" element={<Dashboard />} />
-      <Route path="/doctor/new-visit" element={<NewVisit />} />
-      <Route path="/doctor/visit-scribe" element={<VisitScribe />} />
-      <Route path="/doctor/patients" element={<PatientList />} />
-      <Route path="/patient/visit-summary" element={<VisitSummary />} />
-      <Route path="/patient/my-health" element={<MyHealth />} />
-      <Route path="/patient/vitals" element={<Vitals />} />
-    </Routes>
+    <Suspense fallback={<PageFallback />}>
+      {/* Cross-cutting concerns that need location access */}
+      <ScrollRestoration />
+      <PageTitleManager />
+
+      <RouteTransition>
+        <Routes>
+
+          {/* ── Redirect shortcuts ──────────────────────────────────────── */}
+          {REDIRECT_ROUTES.map(r => (
+            <Route key={r.from} path={r.from} element={<Navigate to={r.to} replace />} />
+          ))}
+
+          {/* ── Public ─────────────────────────────────────────────────── */}
+          <Route path="/"         element={<SmartHome />} />
+          <Route path="/login"    element={<ROUTE_COMPONENTS.LoginPage />} />
+          <Route path="/register" element={<ROUTE_COMPONENTS.RegisterPage />} />
+
+          {/* ── Patient portal — no auth, WhatsApp token ──────────────── */}
+          <Route path="/portal/:token" element={
+            <PatientLayout>
+              <ROUTE_COMPONENTS.portalPatientPortalPage />
+            </PatientLayout>
+          } />
+          <Route path="/portal/:token/chat" element={
+            <PatientLayout>
+              <ROUTE_COMPONENTS.portalPatientChatPage />
+            </PatientLayout>
+          } />
+
+          {/* ── Doctor portal — nested, shared DoctorLayout ───────────── */}
+          <Route path="/doctor/*" element={<DoctorRoutes />} />
+
+          {/* ── 404 ──────────────────────────────────────────────────── */}
+          <Route path="*" element={<ROUTE_COMPONENTS.NotFoundPage />} />
+
+        </Routes>
+      </RouteTransition>
+    </Suspense>
   )
 }
