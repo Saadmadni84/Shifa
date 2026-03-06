@@ -26,7 +26,7 @@ import DoctorLayout   from '@/components/layout/DoctorLayout'
 import PageHeader     from '@/components/common/PageHeader'
 import Tabs           from '@/components/ui/Tabs'
 import Button         from '@/components/ui/Button'
-import { Input }      from '@/components/ui/Input'
+import Input      from '@/components/ui/Input'
 import Avatar         from '@/components/ui/Avatar'
 import { ConfirmModal } from '@/components/ui/Modal'
 
