@@ -88,9 +88,4 @@ public class ClaudeClient {
             .doOnNext(r -> log.info("[Claude] Response received. model={}", props.getModel()))
             .block();
     }
-
-    public String sendMessage(String message, String context) {
-        // Placeholder implementation
-        return "AI response placeholder for: " + message;
-    }
 }

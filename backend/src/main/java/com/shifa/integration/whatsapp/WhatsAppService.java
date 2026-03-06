@@ -2,8 +2,7 @@ package com.shifa.integration.whatsapp;
 
 import com.shifa.common.enums.Language;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.shifa.domain.notification.Notification;
 import com.shifa.domain.visit.Visit;
@@ -15,8 +14,6 @@ import java.time.LocalDate;
 @Slf4j
 @RequiredArgsConstructor
 public class WhatsAppService {
-
-    private static final Logger log = LoggerFactory.getLogger(WhatsAppService.class);
 
     private final WhatsAppClient whatsAppClient;
 

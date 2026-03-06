@@ -15,10 +15,13 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import com.shifa.domain.user.User;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.CascadeType;
 
 @Entity
 @Table(name = "doctors")
@@ -54,7 +57,6 @@ public class Doctor {
     private String specialization;
 
     private String licenseNumber;
-    private String registrationNumber;
 
     private String clinicName;
     private String clinicAddress;
