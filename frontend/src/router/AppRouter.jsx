@@ -59,20 +59,28 @@ function PageFallback() {
 // Using a nested Route with element=<DoctorLayout /> so layout is not re-mounted
 // on every navigation within the doctor section.
 function DoctorRoutes() {
+  const DashboardPage     = ROUTE_COMPONENTS['doctor/DashboardPage'];
+  const NewVisitPage      = ROUTE_COMPONENTS['doctor/NewVisitPage'];
+  const VisitDetailPage   = ROUTE_COMPONENTS['doctor/VisitDetailPage'];
+  const PatientsPage      = ROUTE_COMPONENTS['doctor/PatientsPage'];
+  const PatientDetailPage = ROUTE_COMPONENTS['doctor/PatientDetailPage'];
+  const ProfilePage       = ROUTE_COMPONENTS['doctor/ProfilePage'];
+  const NotFoundPage      = ROUTE_COMPONENTS['NotFoundPage'];
+
   return (
     <ProtectedRoute requiredRole="DOCTOR">
       <DoctorLayout>
         <Routes>
-          <Route path="dashboard"      element={<ROUTE_COMPONENTS['doctor/DashboardPage'] />} />
-          <Route path="visits/new"     element={<ROUTE_COMPONENTS['doctor/NewVisitPage'] />} />
-          <Route path="visits/:id"     element={<ROUTE_COMPONENTS['doctor/VisitDetailPage'] />} />
-          <Route path="patients"       element={<ROUTE_COMPONENTS['doctor/PatientsPage'] />} />
-          <Route path="patients/:id"   element={<ROUTE_COMPONENTS['doctor/PatientDetailPage'] />} />
-          <Route path="profile"        element={<ROUTE_COMPONENTS['doctor/ProfilePage'] />} />
+          <Route path="dashboard"      element={<DashboardPage />} />
+          <Route path="visits/new"     element={<NewVisitPage />} />
+          <Route path="visits/:id"     element={<VisitDetailPage />} />
+          <Route path="patients"       element={<PatientsPage />} />
+          <Route path="patients/:id"   element={<PatientDetailPage />} />
+          <Route path="profile"        element={<ProfilePage />} />
           {/* /doctor with no sub-path → dashboard */}
           <Route index element={<Navigate to="dashboard" replace />} />
           {/* Any unknown /doctor/... path → 404 */}
-          <Route path="*" element={<ROUTE_COMPONENTS['NotFoundPage'] />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </DoctorLayout>
     </ProtectedRoute>
@@ -83,13 +91,21 @@ function DoctorRoutes() {
 // If a logged-in doctor navigates to '/', redirect to dashboard.
 function SmartHome() {
   const { isAuthenticated, user } = useAuthStore()
-  if (!isAuthenticated()) return <ROUTE_COMPONENTS['LandingPage'] />
+  const LandingPage = ROUTE_COMPONENTS['LandingPage'];
+
+  if (!isAuthenticated()) return <LandingPage />
   if (user?.role === 'DOCTOR') return <Navigate to="/doctor/dashboard" replace />
-  return <ROUTE_COMPONENTS['LandingPage'] />
+  return <LandingPage />
 }
 
 // ─── AppRouter ────────────────────────────────────────────────────────────────
 export default function AppRouter() {
+  const LoginPage         = ROUTE_COMPONENTS['LoginPage'];
+  const RegisterPage      = ROUTE_COMPONENTS['RegisterPage'];
+  const PatientPortalPage = ROUTE_COMPONENTS['portal/PatientPortalPage'];
+  const PatientChatPage   = ROUTE_COMPONENTS['portal/PatientChatPage'];
+  const NotFoundPage      = ROUTE_COMPONENTS['NotFoundPage'];
+
   return (
     <Suspense fallback={<PageFallback />}>
       {/* Cross-cutting concerns that need location access */}
@@ -106,18 +122,18 @@ export default function AppRouter() {
 
           {/* ── Public ─────────────────────────────────────────────────── */}
           <Route path="/"         element={<SmartHome />} />
-          <Route path="/login"    element={<ROUTE_COMPONENTS['LoginPage'] />} />
-          <Route path="/register" element={<ROUTE_COMPONENTS['RegisterPage'] />} />
+          <Route path="/login"    element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* ── Patient portal — no auth, WhatsApp token ──────────────── */}
           <Route path="/portal/:token" element={
             <PatientLayout>
-              <ROUTE_COMPONENTS['portal/PatientPortalPage'] />
+              <PatientPortalPage />
             </PatientLayout>
           } />
           <Route path="/portal/:token/chat" element={
             <PatientLayout>
-              <ROUTE_COMPONENTS['portal/PatientChatPage'] />
+              <PatientChatPage />
             </PatientLayout>
           } />
 
@@ -125,7 +141,7 @@ export default function AppRouter() {
           <Route path="/doctor/*" element={<DoctorRoutes />} />
 
           {/* ── 404 ──────────────────────────────────────────────────── */}
-          <Route path="*" element={<ROUTE_COMPONENTS['NotFoundPage'] />} />
+          <Route path="*" element={<NotFoundPage />} />
 
         </Routes>
       </RouteTransition>
