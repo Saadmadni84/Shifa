@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = 'security')
+@ConfigurationProperties(prefix = "security")
 public class ShifaProperties {
     private JwtProperties jwt = new JwtProperties();
 
     @Data
     @Configuration
-    @ConfigurationProperties(prefix = 'security.jwt')
+    @ConfigurationProperties(prefix = "security.jwt")
     public static class JwtProperties {
         private String secret;
         private long expiryMs;
