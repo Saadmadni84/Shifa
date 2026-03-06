@@ -8,7 +8,7 @@ import com.shifa.domain.doctor.Doctor;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.prescription.Prescription;
 import com.shifa.domain.vitals.VitalSigns;
-import org.hibernate.annotations.JdbcTypeCode;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,9 +16,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKey;
@@ -28,14 +25,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.util.UUID;
-import com.shifa.domain.patient.Patient;
-import com.shifa.domain.doctor.Doctor;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name = "visits", indexes = {
@@ -48,81 +43,86 @@ import com.shifa.domain.doctor.Doctor;
 @Getter @Setter @NoArgsConstructor
 public class Visit extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id")
+    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
-    @Column(columnDefinition = "TEXT")
-    private String rawNotes;
-
-    @Column(columnDefinition = "TEXT")
-    private String chiefComplaint;
-
-    @Column(columnDefinition = "TEXT")
-    private String vitalSigns;
-
-    @Column(columnDefinition = "TEXT")
-    private String diagnosis;
-
-    @Column(columnDefinition = "TEXT")
-    private String aiSummaryJson;
-
+    @Column(name = "visit_date", nullable = false)
     private LocalDate visitDate;
 
+    @Column(name = "visit_type", length = 50)
+    private String visitType;
+
+    @Column(name = "chief_complaint", columnDefinition = "TEXT")
+    private String chiefComplaint;
+
+    @Column(name = "diagnosis", columnDefinition = "TEXT")
+    private String diagnosis;
+
+    @Column(name = "raw_notes", columnDefinition = "TEXT")
+    private String rawNotes;
+
+    @Type(JsonBinaryType.class)
+    @Column(name = "ai_summary", columnDefinition = "jsonb")
+    private VisitSummaryData aiSummary;
+
+    @OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKey(name = "languageCode")
+    private Map<String, VisitPatientSummary> patientSummaries = new HashMap<>();
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private VisitStatus status = VisitStatus.DRAFT;
 
-    private String patientPortalToken;
-
-    private LocalDateTime portalTokenExpiresAt;
-
+    @Column(name = "ai_processed_at")
     private LocalDateTime aiProcessedAt;
 
-    private String aiErrorMessage;
+    @Column(name = "sent_to_patient_at")
+    private LocalDateTime sentToPatientAt;
 
-    private LocalDateTime whatsappSentAt;
-
-    private String whatsappMetaMessageId;
-
-    private String whatsappDeliveryStatus;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
-
-    private boolean deleted = false;
-
-    // Legacy fields for backward compatibility
-    @Deprecated
-    private Long patientId;
-
-    @Deprecated
-    private Long doctorId;
-
-    @Deprecated
-    @Column(columnDefinition = "TEXT")
-    private String clinicalNotes;
-
-    @Deprecated
-    @Column(columnDefinition = "TEXT")
-    private String structuredSummary;
-
-    @Deprecated
-    private LocalDateTime visitAt;
-
-    @Deprecated
+    @Column(name = "follow_up_date")
     private LocalDate followUpDate;
 
-    @Deprecated
-    private String statusString;
+    @Column(name = "follow_up_notes", columnDefinition = "TEXT")
+    private String followUpNotes;
+
+    @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Prescription prescription;
+
+    @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private VitalSigns vitalSigns;
+
+    @Column(name = "whatsapp_message_id", length = 100)
+    private String whatsappMessageId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "whatsapp_status")
+    private WhatsAppStatus whatsappStatus = WhatsAppStatus.NOT_SENT;
+
+    @Column(name = "whatsapp_sent_at")
+    private LocalDateTime whatsappSentAt;
+
+    @Column(name = "patient_portal_token", unique = true)
+    private String patientPortalToken;
+
+    @Column(name = "portal_token_expires_at")
+    private LocalDateTime portalTokenExpiresAt;
+
+    public boolean isPortalAccessValid() {
+        return patientPortalToken != null &&
+            portalTokenExpiresAt != null &&
+            portalTokenExpiresAt.isAfter(LocalDateTime.now());
+    }
+
+    public String getPatientSummaryText(Language lang) {
+        VisitPatientSummary summary = patientSummaries.get(lang.name().toLowerCase());
+        if (summary == null) {
+            summary = patientSummaries.get("en");
+        }
+        return summary != null ? summary.getSummaryText() : null;
+    }
 }
