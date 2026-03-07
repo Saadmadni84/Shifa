@@ -53,7 +53,7 @@ public class FollowUpScheduler {
                 Doctor doctor = visit.getDoctor();
 
                 String templateName = "shifa_followup_tomorrow_"
-                        + (patient.getPreferredLanguage() != null ? patient.getPreferredLanguage().toLowerCase()
+                    + (patient.getPreferredLanguage() != null ? patient.getPreferredLanguage().getCode()
                                 : "en");
                 whatsAppService.sendTemplateMessage(
                         patient.getPhoneNumber(),

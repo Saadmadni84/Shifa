@@ -7,6 +7,7 @@ public enum VisitStatus {
     AI_COMPLETE,        // AI done, waiting for doctor review
     REVIEWED,           // Doctor has reviewed AI summary
     SENT_TO_PATIENT,    // WhatsApp sent
+    DELIVERED,          // WhatsApp message delivered
     COMPLETED,          // Patient has read the summary
     CANCELLED           // Visit cancelled
 }

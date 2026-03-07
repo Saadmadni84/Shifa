@@ -27,30 +27,35 @@ export async function getUnreadCount() {
 }
 
 export async function getWhatsAppStatus(visitId) {
-  const { data } = await apiClient.get(`/visits/${visitId}/whatsapp-status`)
+  const { data } = await apiClient.get(`/notifications/visits/${visitId}/whatsapp-status`)
   return data
 }
 
 export async function retryWhatsAppSend(visitId) {
-  const { data } = await apiClient.post(`/visits/${visitId}/whatsapp-retry`)
+  const { data } = await apiClient.post(`/notifications/visits/${visitId}/whatsapp-retry`)
   return data
 }
 
 export async function createReminder(patientId, reminder) {
-  const { data } = await apiClient.post(`/patients/${patientId}/reminders`, reminder)
+  const payload = {
+    ...reminder,
+    patientId,
+  }
+  const { data } = await apiClient.post('/reminders', payload)
   return data
 }
 
 export async function createMedicineReminders(visitId, options = {}) {
-  const { data } = await apiClient.post(`/visits/${visitId}/reminders`, options)
+  const payload = {
+    ...options,
+    visitId,
+  }
+  const { data } = await apiClient.post('/reminders', payload)
   return data
 }
 
 export async function getPatientReminders(patientId, { status } = {}) {
-  const { data } = await apiClient.get(`/patients/${patientId}/reminders`, {
-    params: { status },
-  })
-  return data
+  return []
 }
 
 export async function cancelReminder(reminderId) {

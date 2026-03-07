@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Aspect
-@Component
+@Component("commonAuditAspect")
 @Slf4j
 @RequiredArgsConstructor
 public class AuditAspect {

@@ -40,10 +40,12 @@ public class AuthService {
 
     @Transactional
     public AuthResponse authenticateDoctor(AuthRequest request, String clientIp) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        String identifier = request.getEmail();
 
-        User user = userRepository.findByEmail(request.getEmail())
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(identifier, request.getPassword()));
+
+        User user = userRepository.findByEmailOrPhoneNumber(identifier, identifier)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
         Doctor doctor = null; // doctorRepository mapping to User might need finding by user... let's just
@@ -80,7 +82,17 @@ public class AuthService {
         auditService.logLogin(user.getId(), clientIp, true);
         log.info("[AuthService] Doctor login success: userId={}", user.getId());
 
-        return buildDoctorAuthResponse(user, doctor, tokens);
+        if ("DOCTOR".equals(user.getRole())) {
+            return buildDoctorAuthResponse(user, doctor, tokens);
+        }
+
+        Patient patient = null;
+        try {
+            patient = patientRepository.findByUser(user).orElse(null);
+        } catch (Exception e) {
+            log.warn("Patient profile not found for user");
+        }
+        return buildPatientAuthResponse(user, patient, tokens);
     }
 
     @Transactional
@@ -91,6 +103,10 @@ public class AuthService {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalStateException("An account with this email already exists");
+        }
+
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new IllegalStateException("An account with this phone number already exists");
         }
 
         // Check registration number uniqueness could be added. Skipping exact check as
@@ -120,6 +136,47 @@ public class AuthService {
         log.info("[AuthService] Doctor registered: userId={}", user.getId());
 
         return buildDoctorAuthResponse(user, doctor, tokens);
+    }
+
+    @Transactional
+    public AuthResponse registerPatient(PatientRegisterRequest request, String clientIp) {
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        if (request.getEmail() != null && !request.getEmail().isBlank() && userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalStateException("An account with this email already exists");
+        }
+
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new IllegalStateException("An account with this phone number already exists");
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setRole("PATIENT");
+        user.setPreferredLanguage(request.getPreferredLanguage());
+        user = userRepository.save(user);
+
+        Patient patient = new Patient();
+        patient.setUser(user);
+        patient.setFirstName(request.getFirstName());
+        patient.setLastName(request.getLastName());
+        patient.setPhoneNumber(request.getPhoneNumber());
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            patient.setEmail(request.getEmail());
+        }
+        patient.setPreferredLanguage(request.getPreferredLanguage());
+        patient = patientRepository.save(patient);
+
+        JwtTokenPair tokens = issueTokens(user);
+
+        auditService.logRegistration(user.getId(), clientIp);
+        log.info("[AuthService] Patient registered: userId={}", user.getId());
+
+        return buildPatientAuthResponse(user, patient, tokens);
     }
 
     @Transactional

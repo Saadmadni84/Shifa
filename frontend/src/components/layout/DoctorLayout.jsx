@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 const NAV = [
   { to: '/doctor/dashboard', icon: <LayoutDashboard size={19} />, label: 'Dashboard' },
   { to: '/doctor/patients', icon: <Users size={19} />, label: 'Patients' },
-  { to: '/doctor/new-visit', icon: <Plus size={19} />, label: 'New Visit' },
+  { to: '/doctor/visits/new', icon: <Plus size={19} />, label: 'New Visit' },
   { to: '/doctor/profile', icon: <Settings size={19} />, label: 'Settings' },
 ]
 

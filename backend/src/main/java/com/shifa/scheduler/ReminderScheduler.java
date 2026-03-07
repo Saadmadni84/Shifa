@@ -1,6 +1,7 @@
 package com.shifa.scheduler;
 
 import com.shifa.integration.whatsapp.WhatsAppService;
+import com.shifa.common.enums.NotificationStatus;
 import com.shifa.domain.notification.Notification;
 import com.shifa.domain.notification.NotificationRepository;
 import com.shifa.scheduler.annotation.SchedulerLock;
@@ -11,6 +12,7 @@ import com.shifa.scheduler.util.ISTTimeUtil;
 import com.shifa.scheduler.util.RetryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Component("schedulerReminderScheduler")
 @RequiredArgsConstructor
 @Slf4j
 public class ReminderScheduler {
@@ -45,7 +47,11 @@ public class ReminderScheduler {
         int skipped = 0;
 
         List<Notification> due = notificationRepository
-                .findPendingNotificationsDue(LocalDateTime.now(), BATCH_SIZE);
+            .findPendingNotificationsDue(
+                NotificationStatus.PENDING,
+                LocalDateTime.now(),
+                MAX_RETRY_COUNT,
+                PageRequest.of(0, BATCH_SIZE));
 
         log.info("[ReminderScheduler] {} notifications due", due.size());
 
@@ -71,26 +77,28 @@ public class ReminderScheduler {
                         MAX_RETRY_COUNT, 2_000L, context);
 
                 notification.setSentAt(LocalDateTime.now());
-                notification.setStatus("SENT");
+                notification.setStatus(NotificationStatus.SENT);
                 notificationRepository.save(notification);
 
                 results.add(ReminderResult.ok(
                         notification.getId(),
                         notification.getPatientId(),
-                        notification.getType(),
+                    notification.getTypeCode(),
                         "WHATSAPP",
                         System.currentTimeMillis() - sendStart));
 
             } catch (Exception ex) {
                 notification.setRetryCount(notification.getRetryCount() + 1);
-                notification.setStatus(notification.getRetryCount() >= MAX_RETRY_COUNT ? "FAILED" : "PENDING");
+                notification.setStatus(notification.getRetryCount() >= MAX_RETRY_COUNT
+                    ? NotificationStatus.FAILED
+                    : NotificationStatus.PENDING);
                 notification.setErrorMessage(ex.getMessage());
                 notificationRepository.save(notification);
 
                 results.add(ReminderResult.fail(
                         notification.getId(),
                         notification.getPatientId(),
-                        notification.getType(),
+                    notification.getTypeCode(),
                         "WHATSAPP",
                         ex.getMessage()));
 

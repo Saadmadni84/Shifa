@@ -4,6 +4,7 @@ export { normaliseError, makeCancellable, uploadFile, tokenStore } from './clien
 export {
   loginDoctor,
   registerDoctor,
+  registerPatientAccount,
   requestPatientOTP,
   verifyPatientOTP,
   logout,

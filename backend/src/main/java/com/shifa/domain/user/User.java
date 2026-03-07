@@ -34,4 +34,8 @@ public class User {
     private boolean deleted = false;
 
     private LocalDateTime lastLoginAt;
+
+    private Integer failedLoginAttempts = 0;
+
+    private LocalDateTime accountLockedUntil;
 }

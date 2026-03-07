@@ -3,7 +3,7 @@ package com.shifa.service.document;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("documentOcrService")
 @Slf4j
 public class OCRService {
 

@@ -1,10 +1,22 @@
 package com.shifa.service.visit;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shifa.common.enums.VisitStatus;
 import com.shifa.domain.doctor.Doctor;
 import com.shifa.domain.doctor.DoctorRepository;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.patient.PatientRepository;
+import com.shifa.domain.visit.Visit;
+import com.shifa.domain.visit.VisitRepository;
+import com.shifa.integration.whatsapp.WhatsAppService;
 import com.shifa.security.annotation.PhiAccess;
 import com.shifa.service.ai.AIService;
 import com.shifa.service.dto.VisitCreateRequest;
@@ -15,21 +27,11 @@ import com.shifa.service.event.VisitSentEvent;
 import com.shifa.service.exception.InvalidVisitStateException;
 import com.shifa.service.exception.VisitNotFoundException;
 import com.shifa.service.language.LanguageService;
-import com.shifa.integration.whatsapp.WhatsAppService;
-import com.shifa.domain.visit.Visit;
-import com.shifa.domain.visit.VisitRepository;
-import com.shifa.domain.visit.VisitStatus;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-@Service
+@Service("appVisitService")
 @RequiredArgsConstructor
 @Slf4j
 public class VisitService {
@@ -60,10 +62,6 @@ public class VisitService {
         visit.setRawNotes(request.getRawNotes());
         visit.setStatus(VisitStatus.DRAFT);
         visit.setCreatedAt(LocalDateTime.now());
-
-        if (request.getVitalSigns() != null) {
-            visit.setVitalSigns(request.getVitalSigns());
-        }
 
         Visit saved = visitRepository.save(visit);
         log.info("[VisitService] Visit created: visitId={} patientId={} doctorId={}",
@@ -126,7 +124,7 @@ public class VisitService {
         try {
             VisitSummaryData summary = aiService.generateVisitSummary(visit);
 
-            String patientLang = visit.getPatient().getPreferredLanguage();
+            String patientLang = visit.getPatient().getPreferredLanguage().getCode();
             String patientText = aiService.generatePatientFriendlyText(summary, patientLang);
             summary.setPatientFriendlyText(patientText);
 

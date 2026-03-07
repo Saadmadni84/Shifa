@@ -1,7 +1,7 @@
 package com.shifa.service.visit;
 
 import com.shifa.service.exception.InvalidVisitStateException;
-import com.shifa.domain.visit.VisitStatus;
+import com.shifa.common.enums.VisitStatus;
 
 import java.util.Map;
 import java.util.Set;

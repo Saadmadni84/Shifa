@@ -151,7 +151,7 @@ export default function NewVisitPage() {
 
       {/* ── Add patient modal ────────────────────────────────────────────── */}
       <Modal
-        open={showAddPatient}
+        isOpen={showAddPatient}
         onClose={() => setShowAddPatient(false)}
         title="Add New Patient"
       >

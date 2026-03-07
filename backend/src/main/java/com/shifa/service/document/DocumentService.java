@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Service
+@Service("appDocumentService")
 @RequiredArgsConstructor
 @Slf4j
 public class DocumentService {

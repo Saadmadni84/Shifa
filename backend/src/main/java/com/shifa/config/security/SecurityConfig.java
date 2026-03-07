@@ -1,6 +1,5 @@
 package com.shifa.config.security;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -45,9 +46,16 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health", "/error").permitAll()
-                .requestMatchers("/api/v1/doctor/**").hasRole("DOCTOR")
-                .requestMatchers("/api/v1/patient/**").hasAnyRole("DOCTOR", "PATIENT")
+                .requestMatchers(
+                    "/api/auth/**",
+                    "/api/v1/auth/**",
+                    "/api/portal/**",
+                    "/api/languages",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/actuator/health",
+                    "/error"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

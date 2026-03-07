@@ -4,6 +4,7 @@ import com.shifa.domain.notification.NotificationRepository;
 import com.shifa.service.dto.DashboardStatsDTO;
 import com.shifa.domain.visit.VisitRepository;
 import com.shifa.domain.visit.VisitStatus;
+import com.shifa.common.enums.WhatsAppStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,7 @@ public class DashboardStatsService {
         long sent = visitRepository.countByDoctorUserIdAndWhatsappDeliveryStatusNotNull(doctorId);
         if (sent == 0)
             return 0.0;
-        long read = visitRepository.countByDoctorUserIdAndWhatsappDeliveryStatus(doctorId, "READ");
+        long read = visitRepository.countByDoctorUserIdAndWhatsappDeliveryStatus(doctorId, WhatsAppStatus.READ);
         return Math.round((double) read / sent * 100.0) / 100.0;
     }
 }

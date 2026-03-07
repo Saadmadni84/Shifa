@@ -24,7 +24,7 @@ import { patientsApi } from '@/api/patients'
 import toast from 'react-hot-toast'
 
 // ─── Patient List (paginated, searchable) ─────────────────────────────────────
-export function usePatients({ pageSize = 20 } = {}) {
+export function usePatients({ pageSize = 20, language = '' } = {}) {
     const [search, setSearch] = useState('')
     const debouncedSearch = useDebounce(search, 350)
     const qc = useQueryClient()
@@ -38,11 +38,14 @@ export function usePatients({ pageSize = 20 } = {}) {
         isError,
         error,
     } = useInfiniteQuery({
-        queryKey: ['patients', debouncedSearch],
+        queryKey: ['patients', debouncedSearch, language],
         queryFn: ({ pageParam = 0 }) =>
-            patientsApi.list({ q: debouncedSearch, page: pageParam, size: pageSize }).then(r => r.data),
+            debouncedSearch?.trim()
+                ? patientsApi.searchPatients({ query: debouncedSearch, page: pageParam, size: pageSize })
+                : patientsApi.getDoctorPatients({ page: pageParam, size: pageSize }),
         getNextPageParam: (lastPage) => {
-            const { page, totalPages } = lastPage.data?.pagination ?? {}
+            const page = lastPage?.pageable?.pageNumber ?? 0
+            const totalPages = lastPage?.totalPages ?? 0
             return page + 1 < totalPages ? page + 1 : undefined
         },
         staleTime: 30_000,
@@ -50,8 +53,11 @@ export function usePatients({ pageSize = 20 } = {}) {
     })
 
     // Flatten pages into a single array for easy rendering
-    const patients = data?.pages.flatMap(p => p.data?.patients ?? []) ?? []
-    const total = data?.pages[0]?.data?.pagination?.totalElements ?? 0
+    const allPatients = data?.pages.flatMap(p => p?.content ?? []) ?? []
+    const patients = language
+        ? allPatients.filter((p) => (p.preferredLanguage ?? '').toLowerCase() === language.toLowerCase())
+        : allPatients
+    const total = data?.pages[0]?.totalElements ?? 0
 
     // ─── Create patient ───────────────────────────────────────────────────────
     const { mutateAsync: createPatient, isPending: isCreating } = useMutation({
@@ -68,14 +74,15 @@ export function usePatients({ pageSize = 20 } = {}) {
                     id: `temp-${Date.now()}`,
                     firstName: payload.firstName,
                     lastName: payload.lastName,
-                    phone: payload.phone,
+                    phoneNumber: payload.phoneNumber,
+                    preferredLanguage: payload.preferredLanguage,
                     _optimistic: true,
                 }
                 return {
                     ...old,
                     pages: old.pages.map((pg, i) =>
                         i === 0
-                            ? { ...pg, data: { ...pg.data, patients: [optimistic, ...(pg.data?.patients ?? [])] } }
+                            ? { ...pg, content: [optimistic, ...(pg.content ?? [])] }
                             : pg
                     ),
                 }

@@ -1,17 +1,19 @@
 package com.shifa.security.service;
 
-import com.shifa.security.dto.UserPrincipal;
-import com.shifa.domain.user.User;
-import com.shifa.domain.user.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+import com.shifa.domain.user.User;
+import com.shifa.domain.user.UserRepository;
+import com.shifa.security.dto.UserPrincipal;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service("securityUserDetailsService")
 @RequiredArgsConstructor
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {

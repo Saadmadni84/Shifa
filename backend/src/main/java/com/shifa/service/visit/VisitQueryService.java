@@ -49,7 +49,7 @@ public class VisitQueryService {
 
     @Transactional(readOnly = true)
     @PhiAccess(action = "VIEW_PATIENT_VISITS", resource = "VISIT")
-    public Page<Visit> getVisitsByPatient(Long patientId, UUID doctorId, Pageable pageable) {
+    public Page<Visit> getVisitsByPatient(UUID patientId, UUID doctorId, Pageable pageable) {
         return visitRepository.findByPatientIdAndDoctorUserIdAndDeletedFalse(
                 patientId, doctorId, pageable);
     }
@@ -83,7 +83,7 @@ public class VisitQueryService {
                 .clinicName(visit.getDoctor().getClinicName())
                 .clinicPhone(visit.getDoctor().getPhoneNumber())
                 .patientFirstName(visit.getPatient().getName())
-                .preferredLanguage(visit.getPatient().getPreferredLanguage())
+                .preferredLanguage(visit.getPatient().getPreferredLanguage().getCode())
                 .aiSummary(summary)
                 .patientFriendlyText(summary != null ? summary.getPatientFriendlyText() : null)
                 .followUpDate(visit.getFollowUpDate())

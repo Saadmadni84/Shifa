@@ -1,20 +1,33 @@
 package com.shifa.security.controller;
 
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.shifa.integration.whatsapp.WhatsAppService;
 import com.shifa.security.annotation.CurrentUser;
-import com.shifa.security.dto.*;
+import com.shifa.security.dto.AuthRequest;
+import com.shifa.security.dto.AuthResponse;
+import com.shifa.security.dto.OtpRequest;
+import com.shifa.security.dto.OtpVerifyRequest;
+import com.shifa.security.dto.PatientRegisterRequest;
+import com.shifa.security.dto.RegisterRequest;
+import com.shifa.security.dto.UserPrincipal;
 import com.shifa.security.otp.OtpService;
 import com.shifa.security.service.AuthService;
-import com.shifa.integration.whatsapp.WhatsAppService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
-@RestController
+@RestController("securityAuthController")
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
@@ -29,6 +42,14 @@ public class AuthController {
             @RequestBody @Valid RegisterRequest request,
             HttpServletRequest httpRequest) {
         return authService.registerDoctor(request, getClientIp(httpRequest));
+    }
+
+    @PostMapping("/register/patient")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthResponse registerPatient(
+            @RequestBody @Valid PatientRegisterRequest request,
+            HttpServletRequest httpRequest) {
+        return authService.registerPatient(request, getClientIp(httpRequest));
     }
 
     @PostMapping("/login")

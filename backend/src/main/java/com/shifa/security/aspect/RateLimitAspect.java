@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.*;
 
 @Aspect
-@Component
+@Component("securityRateLimitAspect")
 @RequiredArgsConstructor
 @Slf4j
 public class RateLimitAspect {

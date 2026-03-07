@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
-import { loginDoctor } from '@/api'
+import { useAuthStore } from '@/store'
 import Input from '../ui/Input'
 import Button from '../ui/Button'
 import toast from 'react-hot-toast'
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 export default function LoginForm({ onSuccess }) {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
+  const loginWithEmail = useAuthStore((s) => s.loginWithEmail)
 
   const {
     register,
@@ -21,10 +22,10 @@ export default function LoginForm({ onSuccess }) {
     setLoading(true)
 
     try {
-      const res = await loginDoctor(data)
+      const res = await loginWithEmail(data)
 
-      toast.success('Welcome back, Doctor!')
-      if (onSuccess) onSuccess(res)
+      toast.success(res?.user?.role === 'DOCTOR' ? 'Welcome back, Doctor!' : 'Welcome back!')
+      if (onSuccess) onSuccess(res?.user?.role)
 
     } catch (err) {
 

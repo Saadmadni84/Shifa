@@ -28,7 +28,9 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "patients", indexes = {
@@ -78,6 +80,15 @@ public class Patient extends AuditableEntity {
     @Column(name = "pincode", length = 10)
     private String pincode;
 
+    @Column(name = "address", columnDefinition = "TEXT")
+    private String address;
+
+    @Column(name = "known_conditions", columnDefinition = "TEXT")
+    private String knownConditions;
+
+    @Column(name = "current_medicines_text", columnDefinition = "TEXT")
+    private String currentMedicinesText;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "patient_allergies",
         joinColumns = @JoinColumn(name = "patient_id"))
@@ -109,13 +120,73 @@ public class Patient extends AuditableEntity {
         inverseJoinColumns = @JoinColumn(name = "doctor_id"))
     private List<Doctor> doctors = new ArrayList<>();
 
-    public int getAge() {
+    public Integer getAge() {
         return dateOfBirth != null
             ? (int) ChronoUnit.YEARS.between(dateOfBirth, LocalDate.now())
             : 0;
     }
 
+    public void setAge(Integer age) {
+        if (age == null) {
+            this.dateOfBirth = null;
+            return;
+        }
+        this.dateOfBirth = LocalDate.now().minusYears(age);
+    }
+
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    public String getName() {
+        return getFullName();
+    }
+
+    public String getKnownConditionsText() {
+        if (knownConditions != null && !knownConditions.isBlank()) {
+            return knownConditions;
+        }
+        return chronicConditions == null || chronicConditions.isEmpty()
+            ? "None"
+            : String.join(", ", chronicConditions);
+    }
+
+    public String getCurrentMedicinesText() {
+        return (currentMedicinesText == null || currentMedicinesText.isBlank())
+            ? "Not specified"
+            : currentMedicinesText;
+    }
+
+    public void setAllergiesText(String allergiesText) {
+        if (allergiesText == null || allergiesText.isBlank()) {
+            this.allergies = new ArrayList<>();
+            return;
+        }
+        this.allergies = Arrays.stream(allergiesText.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isBlank())
+            .collect(Collectors.toList());
+    }
+
+    public String getAllergiesText() {
+        return allergies == null || allergies.isEmpty() ? "" : String.join(",", allergies);
+    }
+
+    public void setKnownConditions(String knownConditionsText) {
+        this.knownConditions = knownConditionsText;
+        if (knownConditionsText == null || knownConditionsText.isBlank()) {
+            this.chronicConditions = new ArrayList<>();
+            return;
+        }
+        this.chronicConditions = Arrays.stream(knownConditionsText.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isBlank())
+            .collect(Collectors.toList());
+    }
+
+    public void setPreferredLanguage(String languageCode) {
+        this.preferredLanguage = languageCode == null
+            ? Language.HI
+            : Language.fromCode(languageCode);
     }
 }

@@ -33,6 +33,7 @@ const NotFoundPage     = fromAllPages('NotFoundPage')
 // ─── Patient portal ───────────────────────────────────────────────────────────
 const PatientPortalPage = fromAllPages('PatientPortalPage')
 const PatientChatPage   = fromAllPages('PatientChatPage')
+const MyHealthPage      = fromAllPages('MyHealthPage')
 
 // ─── Doctor portal ────────────────────────────────────────────────────────────
 const DashboardPage     = fromAllPages('DashboardPage')
@@ -56,6 +57,7 @@ export const ROUTE_COMPONENTS = {
   // Patient portal
   portalPatientPortalPage:    PatientPortalPage,
   portalPatientChatPage:      PatientChatPage,
+  patientMyHealthPage:        MyHealthPage,
 
   // Doctor portal
   doctorDashboardPage:        DashboardPage,

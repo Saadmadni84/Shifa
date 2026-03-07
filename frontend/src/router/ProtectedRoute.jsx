@@ -79,7 +79,7 @@ export function GuestOnlyRoute({ children }) {
   const { isAuthenticated, user } = useAuthStore()
 
   if (isAuthenticated()) {
-    const dest = user?.role === 'DOCTOR' ? '/doctor/dashboard' : '/'
+    const dest = user?.role === 'DOCTOR' ? '/doctor/dashboard' : '/patient/my-health'
     return <Navigate to={dest} replace />
   }
 

@@ -14,7 +14,7 @@
 
 import axios from 'axios'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 const TIMEOUT_MS = 30_000
 const MAX_RETRY = 3
 const RETRY_BASE = 1_000
@@ -108,6 +108,13 @@ apiClient.interceptors.response.use(
   },
   async (error) => {
     const original = error.config
+    const reqUrl = original?.url || ''
+    const isAuthEndpoint =
+      reqUrl.includes('/auth/login') ||
+      reqUrl.includes('/auth/register') ||
+      reqUrl.includes('/auth/register/patient') ||
+      reqUrl.includes('/auth/patient/otp/') ||
+      reqUrl.includes('/auth/refresh')
 
     if (!error.response && original) {
       original._retry = (original._retry ?? 0) + 1
@@ -117,7 +124,12 @@ apiClient.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 401 && original && !original._refreshed) {
+    if (
+      error.response?.status === 401 &&
+      original &&
+      !original._refreshed &&
+      !isAuthEndpoint
+    ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) =>
           enqueueWaiter(
@@ -132,6 +144,11 @@ apiClient.interceptors.response.use(
 
       original._refreshed = true
       isRefreshing = true
+
+      const refreshToken = tokenStore.getRefresh()
+      if (!refreshToken) {
+        return Promise.reject(normaliseError(error))
+      }
 
       try {
         const tok = await doRefresh()
@@ -158,7 +175,7 @@ export function normaliseError(error) {
   const res = error?.response
   const status = res?.status ?? 0
   const body = res?.data
-  const fieldErrors = body?.fieldErrors ?? body?.errors ?? {}
+  const fieldErrors = body?.fieldErrors ?? body?.validationErrors ?? body?.errors ?? {}
 
   const message = (() => {
     if (!res) return 'Network error — please check your connection.'

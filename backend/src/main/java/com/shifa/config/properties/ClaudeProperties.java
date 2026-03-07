@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Data
-@Configuration
+@Configuration("configClaudeProperties")
 @ConfigurationProperties(prefix = "integration.claude")
 public class ClaudeProperties {
     private String apiKey;

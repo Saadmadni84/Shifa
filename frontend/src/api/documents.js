@@ -2,33 +2,30 @@ import apiClient, { uploadFile } from './client'
 
 export async function uploadVisitDocument(visitId, file, options = {}, onProgress) {
   const form = new FormData()
+  form.append('visitId', visitId)
   form.append('file', file)
-  form.append('documentType', options.documentType ?? 'PRESCRIPTION')
-  form.append('description', options.description ?? '')
-  form.append('triggerOCR', String(options.triggerOCR ?? true))
+  form.append('patientId', options.patientId ?? '')
 
-  const { data } = await uploadFile(`/visits/${visitId}/documents`, form, onProgress)
+  const { data } = await uploadFile('/documents/upload', form, onProgress)
   return data
 }
 
 export async function uploadPatientDocument(patientId, file, options = {}, onProgress) {
   const form = new FormData()
+  form.append('patientId', patientId)
   form.append('file', file)
-  form.append('documentType', options.documentType ?? 'OTHER')
-  form.append('description', options.description ?? '')
-  form.append('triggerOCR', String(options.triggerOCR ?? false))
 
-  const { data } = await uploadFile(`/patients/${patientId}/documents`, form, onProgress)
+  const { data } = await uploadFile('/documents/upload', form, onProgress)
   return data
 }
 
 export async function getVisitDocuments(visitId) {
-  const { data } = await apiClient.get(`/visits/${visitId}/documents`)
+  const { data } = await apiClient.get(`/documents/visit/${visitId}`)
   return data
 }
 
 export async function getPatientDocuments(patientId, { documentType } = {}) {
-  const { data } = await apiClient.get(`/patients/${patientId}/documents`, {
+  const { data } = await apiClient.get(`/documents/patient/${patientId}`, {
     params: { documentType },
   })
   return data
@@ -73,7 +70,7 @@ export async function pollOCRResult(documentId, maxWaitMs = 60_000) {
   while (Date.now() < deadline) {
     await sleep(INTERVAL)
     const result = await getOCRResult(documentId)
-    if (result?.rawText) return result
+    if (result?.text || result?.rawText) return result
   }
   throw new Error('OCR processing timed out.')
 }

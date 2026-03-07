@@ -1,10 +1,10 @@
 package com.shifa.common.i18n;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Locale;
 
-@Service
+import org.springframework.stereotype.Service;
+
+@Service("coreLanguageService")
 public class LanguageService {
 
     public Locale resolveLocale(String languageCode) {

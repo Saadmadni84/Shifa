@@ -35,7 +35,7 @@ public class PatientChatService {
         String question = request.getQuestion();
         String languageCode = request.getLanguage() != null
                 ? request.getLanguage()
-                : visit.getPatient().getPreferredLanguage();
+            : visit.getPatient().getPreferredLanguage().getCode();
 
         log.info("[PatientChatService] Question received: visitId={} lang={}", visit.getId(), languageCode);
 

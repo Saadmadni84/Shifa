@@ -57,7 +57,7 @@ public class AIPromptBuilder {
                 visit.getRawNotes(),
                 visit.getPatient().getFullName(),
                 visit.getPatient().getAge() != null ? visit.getPatient().getAge() + " years" : "Not specified",
-                LANGUAGE_NAMES.getOrDefault(visit.getPatient().getPreferredLanguage(), "Hindi"),
+                LANGUAGE_NAMES.getOrDefault(visit.getPatient().getPreferredLanguage().getCode(), "Hindi"),
                 visit.getPatient().getKnownConditionsText(),
                 visit.getPatient().getCurrentMedicinesText());
     }

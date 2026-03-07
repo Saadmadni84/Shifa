@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("legacyUserDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override

@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { User, Mail, Lock, Phone, Stethoscope, Hash } from 'lucide-react'
+import { User, Mail, Lock, Phone, Stethoscope, Hash, Building2, MapPin } from 'lucide-react'
 import { registerDoctor } from '@/api'
 import Input, { Select } from '../ui/Input'
 import Button from '../ui/Button'
@@ -112,8 +112,25 @@ export default function DoctorRegisterForm({ onSuccess }) {
         placeholder="MCI-12345"
         leftIcon={<Hash size={14} />}
         helper="Medical Council of India registration number"
-        error={errors.mciNumber?.message}
-        {...register('mciNumber', { required: 'MCI number is required', minLength: { value: 5, message: 'Too short' } })}
+        error={errors.registrationNumber?.message}
+        {...register('registrationNumber', { required: 'MCI number is required', minLength: { value: 5, message: 'Too short' } })}
+      />
+
+      <Input
+        label="Clinic Name"
+        placeholder="Shifa Care Clinic"
+        leftIcon={<Building2 size={14} />}
+        helper="Optional. If empty, a default clinic name is used."
+        error={errors.clinicName?.message}
+        {...register('clinicName')}
+      />
+
+      <Input
+        label="Clinic Address"
+        placeholder="Area, City"
+        leftIcon={<MapPin size={14} />}
+        error={errors.clinicAddress?.message}
+        {...register('clinicAddress')}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -121,10 +138,17 @@ export default function DoctorRegisterForm({ onSuccess }) {
           label="Password"
           type="password"
           required
-          placeholder="Min 8 characters"
+          placeholder="At least 8 chars with A-z, 0-9, symbol"
           leftIcon={<Lock size={14} />}
+          helper="Must include uppercase, lowercase, number and special character"
           error={errors.password?.message}
-          {...register('password', { required: 'Required', minLength: { value: 8, message: 'Min 8 characters' } })}
+          {...register('password', {
+            required: 'Required',
+            pattern: {
+              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+              message: 'Use uppercase, lowercase, number, special char (min 8)',
+            },
+          })}
         />
         <Input
           label="Confirm Password"

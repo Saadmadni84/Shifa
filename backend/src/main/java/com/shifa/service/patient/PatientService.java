@@ -1,5 +1,17 @@
 package com.shifa.service.patient;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.shifa.common.enums.Gender;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.patient.PatientRepository;
 import com.shifa.security.annotation.PhiAccess;
@@ -7,20 +19,11 @@ import com.shifa.service.dto.PatientCreateRequest;
 import com.shifa.service.dto.PatientSearchResult;
 import com.shifa.service.exception.DuplicatePatientException;
 import com.shifa.service.exception.PatientNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-@Service
+@Service("appPatientService")
 @RequiredArgsConstructor
 @Slf4j
 public class PatientService {
@@ -40,13 +43,13 @@ public class PatientService {
         patient.setLastName(request.getLastName());
         patient.setPhoneNumber(request.getPhoneNumber());
         patient.setAge(request.getAge());
-        patient.setGender(request.getGender());
+        patient.setGender(request.getGender() != null ? Gender.valueOf(request.getGender().toUpperCase()) : null);
         patient.setPreferredLanguage(
                 request.getPreferredLanguage() != null ? request.getPreferredLanguage() : "hi");
         patient.setAbhaId(request.getAbhaId());
         patient.setAddress(request.getAddress());
         patient.setKnownConditions(request.getKnownConditions());
-        patient.setAllergies(request.getAllergies());
+        patient.setAllergiesText(request.getAllergies());
         patient.setCreatedAt(LocalDateTime.now());
 
         Patient saved = patientRepository.save(patient);
@@ -99,7 +102,7 @@ public class PatientService {
         if (request.getKnownConditions() != null)
             patient.setKnownConditions(request.getKnownConditions());
         if (request.getAllergies() != null)
-            patient.setAllergies(request.getAllergies());
+            patient.setAllergiesText(request.getAllergies());
 
         patient.setUpdatedAt(LocalDateTime.now());
         return patientRepository.save(patient);
@@ -120,8 +123,8 @@ public class PatientService {
                 .lastName(p.getLastName())
                 .phoneNumber(p.getPhoneNumber())
                 .age(p.getAge())
-                .gender(p.getGender())
-                .preferredLanguage(p.getPreferredLanguage())
+                .gender(p.getGender() != null ? p.getGender().name() : null)
+            .preferredLanguage(p.getPreferredLanguage() != null ? p.getPreferredLanguage().getCode() : null)
                 .lastVisitDate(null)
                 .build();
     }

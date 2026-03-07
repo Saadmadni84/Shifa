@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { ArrowRight, CheckCircle, User, Building2, Stethoscope } from 'lucide-react'
 import DoctorRegisterForm from '@/components/forms/DoctorRegisterForm'
+import PatientRegisterForm from '@/components/forms/PatientRegisterForm'
 
 const STEPS = [
   { id: 1, label: 'Your Details', icon: User },
@@ -20,8 +21,11 @@ export default function RegisterPage() {
   const [step, setStep] = useState(1)
   const [registeredName, setRegisteredName] = useState('')
 
-  const handleSuccess = (name) => {
-    setRegisteredName(name)
+  const handleSuccess = (payload) => {
+    const resolvedName = typeof payload === 'string'
+      ? payload
+      : payload?.user?.displayName || payload?.displayName || ''
+    setRegisteredName(resolvedName)
     setStep(3)
   }
 
@@ -98,26 +102,51 @@ export default function RegisterPage() {
             shifa<span className="text-emerald-500">.ai</span>
           </span>
         </div>
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl p-7 mt-6 text-center shadow-sm">
-          <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <User size={26} className="text-emerald-600" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Patient Access</h2>
-          <p className="text-sm text-gray-500 leading-relaxed mb-6">
-            Patients access Shifa via a secure link sent by their doctor after a visit — no separate account needed.
-          </p>
-          <p className="text-xs text-gray-400 mb-6">
-            Ask your doctor to send your visit summary to your WhatsApp number. You'll receive a link to view your records instantly.
-          </p>
-          <button
-            onClick={() => setRole(null)}
-            className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
-          >
-            ← Go back
-          </button>
-          <p className="mt-4 text-sm text-gray-500">
+        <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-7 mt-6 shadow-sm">
+          {step < 3 ? (
+            <>
+              <h2 className="text-xl font-bold text-gray-900 mb-2 text-center">Create Patient Account</h2>
+              <p className="text-sm text-gray-500 leading-relaxed mb-6 text-center">
+                Register your account to access your records and follow-up updates.
+              </p>
+              <PatientRegisterForm onSuccess={handleSuccess} />
+              <button
+                onClick={() => {
+                  setRole(null)
+                  setStep(1)
+                }}
+                className="w-full mt-3 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+              >
+                ← Go back
+              </button>
+            </>
+          ) : (
+            <div className="text-center">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle size={30} className="text-emerald-500" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Welcome{registeredName ? `, ${registeredName}` : ''}!</h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Your patient account is ready. Continue to sign in.
+              </p>
+              <button
+                onClick={() => navigate('/login', { replace: true })}
+                className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
+              >
+                Go to Sign in
+              </button>
+            </div>
+          )}
+
+          <p className="mt-4 text-sm text-gray-500 text-center">
             Are you a doctor?{' '}
-            <button onClick={() => setRole('doctor')} className="text-emerald-600 font-semibold hover:underline">
+            <button
+              onClick={() => {
+                setRole('doctor')
+                setStep(1)
+              }}
+              className="text-emerald-600 font-semibold hover:underline"
+            >
               Register here
             </button>
           </p>

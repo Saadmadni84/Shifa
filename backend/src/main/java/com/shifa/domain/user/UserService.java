@@ -9,7 +9,6 @@ import com.shifa.domain.user.dto.RegisterRequest;
 import com.shifa.security.JwtService;
 import com.shifa.domain.user.service.OtpService;
 import com.shifa.common.enums.Language;
-import com.shifa.common.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,7 +39,7 @@ public class UserService {
         user.setPhoneNumber(request.getPhoneNumber());
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole(UserRole.valueOf(request.getRole().toUpperCase()));
+        user.setRole(request.getRole().toUpperCase());
         user = userRepository.save(user);
 
         otpService.generateAndSend(user.getPhoneNumber(), Language.EN);
@@ -51,7 +50,7 @@ public class UserService {
         String token = jwtService.generateToken(user.getId().toString());
         return AuthResponse.builder()
             .accessToken(token)
-            .role(user.getRole().name())
+            .role(user.getRole())
             .verified(false)
             .message("OTP sent to " + user.getPhoneNumber())
             .build();
@@ -71,7 +70,7 @@ public class UserService {
 
         resetFailedAttempts(user);
         String token = jwtService.generateToken(user.getId().toString());
-        return AuthResponse.builder().accessToken(token).role(user.getRole().name()).build();
+        return AuthResponse.builder().accessToken(token).role(user.getRole()).build();
     }
 
     private void checkAccountLock(User user) {

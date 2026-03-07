@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-@Repository
-public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
+// Disabled — duplicate of domain-level repository
+// public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
+public interface AuditLogRepository {
 }

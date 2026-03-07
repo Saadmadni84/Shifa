@@ -7,11 +7,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
-@Configuration
-@EnableAsync
+// Disabled — duplicate of com.shifa.config.AsyncConfig
+// @Configuration("securityAsyncConfig")
+// @EnableAsync
 public class AsyncConfig {
 
-    @Bean(name = "aiProcessingExecutor")
+    // @Bean(name = "aiProcessingExecutor")
     public Executor aiProcessingExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(3);
@@ -24,7 +25,7 @@ public class AsyncConfig {
         return executor;
     }
 
-    @Bean(name = "auditExecutor")
+    // @Bean(name = "auditExecutor")
     public Executor auditExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
@@ -35,7 +36,7 @@ public class AsyncConfig {
         return executor;
     }
 
-    @Bean(name = "notificationExecutor")
+    // @Bean(name = "notificationExecutor")
     public Executor notificationExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);

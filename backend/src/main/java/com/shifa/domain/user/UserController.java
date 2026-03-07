@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/legacy/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
 public class UserController {

@@ -18,19 +18,19 @@ public class WhatsAppService {
     private final WhatsAppClient whatsAppClient;
 
     public void sendMedicationReminder(String to, String medName, String timing, String dosage, Language lang) {
-        String message = formatter.buildMedicationReminder(medName, timing, dosage, lang);
-        client.sendTextMessage(to, message);
+        String message = "Take " + medName + " " + dosage + " " + timing;
+        whatsAppClient.sendTextMessage(to, message);
     }
     
     // Abstract method implementations for sending template message as an example
     public void sendWelcomeTemplate(String to, String templateName, String langCode) {
-        client.sendTemplateMessage(to, templateName, langCode, java.util.List.of());
+        whatsAppClient.sendTemplateMessage(to, templateName, langCode, java.util.List.of());
     }
 
     public String sendVisitSummary(com.shifa.domain.visit.Visit visit) {
         String phoneNumber = visit.getPatient().getPhoneNumber();
         String message = "Visit summary placeholder"; // TODO: generate actual summary
-        String messageId = whatsAppClient.sendMessage(phoneNumber, message);
+        String messageId = whatsAppClient.sendTextMessage(phoneNumber, message);
         return messageId;
     }
 
@@ -48,6 +48,14 @@ public class WhatsAppService {
         log.info("Sending WhatsApp OTP to {}", redactedPhone);
     }
 
+    public void sendOtp(String phoneNumber, String otp, Language lang) {
+        String body = switch (lang != null ? lang.getCode() : "en") {
+            case "hi" -> "Aapka OTP hai: " + otp;
+            default -> "Your OTP is: " + otp;
+        };
+        whatsAppClient.sendTextMessage(phoneNumber, body);
+    }
+
     public void sendReminder(Notification notification) {
         // Implementation for sending reminder text/template
         if (notification == null || notification.getPatient() == null) {
@@ -63,11 +71,10 @@ public class WhatsAppService {
             return;
         }
 
-        whatsAppClient.sendMessage(phoneNumber, message);
+        whatsAppClient.sendTextMessage(phoneNumber, message);
     }
 
     public void sendTemplateMessage(String phoneNumber, String templateName, List<String> placeholders) {
-        // Implementation for sending template message
-        whatsAppClient.sendMessage(phoneNumber, "Template: " + templateName + " " + placeholders.toString());
+        whatsAppClient.sendTemplateMessage(phoneNumber, templateName, "en", placeholders);
     }
 }

@@ -12,7 +12,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated?.()) {
-      navigate(user?.role === 'DOCTOR' ? '/doctor/dashboard' : '/', { replace: true })
+      navigate(user?.role === 'DOCTOR' ? '/doctor/dashboard' : '/patient/my-health', { replace: true })
     }
   }, [])
 
@@ -70,7 +70,7 @@ export default function LoginPage() {
         {/* Login form */}
         <LoginForm
           onSuccess={(role) => {
-            navigate(role === 'DOCTOR' ? '/doctor/dashboard' : '/', { replace: true })
+            navigate(role === 'DOCTOR' ? '/doctor/dashboard' : '/patient/my-health', { replace: true })
           }}
         />
 

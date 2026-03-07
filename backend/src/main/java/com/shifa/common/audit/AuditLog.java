@@ -7,7 +7,8 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
+// Disabled — duplicate of com.shifa.domain.audit.AuditLog
+// @Entity
 @Table(name = "audit_logs")
 @Getter
 @Setter

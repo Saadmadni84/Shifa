@@ -1,19 +1,23 @@
 package com.shifa.service.notification;
 
-import com.shifa.domain.notification.Notification;
-import com.shifa.domain.notification.NotificationRepository;
-import com.shifa.domain.patient.Patient;
-import com.shifa.domain.visit.Visit;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Service
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.shifa.common.enums.NotificationStatus;
+import com.shifa.common.enums.NotificationType;
+import com.shifa.domain.notification.Notification;
+import com.shifa.domain.notification.NotificationRepository;
+import com.shifa.domain.patient.Patient;
+import com.shifa.domain.visit.Visit;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service("appNotificationService")
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationService {
@@ -37,18 +41,18 @@ public class NotificationService {
         Notification n = new Notification();
         n.setPatient(patient);
         n.setVisit(visit);
-        n.setType(type);
-        n.setTitle(buildTitle(type, patient.getPreferredLanguage()));
+        n.setType(NotificationType.valueOf(type.toUpperCase()));
+        n.setTitle(buildTitle(type, patient.getPreferredLanguage().getCode()));
         n.setMessage(message);
         n.setScheduledFor(scheduledFor);
-        n.setStatus("PENDING");
+        n.setStatus(NotificationStatus.PENDING);
         n.setRetryCount(0);
         n.setCreatedAt(LocalDateTime.now());
         return notificationRepository.save(n);
     }
 
     @Transactional
-    public int cancelPatientReminders(Long patientId) {
+    public int cancelPatientReminders(UUID patientId) {
         int count = notificationRepository.cancelPatientNotifications(patientId);
         log.info("[NotificationService] Cancelled {} reminders for patientId={}", count, patientId);
         return count;

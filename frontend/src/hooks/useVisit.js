@@ -25,7 +25,7 @@ const POLL_INTERVAL_MS = 3_000   // 3 s while AI is processing
 const POLL_MAX_ATTEMPTS = 60      // 3 min max wait (60 × 3 s)
 
 // ── Terminal AI statuses — polling stops when reached ─────────────────────────
-const TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'CANCELLED'])
+const TERMINAL_STATUSES = new Set(['COMPLETE', 'FAILED', 'CANCELLED', 'NOT_STARTED'])
 
 export function useVisit(visitId) {
     const qc = useQueryClient()
@@ -49,9 +49,9 @@ export function useVisit(visitId) {
         onError: (err) => toast.error(`Failed to load visit: ${err.message}`),
     })
 
-    const visit = visitData?.data ?? null
-    const summary = visitData?.data?.aiSummary ?? null
-    const status = visitData?.data?.aiStatus ?? null   // PENDING | PROCESSING | COMPLETED | FAILED
+    const visit = visitData ?? null
+    const summary = visitData?.aiSummary ?? null
+    const status = visitData?.aiSummaryStatus ?? null
 
     // ─── AI processing poll ──────────────────────────────────────────────────
     // React Query's `refetchInterval` is the right primitive here.
@@ -79,13 +79,13 @@ export function useVisit(visitId) {
                 staleTime: 0,
             })
 
-            if (TERMINAL_STATUSES.has(fresh?.aiStatus)) {
+            if (TERMINAL_STATUSES.has(fresh?.aiSummaryStatus)) {
                 clearInterval(id)
                 pollEnabledRef.current = false
 
-                if (fresh?.aiStatus === 'COMPLETED') {
+                if (fresh?.aiSummaryStatus === 'COMPLETE') {
                     toast.success('✅ AI summary is ready!')
-                } else if (fresh?.aiStatus === 'FAILED') {
+                } else if (fresh?.aiSummaryStatus === 'FAILED') {
                     toast.error('AI processing failed. You can re-try below.')
                 }
             }
@@ -110,9 +110,9 @@ export function useVisit(visitId) {
     // ─── Send to patient via WhatsApp ────────────────────────────────────────
     const { mutateAsync: sendToPatient, isPending: isSending } = useMutation({
         mutationFn: (opts) => visitsApi.sendToPatient(visitId, opts),
-        onSuccess: (res) => {
+        onSuccess: () => {
             qc.invalidateQueries({ queryKey: ['visit', visitId] })
-            toast.success(`✅ Sent to patient via WhatsApp! (${res.data?.data?.language ?? 'Hindi'})`)
+            toast.success('✅ Sent to patient via WhatsApp!')
         },
         onError: (err) => toast.error(`WhatsApp send failed: ${err.message}`),
     })
@@ -134,6 +134,15 @@ export function useVisit(visitId) {
         onError: (err) => toast.error(err.message),
     })
 
+    const { mutateAsync: deleteVisit, isPending: isDeleting } = useMutation({
+        mutationFn: () => visitsApi.deleteVisit(visitId),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['doctor-visits'] })
+            toast.success('Visit deleted.')
+        },
+        onError: (err) => toast.error(`Delete failed: ${err.message}`),
+    })
+
     const refresh = useCallback(() => refetch(), [refetch])
 
     return {
@@ -149,6 +158,7 @@ export function useVisit(visitId) {
         isSending,
         isUpdating,
         isChangingStatus,
+        isDeleting,
 
         // Errors
         isError,
@@ -156,9 +166,11 @@ export function useVisit(visitId) {
 
         // Actions
         sendToPatient,
-        reprocessVisit,
-        updateNotes,
+        refetch,
+        retriggerAI: reprocessVisit,
+        updateVisit: updateNotes,
         updateStatus,
+        deleteVisit,
         refresh,
     }
 }

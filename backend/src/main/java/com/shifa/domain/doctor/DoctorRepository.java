@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import com.shifa.domain.user.User;
 
-public interface DoctorRepository extends JpaRepository<Doctor, Long> {
+public interface DoctorRepository extends JpaRepository<Doctor, UUID> {
 
     @Query("SELECT d FROM Doctor d WHERE d.digestEnabled = true")
     List<Doctor> findAllWithDigestEnabled();

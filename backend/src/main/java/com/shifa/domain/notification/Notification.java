@@ -1,11 +1,15 @@
 package com.shifa.domain.notification;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import com.shifa.common.audit.AuditableEntity;
 import com.shifa.common.enums.NotificationChannel;
 import com.shifa.common.enums.NotificationStatus;
 import com.shifa.common.enums.NotificationType;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.visit.Visit;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,8 +22,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications", indexes = {
@@ -84,7 +86,44 @@ public class Notification extends AuditableEntity {
     @Column(name = "retry_count")
     private int retryCount = 0;
 
-    // Legacy field
+    // Legacy field — transient to avoid column conflict with patient.patient_id
     @Deprecated
+    @jakarta.persistence.Transient
     private Long patientId;
+
+    public void setType(String type) {
+        this.type = type == null ? null : NotificationType.valueOf(type.toUpperCase());
+    }
+
+    public void setType(NotificationType type) {
+        this.type = type;
+    }
+
+    public String getTypeCode() {
+        return type != null ? type.name() : null;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? null : NotificationStatus.valueOf(status.toUpperCase());
+    }
+
+    public void setStatus(NotificationStatus status) {
+        this.status = status;
+    }
+
+    public String getStatusCode() {
+        return status != null ? status.name() : null;
+    }
+
+    public String getMessage() {
+        return content;
+    }
+
+    public void setMessage(String message) {
+        this.content = message;
+    }
+
+    public UUID getPatientId() {
+        return patient != null ? patient.getId() : null;
+    }
 }

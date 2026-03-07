@@ -213,7 +213,7 @@ export const DOCTOR_ROUTES = [
 // ─── REDIRECT ROUTES ──────────────────────────────────────────────────────────
 export const REDIRECT_ROUTES = [
   { from: '/doctor',  to: '/doctor/dashboard' },
-  { from: '/portal',  to: '/' },
+  { from: '/portal',  to: '/patient/my-health' },
   { from: '/app',     to: '/doctor/dashboard' },
   { from: '/home',    to: '/' },
 ]

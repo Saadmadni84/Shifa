@@ -8,7 +8,7 @@ import com.shifa.domain.doctor.Doctor;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.prescription.Prescription;
 import com.shifa.domain.vitals.VitalSigns;
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,6 +43,8 @@ import java.util.Map;
 })
 @Getter @Setter @NoArgsConstructor
 public class Visit extends AuditableEntity {
+
+    private static final ObjectMapper LEGACY_MAPPER = new ObjectMapper();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
@@ -66,8 +69,8 @@ public class Visit extends AuditableEntity {
     @Column(name = "raw_notes", columnDefinition = "TEXT")
     private String rawNotes;
 
-    @Type(JsonBinaryType.class)
-    @Column(name = "ai_summary", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "ai_summary", columnDefinition = "TEXT")
     private VisitSummaryData aiSummary;
 
     @OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -112,6 +115,9 @@ public class Visit extends AuditableEntity {
     @Column(name = "portal_token_expires_at")
     private LocalDateTime portalTokenExpiresAt;
 
+    @Column(name = "ai_error_message", columnDefinition = "TEXT")
+    private String aiErrorMessage;
+
     public boolean isPortalAccessValid() {
         return patientPortalToken != null &&
             portalTokenExpiresAt != null &&
@@ -124,5 +130,40 @@ public class Visit extends AuditableEntity {
             summary = patientSummaries.get("en");
         }
         return summary != null ? summary.getSummaryText() : null;
+    }
+
+    public String getAiSummaryJson() {
+        if (aiSummary == null) {
+            return null;
+        }
+        try {
+            return LEGACY_MAPPER.writeValueAsString(aiSummary);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    public void setAiSummaryJson(String aiSummaryJson) {
+        if (aiSummaryJson == null || aiSummaryJson.isBlank()) {
+            this.aiSummary = null;
+            return;
+        }
+        try {
+            this.aiSummary = LEGACY_MAPPER.readValue(aiSummaryJson, VisitSummaryData.class);
+        } catch (Exception ignored) {
+            this.aiSummary = null;
+        }
+    }
+
+    public String getWhatsappDeliveryStatus() {
+        return whatsappStatus != null ? whatsappStatus.name() : null;
+    }
+
+    public String getWhatsappMetaMessageId() {
+        return whatsappMessageId;
+    }
+
+    public void setWhatsappMetaMessageId(String whatsappMetaMessageId) {
+        this.whatsappMessageId = whatsappMetaMessageId;
     }
 }

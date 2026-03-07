@@ -19,7 +19,7 @@ import java.util.concurrent.Executor;
  *
  * Why separate pools? Prevents slow AI calls from blocking audit writes.
  */
-@Configuration
+@Configuration("mainAsyncConfig")
 @EnableAsync
 public class AsyncConfig {
 

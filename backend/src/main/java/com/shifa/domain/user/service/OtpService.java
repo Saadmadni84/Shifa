@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.Duration;
 
-@Service
+@Service("domainOtpService")
 @Slf4j
 @RequiredArgsConstructor
 public class OtpService {

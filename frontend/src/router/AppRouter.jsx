@@ -41,8 +41,8 @@ import ProtectedRoute                       from './ProtectedRoute'
 import ScrollRestoration                    from './ScrollRestoration'
 import PageTitleManager                     from './PageTitleManager'
 import RouteTransition                      from './RouteTransition'
-import DoctorLayout                         from '@/components/layout/DoctorLayout'
 import PatientLayout                        from '@/components/layout/PatientLayout'
+import UnauthorizedPage                     from './UnauthorizedPage'
 import { PageLoader }                       from '@/components/ui/Spinner'
 
 const DashboardPage = ROUTE_COMPONENTS.doctorDashboardPage;
@@ -51,6 +51,13 @@ const VisitDetailPage = ROUTE_COMPONENTS.doctorVisitDetailPage;
 const PatientsPage = ROUTE_COMPONENTS.doctorPatientsPage;
 const PatientDetailPage = ROUTE_COMPONENTS.doctorPatientDetailPage;
 const ProfilePage = ROUTE_COMPONENTS.doctorProfilePage;
+const DemoLandingPage = lazy(() => import('@/pages/demo/DemoLandingPage'));
+const ScenarioPickerPage = lazy(() => import('@/pages/demo/ScenarioPickerPage'));
+const DemoPatientView = lazy(() => import('@/pages/demo/DemoPatientView'));
+const DemoVisitSummaryPage = lazy(() => import('@/pages/demo/DemoVisitSummaryPage'));
+const DemoDoctorPickerPage = lazy(() => import('@/pages/demo/DemoDoctorPickerPage'));
+const DemoDoctorDashboard = lazy(() => import('@/pages/demo/DemoDoctorDashboard'));
+const DemoDoctorPatientDetail = lazy(() => import('@/pages/demo/DemoDoctorPatientDetail'));
 
 // ─── Page-level loading fallback ──────────────────────────────────────────────
 function PageFallback() {
@@ -68,20 +75,18 @@ function PageFallback() {
 function DoctorRoutes() {
   return (
     <ProtectedRoute requiredRole="DOCTOR">
-      <DoctorLayout>
-        <Routes>
-          <Route path="dashboard"      element={<DashboardPage />} />
-          <Route path="visits/new"     element={<NewVisitPage />} />
-          <Route path="visits/:id"     element={<VisitDetailPage />} />
-          <Route path="patients"       element={<PatientsPage />} />
-          <Route path="patients/:id"   element={<PatientDetailPage />} />
-          <Route path="profile"        element={<ProfilePage />} />
-          {/* /doctor with no sub-path → dashboard */}
-          <Route index element={<Navigate to="dashboard" replace />} />
-          {/* Any unknown /doctor/... path → 404 */}
-          <Route path="*" element={<ROUTE_COMPONENTS.NotFoundPage />} />
-        </Routes>
-      </DoctorLayout>
+      <Routes>
+        <Route path="dashboard"      element={<DashboardPage />} />
+        <Route path="visits/new"     element={<NewVisitPage />} />
+        <Route path="visits/:id"     element={<VisitDetailPage />} />
+        <Route path="patients"       element={<PatientsPage />} />
+        <Route path="patients/:id"   element={<PatientDetailPage />} />
+        <Route path="profile"        element={<ProfilePage />} />
+        {/* /doctor with no sub-path → dashboard */}
+        <Route index element={<Navigate to="dashboard" replace />} />
+        {/* Any unknown /doctor/... path → 404 */}
+        <Route path="*" element={<ROUTE_COMPONENTS.NotFoundPage />} />
+      </Routes>
     </ProtectedRoute>
   )
 }
@@ -92,6 +97,7 @@ function SmartHome() {
   const { isAuthenticated, user } = useAuthStore()
   if (!isAuthenticated()) return <ROUTE_COMPONENTS.LandingPage />
   if (user?.role === 'DOCTOR') return <Navigate to="/doctor/dashboard" replace />
+  if (user?.role === 'PATIENT') return <Navigate to="/patient/my-health" replace />
   return <ROUTE_COMPONENTS.LandingPage />
 }
 
@@ -115,6 +121,16 @@ export default function AppRouter() {
           <Route path="/"         element={<SmartHome />} />
           <Route path="/login"    element={<ROUTE_COMPONENTS.LoginPage />} />
           <Route path="/register" element={<ROUTE_COMPONENTS.RegisterPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+          {/* ── Demo flows ─────────────────────────────────────────────── */}
+          <Route path="/demo" element={<DemoLandingPage />} />
+          <Route path="/demo/scenarios" element={<ScenarioPickerPage />} />
+          <Route path="/demo/patient/:id" element={<DemoPatientView />} />
+          <Route path="/demo/patient/:id/visit/:vid" element={<DemoVisitSummaryPage />} />
+          <Route path="/demo/doctor" element={<DemoDoctorPickerPage />} />
+          <Route path="/demo/doctor/:id" element={<DemoDoctorDashboard />} />
+          <Route path="/demo/doctor/:id/patient/:pid" element={<DemoDoctorPatientDetail />} />
 
           {/* ── Patient portal — no auth, WhatsApp token ──────────────── */}
           <Route path="/portal/:token" element={
@@ -127,6 +143,18 @@ export default function AppRouter() {
               <ROUTE_COMPONENTS.portalPatientChatPage />
             </PatientLayout>
           } />
+
+          {/* ── Patient area — authenticated PATIENT users ────────────── */}
+          <Route
+            path="/patient/my-health"
+            element={
+              <ProtectedRoute requiredRole="PATIENT">
+                <PatientLayout>
+                  <ROUTE_COMPONENTS.patientMyHealthPage />
+                </PatientLayout>
+              </ProtectedRoute>
+            }
+          />
 
           {/* ── Doctor portal — nested, shared DoctorLayout ───────────── */}
           <Route path="/doctor/*" element={<DoctorRoutes />} />

@@ -76,4 +76,44 @@ public class Doctor extends AuditableEntity {
 
     @Column(name = "total_visits")
     private int totalVisits = 0;
+
+    @Column(name = "digest_enabled", nullable = false)
+    private boolean digestEnabled = true;
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getName() {
+        return getFullName();
+    }
+
+    public String getClinicName() {
+        return clinic != null ? clinic.getName() : null;
+    }
+
+    public void setClinicName(String clinicName) {
+        if (clinic == null) {
+            clinic = new Clinic();
+        }
+        clinic.setName(clinicName);
+    }
+
+    public String getClinicAddress() {
+        return clinic != null ? clinic.getAddress() : null;
+    }
+
+    public void setClinicAddress(String clinicAddress) {
+        if (clinic == null) {
+            clinic = new Clinic();
+        }
+        clinic.setAddress(clinicAddress);
+    }
+
+    public String getPhoneNumber() {
+        if (clinic != null && clinic.getPhone() != null && !clinic.getPhone().isBlank()) {
+            return clinic.getPhone();
+        }
+        return user != null ? user.getPhoneNumber() : null;
+    }
 }

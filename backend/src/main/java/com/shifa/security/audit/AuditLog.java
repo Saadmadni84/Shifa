@@ -6,7 +6,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
+// Disabled — duplicate of com.shifa.domain.audit.AuditLog
+// @Entity
 @Table(name = "audit_logs", indexes = {
         @Index(name = "idx_audit_user_date", columnList = "user_id, accessed_at"),
         @Index(name = "idx_audit_phi", columnList = "phi_accessed"),

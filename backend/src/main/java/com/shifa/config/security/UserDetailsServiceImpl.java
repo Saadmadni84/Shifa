@@ -1,9 +1,9 @@
 package com.shifa.config.security;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.time.LocalDateTime;
+
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Spring Security UserDetailsService implementation.
@@ -25,14 +28,15 @@ import java.util.List;
  * avoids pulling the full Doctor or Patient entity graph on every API request.
  *
  * Account state mapping:
- *  is_active = false  → disabled = true   → Spring throws DisabledException
- *  deleted   = true   → throws UsernameNotFoundException (acts as if user doesn't exist)
+ *  account_locked_until > now → disabled/locked
+ *  deleted = true             → throws UsernameNotFoundException (acts as if user doesn't exist)
  *
  * Role format: DB stores "DOCTOR", Spring Security expects "ROLE_DOCTOR".
  * We add the "ROLE_" prefix here so callers never need to think about it.
  */
 @Slf4j
-@Service
+@Service("configUserDetailsService")
+@Primary
 @Transactional(readOnly = true)
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -61,7 +65,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 new SimpleGrantedAuthority("ROLE_" + record.role())
             ))
             .accountExpired(false)
-            .accountLocked(!record.active())    // is_active=false → locked
+            .accountLocked(!record.active())
             .credentialsExpired(false)
             .disabled(!record.active())
             .build();
@@ -78,7 +82,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             Object[] row = (Object[]) em.createNativeQuery("""
                     SELECT u.password_hash,
                            u.role,
-                           u.is_active,
+                          u.account_locked_until,
                            u.deleted
                     FROM   users u
                     WHERE  (u.email = :id OR u.phone_number = :id)
@@ -88,10 +92,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .setParameter("id", identifier)
                 .getSingleResult();
 
+            LocalDateTime accountLockedUntil = row[2] == null
+                ? null
+                : ((java.sql.Timestamp) row[2]).toLocalDateTime();
+            boolean active = accountLockedUntil == null || accountLockedUntil.isBefore(LocalDateTime.now());
+
             return new UserAuthRecord(
                 (String)  row[0],           // passwordHash
                 (String)  row[1],           // role
-                (Boolean) row[2],           // active (is_active)
+                active,
                 (Boolean) row[3]            // deleted
             );
         } catch (NoResultException e) {

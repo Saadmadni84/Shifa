@@ -37,7 +37,12 @@ export default function NewVisitForm({ onSuccess }) {
     }
     setLoading(true)
     try {
-      const visit = await createVisit({ patientId: patient.id, ...data })
+      const visit = await createVisit({
+        patientId: patient.id,
+        visitType: data.visitType,
+        chiefComplaint: data.doctorNotes,
+        rawNotes: data.doctorNotes,
+      })
       toast.success('Visit created! AI is processing…')
       onSuccess?.(visit) || navigate(`/doctor/visits/${visit.id}/review`)
     } catch (err) {

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service("appLanguageService")
 @RequiredArgsConstructor
 @Slf4j
 public class LanguageService {

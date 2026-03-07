@@ -1,6 +1,8 @@
 package com.shifa.service.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shifa.common.enums.NotificationStatus;
+import com.shifa.common.enums.NotificationType;
 import com.shifa.domain.notification.Notification;
 import com.shifa.scheduler.util.ISTTimeUtil;
 import com.shifa.service.dto.VisitSummaryData;
@@ -60,11 +62,11 @@ public class MedicineReminderFactory {
                     Notification n = new Notification();
                     n.setPatient(visit.getPatient());
                     n.setVisit(visit);
-                    n.setType("MEDICINE_REMINDER");
-                    n.setTitle(buildTitle(med.getName(), visit.getPatient().getPreferredLanguage()));
-                    n.setMessage(buildMessage(med, hour, visit.getPatient().getPreferredLanguage()));
+                    n.setType(NotificationType.MEDICATION_REMINDER);
+                    n.setTitle(buildTitle(med.getName(), visit.getPatient().getPreferredLanguage().getCode()));
+                    n.setMessage(buildMessage(med, hour, visit.getPatient().getPreferredLanguage().getCode()));
                     n.setScheduledFor(utc);
-                    n.setStatus("PENDING");
+                    n.setStatus(NotificationStatus.PENDING);
                     n.setRetryCount(0);
                     n.setCreatedAt(LocalDateTime.now());
                     reminders.add(n);

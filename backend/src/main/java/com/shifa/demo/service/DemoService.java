@@ -1,17 +1,19 @@
 package com.shifa.demo.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import com.shifa.demo.data.DemoDataStore;
 import com.shifa.demo.dto.DemoChatDTO;
 import com.shifa.demo.dto.DemoDoctorDTO;
 import com.shifa.demo.dto.DemoPatientDTO;
 import com.shifa.demo.dto.DemoVisitDTO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * DemoService — Business logic for the Shifa demo mode.
@@ -274,16 +276,16 @@ public class DemoService {
         return switch (patientId) {
             case "pat-001" -> List.of(
                 DemoChatDTO.AuditItem.builder().id("a1").timestamp("4 Mar, 8:32pm")
-                    .question("What does PVC mean?")
-                    .aiSummary("AI explained PVCs as extra heartbeats from the ventricles. Patient found explanation helpful.")
+                    .question("PVCs ka matlab kya hai?")
+                    .aiSummary("AI explained in Hindi that PVCs are extra beats from lower heart chambers and are benign in Rajesh's structurally normal heart.")
                     .reviewedByDoctor(true).severity("info").build(),
                 DemoChatDTO.AuditItem.builder().id("a2").timestamp("4 Mar, 9:05pm")
-                    .question("Is Propranolol safe for long term?")
-                    .aiSummary("AI explained safety profile, side effects (fatigue, cold extremities), and importance of not stopping abruptly.")
+                    .question("Metoprolol achanak band kar sakte hain kya?")
+                    .aiSummary("AI advised not to stop metoprolol abruptly, highlighted dizziness/fatigue side effects, and reinforced doctor's taper guidance.")
                     .reviewedByDoctor(true).severity("info").build(),
                 DemoChatDTO.AuditItem.builder().id("a3").timestamp("5 Mar, 11:20am")
-                    .question("Can I exercise with PVCs?")
-                    .aiSummary("AI advised light to moderate exercise is safe and beneficial. Recommended 30 min walking. Warned against intense exertion until follow-up.")
+                    .question("Kya main chai aur gym continue kar sakta hoon?")
+                    .aiSummary("AI advised caffeine max one cup/day, daily 30-minute walk or yoga, and avoiding heavy gym/weightlifting until follow-up.")
                     .reviewedByDoctor(false).severity("info").build()
             );
             case "pat-002" -> List.of(

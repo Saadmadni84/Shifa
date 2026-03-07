@@ -15,6 +15,9 @@ export { default as NotFoundPage }  from './NotFoundPage'
 export { default as PatientPortalPage } from './portal/PatientPortalPage'
 export { default as PatientChatPage }   from './portal/PatientChatPage'
 
+// ── Patient Dashboard (authenticated PATIENT) ───────────────────────────────
+export { default as MyHealthPage }      from './patient/MyHealth'
+
 // ── Doctor Portal (requires DOCTOR role) ──────────────────────────────────────
 export { default as DashboardPage }     from './doctor/DashboardPage'
 export { default as NewVisitPage }      from './doctor/NewVisitPage'

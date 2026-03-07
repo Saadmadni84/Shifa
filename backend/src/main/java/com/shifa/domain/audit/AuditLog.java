@@ -45,7 +45,7 @@ public class AuditLog {
     @Column(name = "user_agent", length = 500)
     private String userAgent;
 
-    @Column(name = "details", columnDefinition = "jsonb")
+    @Column(name = "details", columnDefinition = "TEXT")
     private String details;
 
     @Column(name = "created_at", nullable = false, updatable = false)

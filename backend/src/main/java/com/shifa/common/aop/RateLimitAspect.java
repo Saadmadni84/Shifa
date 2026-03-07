@@ -16,7 +16,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.time.Duration;
 
 @Aspect
-@Component
+@Component("commonRateLimitAspect")
 @Slf4j
 @RequiredArgsConstructor
 public class RateLimitAspect {

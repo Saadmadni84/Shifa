@@ -45,7 +45,10 @@ public class DailyDigestScheduler {
                 int pendingDrafts = (int) visitRepository.countDraftVisitsByDoctor(doctor.getUser().getId());
                 int failedNotifs = (int) notificationRepository.countFailedSinceYesterday(doctor.getUser().getId(),
                         today.atStartOfDay());
-                int remindersGoingOut = (int) notificationRepository.countScheduledForToday(doctor.getUser().getId(), today);
+                int remindersGoingOut = (int) notificationRepository.countScheduledForToday(
+                    doctor.getUser().getId(),
+                    today.atStartOfDay(),
+                    today.plusDays(1).atStartOfDay());
 
                 if (followUpsToday == 0 && pendingDrafts == 0 && failedNotifs == 0) {
                     continue;

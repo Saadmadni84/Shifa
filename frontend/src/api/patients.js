@@ -20,16 +20,19 @@ export async function deletePatient(patientId) {
 }
 
 export async function searchPatients(params = {}) {
-	const { data } = await apiClient.get('/patients', {
+	const query =
+		typeof params === 'string'
+			? params
+			: params.query ?? params.q ?? params.phone ?? params.abha ?? ''
+
+	const { data } = await apiClient.get('/patients/search', {
 		params: {
-			q: params.q,
-			phone: params.phone,
-			abha: params.abha,
-			page: params.page ?? 0,
-			size: params.size ?? 20,
+			query,
+			page: typeof params === 'string' ? 0 : params.page ?? 0,
+			size: typeof params === 'string' ? 20 : params.size ?? 20,
 		},
 	})
-	return data
+	return normalisePage(data)
 }
 
 export async function getDoctorPatients({ page = 0, size = 20, signal } = {}) {
@@ -37,7 +40,7 @@ export async function getDoctorPatients({ page = 0, size = 20, signal } = {}) {
 		params: { page, size },
 		signal,
 	})
-	return data
+	return normalisePage(data)
 }
 
 export async function getPatientVisits(patientId, { page = 0, size = 10 } = {}) {
@@ -112,6 +115,14 @@ export const patientsApi = {
 	update: updatePatient,
 	get: getPatient,
 	getVisitHistory: getPatientVisits,
+}
+
+function normalisePage(data) {
+	if (!data) return { content: [], pageable: { pageNumber: 0 }, totalPages: 0, totalElements: 0 }
+	return {
+		...data,
+		pageable: { pageNumber: data.pageNumber ?? data.pageable?.pageNumber ?? 0 },
+	}
 }
 
 

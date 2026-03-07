@@ -3,6 +3,7 @@ package com.shifa.integration.payment;
 import com.shifa.integration.payment.exception.PaymentException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/webhooks/razorpay")
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "integration.razorpay.enabled", havingValue = "true")
 public class RazorpayWebhookController {
 
     private final RazorpayClient razorpayClient;
