@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Users, Plus, Settings, LogOut, Menu, X, Stethoscope } from 'lucide-react'
-import { logout, getCachedUser } from '@/api'
+import { getCachedUser } from '@/api'
+import { useAuthStore } from '@/store'
 import Avatar from '../ui/Avatar'
 import NotificationBell from '../doctor/NotificationBell'
 import toast from 'react-hot-toast'
@@ -22,14 +23,16 @@ const link = (isActive) =>
 export default function DoctorLayout({ children }) {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const logout = useAuthStore((s) => s.logout)
   const user = getCachedUser()
 
   const handleLogout = async () => {
     try {
       await logout()
       toast.success('Logged out')
+      navigate('/login', { replace: true })
     } finally {
-      navigate('/login')
+      setOpen(false)
     }
   }
 
