@@ -1,18 +1,11 @@
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { LayoutDashboard, Users, Plus, Settings, LogOut, Menu, X, Stethoscope } from 'lucide-react'
 import { getCachedUser } from '@/api'
 import { useAuthStore } from '@/store'
 import Avatar from '../ui/Avatar'
 import NotificationBell from '../doctor/NotificationBell'
 import toast from 'react-hot-toast'
-
-const NAV = [
-  { to: '/doctor/dashboard', icon: <LayoutDashboard size={19} />, label: 'Dashboard' },
-  { to: '/doctor/patients', icon: <Users size={19} />, label: 'Patients' },
-  { to: '/doctor/visits/new', icon: <Plus size={19} />, label: 'New Visit' },
-  { to: '/doctor/profile', icon: <Settings size={19} />, label: 'Settings' },
-]
 
 const link = (isActive) =>
   [
@@ -23,6 +16,18 @@ const link = (isActive) =>
 export default function DoctorLayout({ children }) {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const { doctorId } = useParams()
+  
+  const isDemo = !!doctorId;
+  const basePath = isDemo ? `/demo/doctor/${doctorId}` : '/doctor';
+  
+  const NAV = [
+    { to: isDemo ? basePath : `${basePath}/dashboard`, icon: <LayoutDashboard size={19} />, label: 'Dashboard' },
+    { to: `${basePath}/patients`, icon: <Users size={19} />, label: 'Patients' },
+    { to: `${basePath}/visit/new`, icon: <Plus size={19} />, label: 'New Visit' },
+    { to: `${basePath}/profile`, icon: <Settings size={19} />, label: 'Settings' },
+  ]
+
   const logout = useAuthStore((s) => s.logout)
   const user = getCachedUser()
 
