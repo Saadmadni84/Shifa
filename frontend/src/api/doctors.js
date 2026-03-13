@@ -56,3 +56,5 @@ export async function searchDoctors({ q, specialization, page = 0, size = 20 } =
 export async function getDoctorById(doctorId) {
   return getMyProfile()
 }
+
+export const doctorsApi = { getMyProfile, updateMyProfile, uploadProfilePhoto, getDashboardStats, getVisitTrend, getMyPatients, searchDoctors, getDoctorById };

@@ -44,6 +44,7 @@ import RouteTransition                      from './RouteTransition'
 import PatientLayout                        from '@/components/layout/PatientLayout'
 import UnauthorizedPage                     from './UnauthorizedPage'
 import { PageLoader }                       from '@/components/ui/Spinner'
+import { doctorRoutes } from './doctorRoutes'
 
 const DashboardPage = ROUTE_COMPONENTS.doctorDashboardPage;
 const NewVisitPage = ROUTE_COMPONENTS.doctorNewVisitPage;
@@ -56,8 +57,6 @@ const ScenarioPickerPage = lazy(() => import('@/pages/demo/ScenarioPickerPage'))
 const DemoPatientView = lazy(() => import('@/pages/demo/DemoPatientView'));
 const DemoVisitSummaryPage = lazy(() => import('@/pages/demo/DemoVisitSummaryPage'));
 const DemoDoctorPickerPage = lazy(() => import('@/pages/demo/DemoDoctorPickerPage'));
-const DemoDoctorDashboard = lazy(() => import('@/pages/demo/DemoDoctorDashboard'));
-const DemoDoctorPatientDetail = lazy(() => import('@/pages/demo/DemoDoctorPatientDetail'));
 
 // ─── Page-level loading fallback ──────────────────────────────────────────────
 function PageFallback() {
@@ -129,8 +128,11 @@ export default function AppRouter() {
           <Route path="/demo/patient/:id" element={<DemoPatientView />} />
           <Route path="/demo/patient/:id/visit/:vid" element={<DemoVisitSummaryPage />} />
           <Route path="/demo/doctor" element={<DemoDoctorPickerPage />} />
-          <Route path="/demo/doctor/:id" element={<DemoDoctorDashboard />} />
-          <Route path="/demo/doctor/:id/patient/:pid" element={<DemoDoctorPatientDetail />} />
+          
+          {/* New Doctor Panel Demo Flow */}
+          {doctorRoutes.map((r) => (
+            <Route key={r.path} path={r.path} element={r.element} />
+          ))}
 
           {/* ── Patient portal — no auth, WhatsApp token ──────────────── */}
           <Route path="/portal/:token" element={

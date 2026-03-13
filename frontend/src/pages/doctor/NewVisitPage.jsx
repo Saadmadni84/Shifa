@@ -1,168 +1,97 @@
-/**
- * NewVisitPage.jsx — Create New Visit
- * Route: /doctor/visits/new
- * Layout: DoctorLayout
- *
- * Flow:
- *   1. Select patient (search existing or quick-add new)
- *   2. Fill visit form: chief complaint, SOAP notes, diagnosis, medications, follow-up date
- *   3. On submit → POST /api/v1/visits → AI processing begins
- *   4. Redirect to VisitDetailPage which shows AI progress
- *
- * Sub-components:
- *   - PatientSearch (reusable search/select widget)
- *   - NewVisitForm (the SOAP note + prescription form)
- *   - AIProcessingStatus (polling spinner shown after submit)
- */
-
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { UserPlus, ArrowLeft, ChevronRight } from 'lucide-react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Plus, ArrowRight, UserPlus, FileText, CheckCircle2 } from 'lucide-react'
 
-import DoctorLayout            from '@/components/layout/DoctorLayout'
-import PageHeader              from '@/components/common/PageHeader'
-import PatientSearch           from '@/components/doctor/PatientSearch'
-import NewVisitForm            from '@/components/forms/NewVisitForm'
-import PatientQuickAddForm     from '@/components/forms/PatientQuickAddForm'
-import Button                 from '@/components/ui/Button'
-import Modal                   from '@/components/ui/Modal'
-import Avatar                  from '@/components/ui/Avatar'
-import Badge                   from '@/components/ui/Badge'
+import DoctorLayout from '@/components/layout/DoctorLayout'
+import Button from '@/components/ui/Button'
+import { DEMO_DOCTOR, DEMO_PATIENTS } from '@/data/demo/doctorDemoData'
 
 export default function NewVisitPage() {
   const navigate = useNavigate()
-  const [params] = useSearchParams()
-  const preloadedId = params.get('patientId')
+  const { doctorId } = useParams()
+  const [searchParams] = useSearchParams()
+  const presetPatientId = searchParams.get('patient')
 
-  // ── State ────────────────────────────────────────────────────────────────
-  const [selectedPatient, setSelectedPatient] = useState(null)
-  const [showSearch, setShowSearch] = useState(!preloadedId)
-  const [showAddPatient, setShowAddPatient] = useState(false)
-  const [step, setStep] = useState(preloadedId ? 2 : 1)
-  // step 1 = select patient
-  // step 2 = fill visit form
+  const [selectedPatientId, setSelectedPatientId] = useState(presetPatientId || '')
+  const [notes, setNotes] = useState('')
+  const [isRecording, setIsRecording] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
-  const handlePatientSelect = (patient) => {
-    setSelectedPatient(patient)
-    setShowSearch(false)
-    setStep(2)
-  }
+  const selectedPatient = DEMO_PATIENTS.find(p => p.id === selectedPatientId)
 
-  const handleVisitCreated = (visit) => {
-    // Navigate to visit detail which polls AI status
-    navigate(`/doctor/visits/${visit.id}`, { state: { justCreated: true } })
+  const handleSimulateAI = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      // In a real flow, this would redirect to the generated AI visit detail.
+      // We bounce back to the patient profile for demo flow completeness.
+      navigate(`/demo/doctor/${doctorId}/patient/${selectedPatientId}`);
+    }, 2000);
   }
 
   return (
-    <DoctorLayout>
-      <PageHeader
-        title="New Visit"
-        subtitle="Record a patient consultation — Shifa will generate an AI summary and send it to the patient."
-        backHref="/doctor/dashboard"
-      />
-
-      <div className="p-4 sm:p-6 max-w-2xl">
-
-        {/* ── Breadcrumb pills ──────────────────────────────────────────── */}
-        <div className="flex items-center gap-2 mb-6 text-sm">
-          <span className={`font-semibold ${step === 1 ? 'text-emerald-600' : 'text-gray-400'}`}>
-            1. Select Patient
-          </span>
-          <ChevronRight size={14} className="text-gray-300" />
-          <span className={`font-semibold ${step === 2 ? 'text-emerald-600' : 'text-gray-400'}`}>
-            2. Visit Notes
-          </span>
-          <ChevronRight size={14} className="text-gray-300" />
-          <span className="font-semibold text-gray-400">3. AI Summary</span>
+    <DoctorLayout doctor={DEMO_DOCTOR}>
+      <div className="p-4 sm:p-6 max-w-3xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">New Consultation</h1>
+          <p className="text-gray-500">Record a visit and generate an AI clinical summary</p>
         </div>
 
-        {/* ── Step 1: Patient selection ─────────────────────────────────── */}
-        {step === 1 && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="font-bold text-gray-900 mb-1">Select a patient</h2>
-            <p className="text-sm text-gray-500 mb-5">
-              Search by name or phone number. Or add a new patient.
-            </p>
-
-            <PatientSearch
-              autoFocus
-              onSelect={handlePatientSelect}
-              className="mb-4"
-            />
-
-            <div className="border-t border-gray-100 pt-4 mt-2">
-              <p className="text-sm text-gray-400 mb-3">New patient?</p>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowAddPatient(true)}
-              >
-                <UserPlus size={14} className="mr-1.5" />
-                Add new patient
-              </Button>
-            </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          
+          {/* Patient Selection */}
+          <div className="p-6 border-b border-gray-100 bg-gray-50">
+            <h2 className="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wide">1. Select Patient</h2>
+            <select 
+              value={selectedPatientId} 
+              onChange={e => setSelectedPatientId(e.target.value)}
+              className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+            >
+              <option value="" disabled>Select a patient from your list...</option>
+              {DEMO_PATIENTS.map(p => (
+                <option key={p.id} value={p.id}>{p.firstName} {p.lastName} - {p.phone}</option>
+              ))}
+            </select>
           </div>
-        )}
 
-        {/* ── Step 2: Visit form ────────────────────────────────────────── */}
-        {step === 2 && (
-          <div className="space-y-4">
-            {/* Selected patient banner */}
-            {selectedPatient && (
-              <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <Avatar
-                    name={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
-                    size="sm"
-                  />
-                  <div>
-                    <div className="font-bold text-gray-900 text-sm">
-                      {selectedPatient.firstName} {selectedPatient.lastName}
-                    </div>
-                    <div className="text-xs text-gray-500">{selectedPatient.phone}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {selectedPatient.preferredLanguage && (
-                    <Badge variant="language" label={selectedPatient.preferredLanguage} />
-                  )}
-                  <button
-                    onClick={() => setStep(1)}
-                    className="text-xs text-emerald-600 font-semibold hover:underline"
-                  >
-                    Change
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* The main form */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-              <NewVisitForm
-                patientId={selectedPatient?.id ?? preloadedId}
-                onSuccess={handleVisitCreated}
-                onCancel={() => navigate(-1)}
+          {/* AI Intake / Notes */}
+          <div className={`p-6 transition-opacity ${!selectedPatientId ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+            <h2 className="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wide flex justify-between">
+              <span>2. Clinical Notes</span>
+              {selectedPatientId && <span className="text-emerald-600 normal-case font-medium">Recording for {selectedPatient?.firstName}</span>}
+            </h2>
+            
+            <div className="space-y-4">
+              <textarea 
+                rows={6}
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Type your notes here, or use voice dictation..."
+                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none resize-none"
               />
+
+              <div className="flex gap-3">
+                <Button 
+                  variant={isRecording ? 'danger' : 'secondary'} 
+                  onClick={() => setIsRecording(!isRecording)}
+                  className="w-40"
+                >
+                  {isRecording ? 'Stop Recording' : 'Start Dictation'}
+                </Button>
+                
+                <Button 
+                  variant="primary" 
+                  className="flex-1"
+                  disabled={!selectedPatientId || isProcessing}
+                  onClick={handleSimulateAI}
+                >
+                  {isProcessing ? 'Generating AI Summary...' : 'Process with AI'} 
+                  {!isProcessing && <ArrowRight size={16} className="ml-2" />}
+                </Button>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
-
-      {/* ── Add patient modal ────────────────────────────────────────────── */}
-      <Modal
-        isOpen={showAddPatient}
-        onClose={() => setShowAddPatient(false)}
-        title="Add New Patient"
-      >
-        <PatientQuickAddForm
-          onSuccess={(patient) => {
-            setShowAddPatient(false)
-            handlePatientSelect(patient)
-          }}
-          onCancel={() => setShowAddPatient(false)}
-        />
-      </Modal>
     </DoctorLayout>
   )
 }

@@ -44,7 +44,7 @@ export default function LoginPage() {
               Sign in as Patient
             </button>
             <button
-              onClick={() => navigate('/demo/doctor')}
+              onClick={() => navigate('/demo/doctor/d1')}
               className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors"
             >
               Sign in as Doctor
