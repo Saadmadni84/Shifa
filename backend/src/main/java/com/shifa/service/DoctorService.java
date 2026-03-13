@@ -2,15 +2,33 @@
 // backend/src/main/java/com/shifa/service/DoctorService.java
 package com.shifa.service;
 
-import com.shifa.dto.*;
-import com.shifa.dto.DashboardResponseDto.*;
-import com.shifa.dto.PatientSummaryDto.*;
-import com.shifa.dto.VisitDetailDto.*;
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.shifa.dto.DashboardResponseDto;
+import com.shifa.dto.DashboardResponseDto.AlertDto;
+import com.shifa.dto.DashboardResponseDto.StatsDto;
+import com.shifa.dto.DoctorDto;
+import com.shifa.dto.PatientSummaryDto;
+import com.shifa.dto.PatientSummaryDto.ConditionDto;
+import com.shifa.dto.PatientSummaryDto.LastVitals;
+import com.shifa.dto.PatientSummaryDto.MedicationDto;
+import com.shifa.dto.VisitDetailDto;
+import com.shifa.dto.VisitDetailDto.PrescriptionDto;
+import com.shifa.dto.VisitDetailDto.VitalsDto;
+import com.shifa.dto.VisitDetailDto.WhatsAppSummaryDto;
+import com.shifa.dto.VisitSummaryDto;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * DoctorService
@@ -117,9 +135,23 @@ public class DoctorService {
 
     // ── Visits ───────────────────────────────────────────────────────────────
 
-    public List<VisitDetailDto> getPatientVisits(String patientId, boolean demo) {
+        public List<VisitSummaryDto> getPatientVisits(String patientId, boolean demo) {
         if (demo) {
-            return DEMO_VISITS.getOrDefault(patientId, Collections.emptyList());
+                        return DEMO_VISITS.getOrDefault(patientId, Collections.emptyList()).stream()
+                                        .map(v -> VisitSummaryDto.builder()
+                                                        .id(v.getId())
+                                                        .patientId(v.getPatientId())
+                                                        .date(v.getDate())
+                                                        .type(v.getType())
+                                                        .doctor(v.getDoctor())
+                                                        .diagnosis(v.getDiagnosis())
+                                                        .chiefComplaint(v.getChiefComplaint())
+                                                        .instructions(v.getInstructions())
+                                                        .whatsappSummary(v.getWhatsappSummary())
+                                                        .vitals(v.getVitals())
+                                                        .followUpDate(v.getFollowUpDate())
+                                                        .build())
+                                        .collect(Collectors.toList());
         }
         throw new UnsupportedOperationException("Live mode not yet implemented");
     }
