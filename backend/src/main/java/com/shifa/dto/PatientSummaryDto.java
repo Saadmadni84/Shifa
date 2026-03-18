@@ -27,6 +27,8 @@ public class PatientSummaryDto {
 	private LastVitals lastVitals;
 	private List<ConditionDto> activeConditions;
 	private List<MedicationDto> activeMedications;
+	private String bloodType;
+	private List<String> allergies;
 
 	@Data
 	@Builder

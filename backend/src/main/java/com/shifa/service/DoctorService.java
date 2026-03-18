@@ -57,14 +57,31 @@ public class DoctorService {
             .phone("+91-9876543210")
             .build();
 
+    private static final DoctorDto DEMO_DOCTOR_2 = DoctorDto.builder()
+            .id("d2")
+            .name("Dr. Michał Nedoszytko")
+            .specialty("Cardiologist")
+            .hospital("City Heart Clinic, San Francisco")
+            .avatar("MN")
+            .phone("+1-415-555-0100")
+            .build();
+
     private static final List<PatientSummaryDto> DEMO_PATIENTS = buildDemoPatients();
+    private static final List<PatientSummaryDto> DEMO_PATIENTS_2 = buildDemoPatients2();
+    
     private static final Map<String, List<VisitDetailDto>> DEMO_VISITS = buildDemoVisits();
+    private static final Map<String, List<VisitDetailDto>> DEMO_VISITS_2 = buildDemoVisits2();
 
     // ── Dashboard ────────────────────────────────────────────────────────────
 
     public DashboardResponseDto getDashboard(String doctorId, boolean demo) {
         if (demo) {
-            List<PatientSummaryDto> alertPatients = DEMO_PATIENTS.stream()
+            boolean isMichal = "d2".equals(doctorId);
+            DoctorDto currentDoctor = isMichal ? DEMO_DOCTOR_2 : DEMO_DOCTOR;
+            List<PatientSummaryDto> currentPatients = isMichal ? DEMO_PATIENTS_2 : DEMO_PATIENTS;
+            Map<String, List<VisitDetailDto>> currentVisits = isMichal ? DEMO_VISITS_2 : DEMO_VISITS;
+
+            List<PatientSummaryDto> alertPatients = currentPatients.stream()
                     .filter(p -> "alert".equals(p.getAlertStatus()))
                     .collect(Collectors.toList());
 
@@ -80,23 +97,23 @@ public class DoctorService {
                             .build())
                     .collect(Collectors.toList());
 
-            List<PatientSummaryDto> recent = DEMO_PATIENTS.stream()
+            List<PatientSummaryDto> recent = currentPatients.stream()
                     .sorted(Comparator.comparing(PatientSummaryDto::getLastVisitDate).reversed())
                     .limit(4)
                     .collect(Collectors.toList());
 
-            int totalVisits = DEMO_VISITS.values().stream().mapToInt(List::size).sum();
-            int unread = DEMO_PATIENTS.stream().mapToInt(PatientSummaryDto::getUnreadCount).sum();
+            int totalVisits = currentVisits.values().stream().mapToInt(List::size).sum();
+            int unread = currentPatients.stream().mapToInt(PatientSummaryDto::getUnreadCount).sum();
 
             StatsDto stats = StatsDto.builder()
-                    .totalPatients(DEMO_PATIENTS.size())
+                    .totalPatients(currentPatients.size())
                     .unreadMessages(unread)
                     .totalVisits(totalVisits)
                     .alertPatients(alertPatients.size())
                     .build();
 
             return DashboardResponseDto.builder()
-                    .doctor(DEMO_DOCTOR)
+                    .doctor(currentDoctor)
                     .stats(stats)
                     .alerts(alerts)
                     .recentPatients(recent)
@@ -111,7 +128,9 @@ public class DoctorService {
     public List<PatientSummaryDto> getPatients(
             String doctorId, String q, String status, int page, int size, boolean demo) {
         if (demo) {
-            return DEMO_PATIENTS.stream()
+            boolean isMichal = "d2".equals(doctorId);
+            List<PatientSummaryDto> currentPatients = isMichal ? DEMO_PATIENTS_2 : DEMO_PATIENTS;
+            return currentPatients.stream()
                     .filter(p -> q == null || q.isBlank() ||
                             (p.getFirstName() + " " + p.getLastName()).toLowerCase().contains(q.toLowerCase()) ||
                             (p.getPrimaryCondition() != null && p.getPrimaryCondition().toLowerCase().contains(q.toLowerCase())))
@@ -125,7 +144,12 @@ public class DoctorService {
 
     public PatientSummaryDto getPatientDetail(String patientId, boolean demo) {
         if (demo) {
-            return DEMO_PATIENTS.stream()
+            java.util.Optional<PatientSummaryDto> p1 = DEMO_PATIENTS.stream()
+                    .filter(p -> p.getId().equals(patientId))
+                    .findFirst();
+            if (p1.isPresent()) return p1.get();
+
+            return DEMO_PATIENTS_2.stream()
                     .filter(p -> p.getId().equals(patientId))
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("Patient not found: " + patientId));
@@ -137,8 +161,12 @@ public class DoctorService {
 
         public List<VisitSummaryDto> getPatientVisits(String patientId, boolean demo) {
         if (demo) {
-                        return DEMO_VISITS.getOrDefault(patientId, Collections.emptyList()).stream()
-                                        .map(v -> VisitSummaryDto.builder()
+            List<VisitDetailDto> visits = DEMO_VISITS.getOrDefault(patientId, Collections.emptyList());
+            if (visits.isEmpty()) {
+                visits = DEMO_VISITS_2.getOrDefault(patientId, Collections.emptyList());
+            }
+            return visits.stream()
+                    .map(v -> VisitSummaryDto.builder()
                                                         .id(v.getId())
                                                         .patientId(v.getPatientId())
                                                         .date(v.getDate())
@@ -158,8 +186,13 @@ public class DoctorService {
 
     public VisitDetailDto getVisitDetail(String patientId, String visitId, boolean demo) {
         if (demo) {
-            return DEMO_VISITS.getOrDefault(patientId, Collections.emptyList()).stream()
-                    .filter(v -> v.getId().equals(visitId))
+            java.util.Optional<VisitDetailDto> v = DEMO_VISITS.getOrDefault(patientId, Collections.emptyList()).stream()
+                    .filter(obj -> obj.getId().equals(visitId))
+                    .findFirst();
+            if (v.isPresent()) return v.get();
+
+            return DEMO_VISITS_2.getOrDefault(patientId, Collections.emptyList()).stream()
+                    .filter(obj -> obj.getId().equals(visitId))
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("Visit not found: " + visitId));
         }
@@ -169,7 +202,9 @@ public class DoctorService {
     public List<VisitDetailDto> getAllVisits(
             String doctorId, String q, int page, int size, boolean demo) {
         if (demo) {
-            return DEMO_VISITS.values().stream()
+            boolean isMichal = "d2".equals(doctorId);
+            Map<String, List<VisitDetailDto>> visitsMap = isMichal ? DEMO_VISITS_2 : DEMO_VISITS;
+            return visitsMap.values().stream()
                     .flatMap(Collection::stream)
                     .filter(v -> q == null || q.isBlank() ||
                             (v.getDiagnosis() != null && v.getDiagnosis().toLowerCase().contains(q.toLowerCase())))
@@ -241,40 +276,6 @@ public class DoctorService {
                         MedicationDto.builder().name("Tiotropium Inhaler").dose("18 mcg").frequency("Once daily (OD)").timing("Morning").build(),
                         MedicationDto.builder().name("Salbutamol Inhaler").dose("100 mcg").frequency("As needed (SOS)").timing("On breathlessness").build(),
                         MedicationDto.builder().name("Amlodipine").dose("5 mg").frequency("Once daily (OD)").timing("Evening").build()
-                ))
-                .build());
-
-        list.add(PatientSummaryDto.builder()
-                .id("p4").firstName("Kavitha").lastName("Nair").age(38)
-                .dob("1987-03-15").gender("Female").language("ml").languageLabel("Malayalam")
-                .phone("+91-9845678901").avatar("KN").alertStatus("stable").unreadCount(0)
-                .primaryCondition("Polycystic Ovarian Syndrome (E28.2)")
-                .lastVisitDate("2026-02-20").summaryLanguage("Malayalam")
-                .whatsappDeliveryStatus("Read")
-                .lastVitals(LastVitals.builder().bp("118/76").sugar("98 mg/dL").weight("64 kg").pulse("68 bpm").build())
-                .activeConditions(List.of(
-                        ConditionDto.builder().code("E28.2").display("Polycystic Ovarian Syndrome (PCOS)").status("active").build()
-                ))
-                .activeMedications(List.of(
-                        MedicationDto.builder().name("Metformin").dose("500 mg").frequency("Twice daily (BD)").timing("After meals").build(),
-                        MedicationDto.builder().name("Inositol").dose("2 g").frequency("Once daily (OD)").timing("Morning").build()
-                ))
-                .build());
-
-        list.add(PatientSummaryDto.builder()
-                .id("p5").firstName("Arjun").lastName("Singh").age(29)
-                .dob("1996-07-20").gender("Male").language("hi").languageLabel("Hindi")
-                .phone("+91-9856789012").avatar("AS").alertStatus("stable").unreadCount(0)
-                .primaryCondition("Acid Peptic Disease (K29.7)")
-                .lastVisitDate("2026-03-06").summaryLanguage("Hindi")
-                .whatsappDeliveryStatus("Read")
-                .lastVitals(LastVitals.builder().bp("122/78").sugar("92 mg/dL").weight("72 kg").pulse("74 bpm").build())
-                .activeConditions(List.of(
-                        ConditionDto.builder().code("K29.7").display("Gastritis / Acid Peptic Disease").status("active").build()
-                ))
-                .activeMedications(List.of(
-                        MedicationDto.builder().name("Pantoprazole").dose("40 mg").frequency("Once daily (OD)").timing("Before breakfast").build(),
-                        MedicationDto.builder().name("Domperidone").dose("10 mg").frequency("Thrice daily (TDS)").timing("Before meals").build()
                 ))
                 .build());
 
@@ -358,42 +359,51 @@ public class DoctorService {
                         .build()
         ));
 
-        // Kavitha Nair — p4
-        map.put("p4", List.of(
+        return Collections.unmodifiableMap(map);
+    }
+
+    private static List<PatientSummaryDto> buildDemoPatients2() {
+        List<PatientSummaryDto> list = new ArrayList<>();
+        list.add(PatientSummaryDto.builder()
+                .id("p-alex").firstName("Alex").lastName("Johnson").age(41)
+                .dob("1985-03-15").gender("Male").language("en").languageLabel("English")
+                .phone("+1-555-0123").avatar("AJ").alertStatus("alert").unreadCount(2)
+                .primaryCondition("Palpitations (R00.2)")
+                .lastVisitDate("2026-03-13").summaryLanguage("English")
+                .whatsappDeliveryStatus("Sent")
+                .bloodType("A+")
+                .allergies(List.of("Penicillin (Anaphylaxis)", "Sulfa drugs (Skin rash)"))
+                .lastVitals(LastVitals.builder().bp("128/82").pulse("78").weight("82 kg").sugar("N/A").build())
+                .activeConditions(List.of(
+                        ConditionDto.builder().code("R00.2").display("Palpitations").status("active").build(),
+                        ConditionDto.builder().code("R00.1").display("Bradycardia, unspecified").status("active").build()
+
+                ))
+                .activeMedications(List.of(
+                        MedicationDto.builder().name("Propranolol").dose("40 mg").frequency("Twice daily (BID)").timing("Morning/Evening").build()
+                ))
+                .build());
+        return Collections.unmodifiableList(list);
+    }
+
+    private static Map<String, List<VisitDetailDto>> buildDemoVisits2() {
+        Map<String, List<VisitDetailDto>> map = new HashMap<>();
+        // Alex Johnson — p-alex
+        map.put("p-alex", List.of(
                 VisitDetailDto.builder()
-                        .id("v4-1").patientId("p4").date("2026-02-20").type("Follow-up").doctor("Dr. Priya Sharma")
-                        .diagnosis("PCOS with insulin resistance")
-                        .chiefComplaint("Irregular periods, weight gain")
-                        .clinicalNotes("LH/FSH ratio 2.5. Fasting insulin elevated. Continue Metformin. Add Inositol supplement.")
-                        .instructions("Continue Metformin 500mg BD. Start Inositol 2g OD. Low-GI diet. Brisk walk 30 min daily.")
-                        .followUpDate("2026-04-20")
-                        .vitals(VitalsDto.builder().bp("118/76").pulse("68").weight("64").sugar("98").build())
+                        .id("v-alex-01").patientId("p-alex").date("2026-03-13").type("Cardiology Consultation").doctor("Dr. Michał Nedoszytko")
+                        .diagnosis("Palpitations (R00.2)")
+                        .chiefComplaint("Heart palpitations and irregular heartbeat")
+                        .clinicalNotes("Patient presents with 3-week history of heart palpitations. EKG shows normal sinus rhythm with frequent PVCs. No ST-segment changes. BP 128/82. Started on Propranolol 40mg BID.")
+                        .instructions("Start Propranolol 40mg BID. Monitor BP daily. Return in 2 weeks for BP check and follow-up.")
+                        .followUpDate("2026-03-27")
+                        .vitals(VitalsDto.builder().bp("128/82").pulse("78").weight("82").sugar("N/A").build())
                         .prescriptions(List.of(
-                                PrescriptionDto.builder().name("Tab. Metformin 500mg").sig("1-0-1 (After meals)").duration("60 days").refills(2).build(),
-                                PrescriptionDto.builder().name("Inositol Powder 2g").sig("1-0-0 (Morning)").duration("60 days").refills(1).build()
+                                PrescriptionDto.builder().name("Tab. Propranolol 40mg").sig("1-0-1").duration("30 days").refills(1).build()
                         ))
-                        .whatsappSummary(WhatsAppSummaryDto.builder().sent(true).language("Malayalam").status("Read").timestamp("2026-02-20T11:00:00").build())
+                        .whatsappSummary(WhatsAppSummaryDto.builder().sent(true).language("English").status("Sent").timestamp("2026-03-13T10:00:00").build())
                         .build()
         ));
-
-        // Arjun Singh — p5
-        map.put("p5", List.of(
-                VisitDetailDto.builder()
-                        .id("v5-1").patientId("p5").date("2026-03-06").type("Consultation").doctor("Dr. Priya Sharma")
-                        .diagnosis("Acute Gastritis / Acid Peptic Disease (K29.7)")
-                        .chiefComplaint("Burning pain upper abdomen, nausea after meals")
-                        .clinicalNotes("H. pylori rapid test negative. Likely stress-related APD. Advised dietary changes.")
-                        .instructions("Pantoprazole 40mg before breakfast. Domperidone before meals. Avoid spicy/oily food, tea on empty stomach, NSAIDs.")
-                        .followUpDate("2026-03-20")
-                        .vitals(VitalsDto.builder().bp("122/78").pulse("74").weight("72").sugar("92").build())
-                        .prescriptions(List.of(
-                                PrescriptionDto.builder().name("Tab. Pantoprazole 40mg").sig("1-0-0 (Before breakfast)").duration("14 days").refills(0).build(),
-                                PrescriptionDto.builder().name("Tab. Domperidone 10mg").sig("1-1-1 (Before meals)").duration("14 days").refills(0).build()
-                        ))
-                        .whatsappSummary(WhatsAppSummaryDto.builder().sent(true).language("Hindi").status("Read").timestamp("2026-03-06T13:20:00").build())
-                        .build()
-        ));
-
         return Collections.unmodifiableMap(map);
     }
 }
