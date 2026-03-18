@@ -39,3 +39,10 @@ frontend/dist/
 ### OS ###
 .DS_Store
 *.mv.db
+
+### User Additions ###
+node_modules/
+target/
+.env
+*.log
+
