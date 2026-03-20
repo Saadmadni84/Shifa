@@ -18,7 +18,7 @@ import com.shifa.mapper.InteractionMapper;
 import com.shifa.service.InteractionService;
 
 @RestController
-@RequestMapping("/interactions")
+@RequestMapping("/api/interactions")
 public class InteractionController {
 
     private final InteractionService interactionService;
