@@ -13,7 +13,7 @@ import com.shifa.dto.MedicationDTO;
 import com.shifa.service.MedicationService;
 
 @RestController
-@RequestMapping("/medications")
+@RequestMapping("/api/medications")
 public class MedicationController {
 
     private final MedicationService service;

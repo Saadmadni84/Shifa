@@ -1,0 +1,77 @@
+                                   Table "public.visits"
+         Column          |              Type              | Collation | Nullable | Default 
+-------------------------+--------------------------------+-----------+----------+---------
+ id                      | uuid                           |           | not null | 
+ fhir_encounter_id       | character varying(255)         |           | not null | 
+ patient_id              | uuid                           |           | not null | 
+ practitioner_id         | uuid                           |           | not null | 
+ organization_id         | uuid                           |           |          | 
+ visit_type              | character varying(255)         |           | not null | 
+ class                   | character varying(255)         |           | not null | 
+ visit_status            | character varying(255)         |           | not null | 
+ service_type            | character varying(255)         |           |          | 
+ reason_for_visit        | text                           |           |          | 
+ reason_codes            | jsonb                          |           |          | 
+ summary                 | text                           |           |          | 
+ started_at              | timestamp(0) without time zone |           |          | 
+ ended_at                | timestamp(0) without time zone |           |          | 
+ duration_minutes        | integer                        |           |          | 
+ provider_notes_followup | text                           |           |          | 
+ created_by              | uuid                           |           |          | 
+ created_at              | timestamp(0) without time zone |           |          | 
+ updated_at              | timestamp(0) without time zone |           |          | 
+ delete_reason           | text                           |           |          | 
+ deleted                 | boolean                        |           | not null | 
+ deleted_at              | timestamp(6) without time zone |           |          | 
+ updated_by              | character varying(100)         |           |          | 
+ ai_error_message        | text                           |           |          | 
+ ai_processed_at         | timestamp(6) without time zone |           |          | 
+ ai_summary              | text                           |           |          | 
+ chief_complaint         | text                           |           |          | 
+ diagnosis               | text                           |           |          | 
+ follow_up_date          | date                           |           |          | 
+ follow_up_notes         | text                           |           |          | 
+ patient_portal_token    | character varying(255)         |           |          | 
+ portal_token_expires_at | timestamp(6) without time zone |           |          | 
+ raw_notes               | text                           |           |          | 
+ sent_to_patient_at      | timestamp(6) without time zone |           |          | 
+ status                  | character varying(255)         |           | not null | 
+ visit_date              | date                           |           | not null | 
+ whatsapp_message_id     | character varying(100)         |           |          | 
+ whatsapp_sent_at        | timestamp(6) without time zone |           |          | 
+ whatsapp_status         | character varying(255)         |           |          | 
+ doctor_id               | uuid                           |           | not null | 
+Indexes:
+    "visits_pkey" PRIMARY KEY, btree (id)
+    "idx_visit_date" btree (visit_date)
+    "idx_visit_doctor" btree (doctor_id)
+    "idx_visit_patient" btree (patient_id)
+    "idx_visit_status" btree (status)
+    "idx_visit_token" UNIQUE CONSTRAINT, btree (patient_portal_token)
+    "visits_fhir_encounter_id_unique" UNIQUE CONSTRAINT, btree (fhir_encounter_id)
+Check constraints:
+    "visits_status_check" CHECK (status::text = ANY (ARRAY['DRAFT'::character varying, 'NOTES_TAKEN'::character varying, 'AI_PROCESSING'::character varying, 'AI_COMPLETE'::character varying, 'REVIEWED'::character varying, 'SENT_TO_PATIENT'::character varying, 'DELIVERED'::character varying, 'COMPLETED'::character varying, 'CANCELLED'::character varying]::text[]))
+    "visits_visit_status_check" CHECK (visit_status::text = ANY (ARRAY['planned'::character varying, 'in_progress'::character varying, 'completed'::character varying, 'cancelled'::character varying]::text[]))
+    "visits_visit_type_check" CHECK (visit_type::text = ANY (ARRAY['office_visit'::character varying, 'telehealth'::character varying, 'emergency'::character varying, 'inpatient'::character varying]::text[]))
+    "visits_whatsapp_status_check" CHECK (whatsapp_status::text = ANY (ARRAY['NOT_SENT'::character varying, 'QUEUED'::character varying, 'SENT'::character varying, 'DELIVERED'::character varying, 'READ'::character varying, 'FAILED'::character varying]::text[]))
+Foreign-key constraints:
+    "fkth95fndjk3y3nepjfu3f66r63" FOREIGN KEY (doctor_id) REFERENCES doctors(id)
+    "visits_created_by_foreign" FOREIGN KEY (created_by) REFERENCES users(id)
+    "visits_organization_id_foreign" FOREIGN KEY (organization_id) REFERENCES organizations(id)
+    "visits_patient_id_foreign" FOREIGN KEY (patient_id) REFERENCES patients(id)
+    "visits_practitioner_id_foreign" FOREIGN KEY (practitioner_id) REFERENCES practitioners(id)
+Referenced by:
+    TABLE "chat_sessions" CONSTRAINT "chat_sessions_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "conditions" CONSTRAINT "conditions_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "documents" CONSTRAINT "documents_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "uploaded_documents" CONSTRAINT "fk36e0ww957extejib5beujvemd" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "visit_patient_summaries" CONSTRAINT "fk7ynvg6q1an75vto0ar9o4njhl" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "vital_signs" CONSTRAINT "fka54hi1u2qbtgb2txsc2ee5twn" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "notifications" CONSTRAINT "notifications_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "observations" CONSTRAINT "observations_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "patient_context_summaries" CONSTRAINT "patient_context_summaries_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id) ON DELETE SET NULL
+    TABLE "prescriptions" CONSTRAINT "prescriptions_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "transcripts" CONSTRAINT "transcripts_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+    TABLE "upload_tokens" CONSTRAINT "upload_tokens_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id) ON DELETE CASCADE
+    TABLE "visit_notes" CONSTRAINT "visit_notes_visit_id_foreign" FOREIGN KEY (visit_id) REFERENCES visits(id)
+

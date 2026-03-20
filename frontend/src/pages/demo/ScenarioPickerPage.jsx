@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { demoPatients } from '@/data/demo/demoData'
+import { useEffect, useState } from "react";
+import { getScenarios } from "../../api/demo";
 
 // Language code → short label shown on card badge
 const LANG_SHORT = { Hindi: 'HI', Gujarati: 'GU', Tamil: 'TA', Telugu: 'TE', Bengali: 'BN', Marathi: 'MR', English: 'EN' }
@@ -7,6 +8,11 @@ const AVATAR_GRADIENTS = ['from-emerald-400 to-emerald-600', 'from-indigo-400 to
 
 export default function ScenarioPickerPage() {
   const navigate = useNavigate()
+  const [scenarios, setScenarios] = useState([]);
+
+  useEffect(() => {
+    getScenarios().then(res => setScenarios(res.data)).catch(console.error);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex flex-col items-center px-4 py-12">
@@ -24,9 +30,9 @@ export default function ScenarioPickerPage() {
 
       {/* Cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full max-w-4xl">
-        {demoPatients.map((p, idx) => {
+        {scenarios.map((p, idx) => {
           const visit = p.visits?.[0]
-          const language = p.language || 'English'
+          const language = p.preferredLanguage || 'EN'
           const langBadge = LANG_SHORT[language] ?? language.slice(0, 2).toUpperCase()
           const grad = AVATAR_GRADIENTS[idx % AVATAR_GRADIENTS.length]
           const num = String(idx + 1).padStart(2, '0')
@@ -35,7 +41,7 @@ export default function ScenarioPickerPage() {
           return (
             <button
               key={p.id}
-              onClick={() => navigate(`/demo/patient/${p.id}/visit/${visit?.id || ''}`)}
+              onClick={() => navigate(`/demo/patient/${p.id}`)}
               className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:border-emerald-400 hover:shadow-md transition-all text-left group"
             >
               {/* Avatar area */}

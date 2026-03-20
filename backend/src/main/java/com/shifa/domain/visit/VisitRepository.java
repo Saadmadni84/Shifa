@@ -18,6 +18,8 @@ public interface VisitRepository extends JpaRepository<Visit, UUID> {
 
     // Portal token methods
     Optional<Visit> findByPatientPortalToken(String token);
+    List<Visit> findByPatientId(UUID patientId);
+
 
     // Doctor-based queries using UUID
     Page<Visit> findByDoctorUserIdAndDeletedFalse(UUID doctorUserId, Pageable pageable);

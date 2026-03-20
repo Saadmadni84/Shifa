@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "medications")
+@Table(name = "prescription_medications")
 @Getter @Setter @NoArgsConstructor
 public class Medication extends AuditableEntity {
 

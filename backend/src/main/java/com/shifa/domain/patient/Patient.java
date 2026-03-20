@@ -1,11 +1,19 @@
 package com.shifa.domain.patient;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.shifa.common.audit.AuditableEntity;
 import com.shifa.common.enums.Gender;
 import com.shifa.common.enums.Language;
 import com.shifa.domain.doctor.Doctor;
 import com.shifa.domain.user.User;
 import com.shifa.domain.visit.Visit;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -24,13 +32,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "patients", indexes = {
@@ -79,6 +80,9 @@ public class Patient extends AuditableEntity {
 
     @Column(name = "pincode", length = 10)
     private String pincode;
+
+    @Column(name = "is_demo", columnDefinition = "boolean default false")
+    private Boolean isDemo = false;
 
     @Column(name = "address", columnDefinition = "TEXT")
     private String address;

@@ -1,15 +1,17 @@
 package com.shifa.domain.patient;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.shifa.domain.user.User;
 
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
@@ -21,6 +23,8 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
                         "LOWER(p.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
                         "p.phoneNumber LIKE CONCAT('%', :query, '%'))")
         Page<Patient> searchByNameOrPhoneAndDeletedFalse(@Param("query") String query, Pageable pageable);
+
+        List<Patient> findByIsDemoTrue();
 
         @Query("SELECT p FROM Patient p WHERE p.deleted = false AND p.id NOT IN " +
                         "(SELECT v.patient.id FROM Visit v WHERE v.createdAt >= :cutoff OR v.followUpDate >= :recentDate)")
