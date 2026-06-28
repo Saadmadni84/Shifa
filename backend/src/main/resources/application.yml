@@ -14,6 +14,8 @@ spring:
     locations: classpath:db/migration
 
 shifa:
+  rag:
+    base-url: ${RAG_BASE_URL:http://localhost:5050}
   scheduler:
     enabled: true
     pool-size: 5

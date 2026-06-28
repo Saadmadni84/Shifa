@@ -388,7 +388,7 @@ public class DoctorService {
 
     private static Map<String, List<VisitDetailDto>> buildDemoVisits2() {
         Map<String, List<VisitDetailDto>> map = new HashMap<>();
-        // Alex Johnson — p-alex
+        // Rajesh Kumar — p-alex
         map.put("p-alex", List.of(
                 VisitDetailDto.builder()
                         .id("v-alex-01").patientId("p-alex").date("2026-03-13").type("Cardiology Consultation").doctor("Dr. Michał Nedoszytko")

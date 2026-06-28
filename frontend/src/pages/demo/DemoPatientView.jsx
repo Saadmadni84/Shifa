@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getScenarioById } from "../../api/demo";
+import ScribeRecorder from "../../components/visit/ScribeRecorder";
 import { 
   Calendar, FileText, ArrowLeft, Heart, 
   MapPin, Phone, User, Activity, Clock, 
@@ -11,8 +12,9 @@ import {
 export default function DemoPatientView() {
   const { id } = useParams();
   const [data, setData] = useState(null);
-  const [chatMessage, setChatMessage] = useState("");
+
   const [selectedVisit, setSelectedVisit] = useState(null);
+  const [activeTab, setActiveTab] = useState('profile');
 
   useEffect(() => {
     getScenarioById(id).then(res => setData(res.data)).catch(console.error);
@@ -47,16 +49,24 @@ export default function DemoPatientView() {
           <div className="bg-emerald-100 text-emerald-600 p-1.5 rounded-lg">
             <CheckCircle2 size={24} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-gray-900">postvisit<span className="text-emerald-500">.ai</span></span>
+          <span className="text-xl font-bold tracking-tight text-gray-900">Shifa<span className="text-emerald-500">.ai</span></span>
           <span className="ml-2 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-md">Patient Panel</span>
         </div>
         <div className="flex items-center gap-8">
           <nav className="hidden md:flex gap-6 text-sm font-medium text-gray-600">
-            <span className="text-emerald-600 border-b-2 border-emerald-500 pb-4 pt-4 px-1 cursor-pointer">Profile</span>
-            <span className="pb-4 pt-4 px-1 cursor-pointer hover:text-gray-900">My Health</span>
-            <span className="pb-4 pt-4 px-1 cursor-pointer hover:text-gray-900">Reference</span>
-            <span className="flex items-center gap-2 pb-4 pt-4 px-1 cursor-pointer hover:text-gray-900">
-              <span className="w-2 h-2 bg-red-500 rounded-full"></span> Record Visit
+            <span 
+              onClick={() => { setActiveTab('profile'); setSelectedVisit(null); }}
+              className={`pb-4 pt-4 px-1 cursor-pointer transition-colors ${activeTab === 'profile' ? 'text-emerald-600 border-b-2 border-emerald-500' : 'hover:text-gray-900'}`}>Profile</span>
+            <span 
+              onClick={() => { setActiveTab('myHealth'); setSelectedVisit(null); }}
+              className={`pb-4 pt-4 px-1 cursor-pointer transition-colors ${activeTab === 'myHealth' ? 'text-emerald-600 border-b-2 border-emerald-500' : 'hover:text-gray-900'}`}>My Health</span>
+            <span 
+              onClick={() => { setActiveTab('reference'); setSelectedVisit(null); }}
+              className={`pb-4 pt-4 px-1 cursor-pointer transition-colors ${activeTab === 'reference' ? 'text-emerald-600 border-b-2 border-emerald-500' : 'hover:text-gray-900'}`}>Reference</span>
+            <span 
+              onClick={() => { setActiveTab('record'); setSelectedVisit(null); }}
+              className={`flex items-center gap-2 pb-4 pt-4 px-1 cursor-pointer transition-colors ${activeTab === 'record' ? 'text-emerald-600 border-b-2 border-emerald-500' : 'hover:text-gray-900'}`}>
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Record Visit
             </span>
           </nav>
           <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 pr-2 rounded-full transition-colors pb-1 pt-1 pl-1">
@@ -77,95 +87,127 @@ export default function DemoPatientView() {
           <div className="max-w-4xl mx-auto space-y-6 pb-12">
             
             {!selectedVisit ? (
-              // ----------------- PROFILE VIEW -----------------
+              // ----------------- TAB VIEWS -----------------
               <>
-                {/* Patient Header Card */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex items-start gap-6">
-                  <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-4xl shadow-inner flex-shrink-0">
-                    {patient.name.charAt(0)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h1 className="text-2xl font-bold text-gray-900">{patient.name}</h1>
-                        <p className="text-gray-500 text-sm mt-1">{patient.gender}, {patient.age} y.o.</p>
-                        <p className="text-gray-400 text-xs mt-0.5">{patient.name.toLowerCase().replace('', '.')}@demo.postvisit.ai</p>
+                {activeTab === 'profile' && (
+                  <>
+                    {/* Patient Header Card */}
+                    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex items-start gap-6">
+                      <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-4xl shadow-inner flex-shrink-0">
+                        {patient.name.charAt(0)}
                       </div>
-                      <ChevronRight size={20} className="text-gray-300" />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h1 className="text-2xl font-bold text-gray-900">{patient.name}</h1>
+                            <p className="text-gray-500 text-sm mt-1">{patient.gender}, {patient.age} y.o.</p>
+                            <p className="text-gray-400 text-xs mt-0.5">{patient.name.toLowerCase().replace(' ', '.')}@demo.shifa.ai</p>
+                          </div>
+                          <ChevronRight size={20} className="text-gray-300" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Visits Section */}
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      Visit History
+                    {/* Visits Section */}
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                          Visit History
+                        </h2>
+                        <button className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-md text-sm font-bold border border-emerald-100">
+                          <CheckCircle2 size={16}/> Ask
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {visits.map((visit, idx) => {
+                          const vDate = new Date(visit.visitDate);
+                          const mockDocs = [
+                            { name: "Dr. Michał Nedoszytko", specialty: "Cardiology" },
+                            { name: "Dr. rwerwer werwer", specialty: "Werwer" },
+                            { name: "Dr. Sarah Chen", specialty: "Cardiology" },
+                            { name: "Dr. Michał Nedoszytko", specialty: "Cardiology" },
+                            { name: "Dr. Sarah Chen", specialty: "Cardiology" }
+                          ];
+                          const doc = mockDocs[idx % mockDocs.length];
+                          return (
+                          <div 
+                            key={visit.id} 
+                            className="bg-white border border-gray-200 rounded-xl p-5 flex gap-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                            onClick={() => setSelectedVisit({ ...visit, mockDoc: doc })}
+                          >
+                            {/* Date Left Column */}
+                            <div className="flex flex-col items-center justify-start flex-shrink-0 w-16">
+                              <div className="bg-indigo-500 text-white text-[10px] font-bold uppercase w-12 text-center rounded-t-md py-1">
+                                {vDate.toLocaleString('default', { month: 'short' })}
+                              </div>
+                              <div className="bg-indigo-50 text-indigo-900 text-xl font-bold w-12 text-center rounded-b-md py-1 border border-indigo-100 border-t-0">
+                                {vDate.getDate()}
+                              </div>
+                            </div>
+                            
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start mb-2">
+                                <span className="text-xs font-medium text-gray-500">{visit.visitType || 'Office Visit'}</span>
+                                <span className="text-indigo-600 text-xs font-semibold hover:underline">Contact</span>
+                              </div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs bg-cover bg-center"
+                                     style={doc.name === "Dr. Sarah Chen" ? {backgroundImage: 'url(https://i.pravatar.cc/100?img=5)'} : 
+                                            doc.name.includes("Michał") ? {backgroundImage: 'url(https://i.pravatar.cc/100?img=11)'} : {}}>
+                                  {!doc.name.includes("Michał") && !doc.name.includes("Sarah") && "Dr"}
+                                </div>
+                                <div>
+                                  <h3 className="font-bold text-gray-900 text-sm">{doc.name}</h3>
+                                  <p className="text-xs text-indigo-500">{doc.specialty}</p>
+                                </div>
+                              </div>
+                              <p className="text-sm text-gray-600 truncate">{visit.chiefComplaint || visit.diagnosis || 'General Consultation'}</p>
+                            </div>
+                            <div className="flex items-center justify-center px-2">
+                              <ChevronRight size={20} className="text-gray-300 group-hover:text-indigo-500 transition-colors" />
+                            </div>
+                          </div>
+                        )})}
+
+                        {visits.length === 0 && (
+                          <div className="text-center p-12 bg-white rounded-2xl border border-gray-200 border-dashed text-gray-500">
+                            <XCircle size={32} className="mx-auto mb-3 text-gray-300" />
+                            <p>No past visits recorded.</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'record' && (
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-300 py-12">
+                    <ScribeRecorder 
+                      onCancel={() => setActiveTab('profile')} 
+                      onAudioReady={(blob) => {
+                        console.log('Audio recorded:', blob);
+                        alert('Recording complete! Processing feature coming soon.');
+                        setActiveTab('profile');
+                      }} 
+                    />
+                  </div>
+                )}
+
+                {['myHealth', 'reference'].includes(activeTab) && (
+                  <div className="pt-24 pb-12 flex flex-col items-center justify-center text-center animate-in fade-in duration-300">
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6 text-gray-400">
+                      {activeTab === 'myHealth' ? <Activity size={32} /> : <FileText size={32} />}
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      {activeTab === 'myHealth' ? 'My Health' : 'Reference Materials'}
                     </h2>
-                    <button className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-md text-sm font-bold border border-emerald-100">
-                      <CheckCircle2 size={16}/> Ask
-                    </button>
+                    <p className="text-gray-500 max-w-md">
+                      This section is part of the Shifa platform but is currently under development. 
+                      Check back later for medical records, lab results, and patient education materials.
+                    </p>
                   </div>
-
-                  <div className="space-y-4">
-                    {visits.map((visit, idx) => {
-                      const vDate = new Date(visit.visitDate);
-                      const mockDocs = [
-                        { name: "Dr. Michał Nedoszytko", specialty: "Cardiology" },
-                        { name: "Dr. rwerwer werwer", specialty: "Werwer" },
-                        { name: "Dr. Sarah Chen", specialty: "Cardiology" },
-                        { name: "Dr. Michał Nedoszytko", specialty: "Cardiology" },
-                        { name: "Dr. Sarah Chen", specialty: "Cardiology" }
-                      ];
-                      const doc = mockDocs[idx % mockDocs.length];
-                      return (
-                      <div 
-                        key={visit.id} 
-                        className="bg-white border border-gray-200 rounded-xl p-5 flex gap-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
-                        onClick={() => setSelectedVisit({ ...visit, mockDoc: doc })}
-                      >
-                        {/* Date Left Column */}
-                        <div className="flex flex-col items-center justify-start flex-shrink-0 w-16">
-                          <div className="bg-indigo-500 text-white text-[10px] font-bold uppercase w-12 text-center rounded-t-md py-1">
-                            {vDate.toLocaleString('default', { month: 'short' })}
-                          </div>
-                          <div className="bg-indigo-50 text-indigo-900 text-xl font-bold w-12 text-center rounded-b-md py-1 border border-indigo-100 border-t-0">
-                            {vDate.getDate()}
-                          </div>
-                        </div>
-                        
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="text-xs font-medium text-gray-500">{visit.visitType || 'Office Visit'}</span>
-                            <span className="text-indigo-600 text-xs font-semibold hover:underline">Contact</span>
-                          </div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs bg-cover bg-center"
-                                 style={doc.name === "Dr. Sarah Chen" ? {backgroundImage: 'url(https://i.pravatar.cc/100?img=5)'} : 
-                                        doc.name.includes("Michał") ? {backgroundImage: 'url(https://i.pravatar.cc/100?img=11)'} : {}}>
-                              {!doc.name.includes("Michał") && !doc.name.includes("Sarah") && "Dr"}
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-gray-900 text-sm">{doc.name}</h3>
-                              <p className="text-xs text-indigo-500">{doc.specialty}</p>
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-600 truncate">{visit.chiefComplaint || visit.diagnosis || 'General Consultation'}</p>
-                        </div>
-                        <div className="flex items-center justify-center px-2">
-                          <ChevronRight size={20} className="text-gray-300 group-hover:text-indigo-500 transition-colors" />
-                        </div>
-                      </div>
-                    )})}
-
-                    {visits.length === 0 && (
-                      <div className="text-center p-12 bg-white rounded-2xl border border-gray-200 border-dashed text-gray-500">
-                        <XCircle size={32} className="mx-auto mb-3 text-gray-300" />
-                        <p>No past visits recorded.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </>
             ) : (
               // ----------------- VISIT SUMMARY VIEW -----------------
@@ -368,10 +410,10 @@ export default function DemoPatientView() {
                             <ExpandableSection icon={<Mic size={16}/>} title={<div className="flex items-center gap-2">Visit Transcript <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase text-[10px] font-bold">Completed</span></div>} content={
                               <div className="space-y-4 text-sm leading-relaxed text-gray-700 pb-4">
                                 <div className="text-xs text-gray-400 mb-4 uppercase">
-                                  VISIT TRANSCRIPT — PostVisit.ai Demo<br/>
+                                  VISIT TRANSCRIPT — Shifa Demo<br/>
                                   Date: 2026-02-15<br/>
-                                  Provider: Dr. Michael Nedo, MD — Cardiology<br/>
-                                  Patient: Alex Johnson, 41M
+                                  Provider: Dr. Ananya Sharma, MD — Cardiology<br/>
+                                  Patient: Rajesh Kumar, 52M
                                 </div>
                                 {detailedData.transcript.map((t, i) => (
                                   <div key={i} className="flex gap-3">
@@ -405,7 +447,7 @@ export default function DemoPatientView() {
           </div>
         </div>
 
-        {/* Right Sidebar - AI Assistant */}
+        {/* Right Sidebar - AI Assistant (RAG-Powered) */}
         <div className="w-96 bg-white border-l border-gray-200 flex flex-col shadow-xl z-10 flex-shrink-0">
           <div className="p-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -413,53 +455,16 @@ export default function DemoPatientView() {
                 <CheckCircle2 size={18} />
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 text-sm">PostVisit AI</h3>
+                <h3 className="font-bold text-gray-900 text-sm">Shifa</h3>
                 <p className="text-[10px] text-gray-500">Ask anything about your visit</p>
               </div>
             </div>
             <div className="text-gray-400 flex gap-2">
-              <Activity size={16} /> {/* Placeholder icon for expand/close tools from screenshot */}
+              <Activity size={16} />
             </div>
           </div>
           
-          <div className="flex-1 overflow-y-auto p-6 bg-white space-y-6 flex flex-col pt-12 items-center">
-            
-            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 mb-2">
-              <CheckCircle2 size={40} strokeWidth={2.5} />
-            </div>
-            
-            <div className="text-center mb-6">
-              <h2 className="font-bold text-gray-900 text-lg">Your visit assistant</h2>
-              <p className="text-xs text-gray-500 mt-2 px-6">
-                I have the full context of your visit. Ask me anything about your diagnosis, medications, or next steps.
-              </p>
-            </div>
-
-            <div className="w-full space-y-3">
-              <SuggestionChip text="What does my diagnosis mean in simple terms?" />
-              <SuggestionChip text="Explain my medication and side effects" />
-              <SuggestionChip text="What should I watch out for at home?" />
-            </div>
-
-          </div>
-          
-          <div className="p-4 border-t border-gray-100 bg-white">
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full p-1 pl-3">
-              <span className="text-gray-400 font-bold px-1">+</span>
-              <input 
-                type="text" 
-                placeholder="Ask about your visit..."
-                className="w-full bg-transparent border-transparent py-2 px-2 outline-none text-sm"
-                value={chatMessage}
-                onChange={e => setChatMessage(e.target.value)}
-              />
-              <button 
-                className={`py-1.5 px-4 rounded-full text-sm font-bold transition-colors ${chatMessage.trim() ? 'bg-emerald-500 text-white' : 'bg-emerald-100 text-emerald-400'}`}
-              >
-                Send
-              </button>
-            </div>
-          </div>
+          <RagChatPanel patientId={id} patientName={patient.name} />
         </div>
 
       </div>
@@ -509,3 +514,201 @@ function ExpandableSection({ icon, title, content, defaultOpen = false, hideAsk 
   );
 }
 
+// ─── RAG-Powered Chat Panel ───────────────────────────────────────────────────
+const RAG_API_URL = import.meta.env.VITE_RAG_API_URL || 'http://localhost:5050';
+
+const CHAT_SUGGESTIONS = [
+  "What does my diagnosis mean in simple terms?",
+  "Explain my medication and side effects",
+  "What should I watch out for at home?",
+];
+
+function RagChatPanel({ patientId, patientName }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = React.useRef(null);
+  const inputRef = React.useRef(null);
+
+  React.useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  const sendMessage = async (text) => {
+    const q = (text || "").trim();
+    if (!q || loading) return;
+
+    // Add user message
+    setMessages(prev => [...prev, { role: 'user', content: q }]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${RAG_API_URL}/api/rag/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: patientId,
+          question: q,
+          language: "en",
+        }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: data.answer || "I couldn't find an answer to that question.",
+          sources: data.sources || [],
+          disclaimer: data.disclaimer || "",
+        },
+      ]);
+    } catch (err) {
+      console.error("[RAG Chat] Error:", err);
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: "I'm sorry, I'm having trouble connecting right now. Please make sure the RAG service is running and try again.",
+          error: true,
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const hasMessages = messages.length > 0;
+
+  return (
+    <>
+      {/* Chat Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 bg-white space-y-4 flex flex-col">
+        {!hasMessages && (
+          <div className="flex flex-col items-center justify-center flex-1 text-center pt-8 pb-4">
+            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 mb-4">
+              <CheckCircle2 size={40} strokeWidth={2.5} />
+            </div>
+            <h2 className="font-bold text-gray-900 text-lg">Your visit assistant</h2>
+            <p className="text-xs text-gray-500 mt-2 px-6 leading-relaxed">
+              I have the full context of your visit. Ask me anything about your diagnosis, medications, or next steps.
+            </p>
+            <div className="w-full space-y-2 mt-6">
+              {CHAT_SUGGESTIONS.map((text, i) => (
+                <button
+                  key={i}
+                  onClick={() => sendMessage(text)}
+                  className="w-full text-left bg-white border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 transition-all duration-200 shadow-sm hover:shadow"
+                >
+                  {text}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className="max-w-[85%]">
+              {msg.role === 'assistant' && (
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center">
+                    <CheckCircle2 size={12} className="text-emerald-600" />
+                  </div>
+                  <span className="text-xs font-semibold text-gray-500">Shifa AI</span>
+                </div>
+              )}
+              <div
+                className={[
+                  'rounded-2xl px-4 py-3 text-sm leading-relaxed',
+                  msg.role === 'user'
+                    ? 'bg-emerald-500 text-white rounded-br-sm'
+                    : msg.error
+                    ? 'bg-red-50 border border-red-200 text-red-700 rounded-bl-sm'
+                    : 'bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm',
+                ].join(' ')}
+              >
+                <div className="whitespace-pre-wrap">{msg.content}</div>
+              </div>
+              {/* Source citations */}
+              {msg.sources && msg.sources.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {msg.sources.map((src, j) => (
+                    <span key={j} className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
+                      📋 {src.type === 'visit_record' ? `Visit ${src.visit_date}` : src.type === 'patient_profile' ? 'Profile' : src.type}
+                      {src.doctor_name && ` · ${src.doctor_name}`}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {/* Disclaimer */}
+              {msg.disclaimer && (
+                <p className="mt-2 text-[10px] text-gray-400 italic">{msg.disclaimer}</p>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Typing indicator */}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="max-w-[85%]">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center">
+                  <CheckCircle2 size={12} className="text-emerald-600" />
+                </div>
+                <span className="text-xs font-semibold text-gray-500">Shifa AI</span>
+              </div>
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 border-t border-gray-100 bg-white shrink-0">
+        <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full p-1 pl-3 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+          <span className="text-gray-400 font-bold px-1">+</span>
+          <input 
+            ref={inputRef}
+            type="text" 
+            placeholder="Ask about your visit..."
+            className="w-full bg-transparent border-transparent py-2 px-2 outline-none text-sm"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage(input);
+              }
+            }}
+            disabled={loading}
+          />
+          <button 
+            onClick={() => sendMessage(input)}
+            disabled={!input.trim() || loading}
+            className={`py-1.5 px-4 rounded-full text-sm font-bold transition-colors shrink-0 ${
+              input.trim() && !loading 
+                ? 'bg-emerald-500 text-white hover:bg-emerald-600' 
+                : 'bg-emerald-100 text-emerald-400 cursor-not-allowed'
+            }`}
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
