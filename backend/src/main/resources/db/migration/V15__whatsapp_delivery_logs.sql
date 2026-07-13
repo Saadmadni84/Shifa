@@ -9,5 +9,5 @@ CREATE TABLE whatsapp_delivery_logs (
     created_at      TIMESTAMP    DEFAULT NOW()
 );
 
-CREATE INDEX idx_wa_log_meta    ON whatsapp_delivery_logs(meta_message_id);
-CREATE INDEX idx_wa_log_synced  ON whatsapp_delivery_logs(synced) WHERE synced = FALSE;
+CREATE INDEX IF NOT EXISTS idx_wa_log_meta    ON whatsapp_delivery_logs(meta_message_id);
+CREATE INDEX IF NOT EXISTS idx_wa_log_synced  ON whatsapp_delivery_logs(synced) WHERE synced = FALSE;

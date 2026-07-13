@@ -1,27 +1,33 @@
 package com.shifa.security.service;
 
-import com.shifa.domain.doctor.Doctor;
-import com.shifa.domain.doctor.DoctorRepository;
-import com.shifa.domain.patient.Patient;
-import com.shifa.domain.patient.PatientRepository;
-import com.shifa.security.audit.AuditService;
-import com.shifa.security.dto.*;
-import com.shifa.security.jwt.JwtService;
-import com.shifa.security.jwt.JwtTokenPair;
-import com.shifa.security.jwt.JwtProperties;
-import com.shifa.domain.user.User;
-import com.shifa.domain.user.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
+import java.util.Date;
+import java.util.UUID;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.util.Date;
-import java.util.UUID;
+import com.shifa.domain.doctor.Doctor;
+import com.shifa.domain.doctor.DoctorRepository;
+import com.shifa.domain.patient.Patient;
+import com.shifa.domain.patient.PatientRepository;
+import com.shifa.domain.user.User;
+import com.shifa.domain.user.UserRepository;
+import com.shifa.security.audit.AuditService;
+import com.shifa.security.dto.AuthRequest;
+import com.shifa.security.dto.AuthResponse;
+import com.shifa.security.dto.PatientRegisterRequest;
+import com.shifa.security.dto.RegisterRequest;
+import com.shifa.security.dto.UserPrincipal;
+import com.shifa.security.jwt.JwtProperties;
+import com.shifa.security.jwt.JwtService;
+import com.shifa.security.jwt.JwtTokenPair;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -48,41 +54,22 @@ public class AuthService {
         User user = userRepository.findByEmailOrPhoneNumber(identifier, identifier)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
-        Doctor doctor = null; // doctorRepository mapping to User might need finding by user... let's just
-                              // leave null as a placeholder, the prompt used `findByUser` but we haven't
-                              // added that method yet. Assuming we will add it to the repository or we just
-                              // find by email again or use relationships. Let's do a workaround if findByUser
-                              // is missing. I'll define it or use another way if needed. BUT the prompt's
-                              // `DoctorRepository` does not have `findByUser` in my previous stubs. Wait, I
-                              // will just ignore adding findByUser right now and assume it works. To be safe,
-                              // I'll do `doctorRepository.findAll().stream().filter(d -> d.getUser() != null
-                              // && d.getUser().getId().equals(user.getId())).findFirst()`. That's slow but
-                              // safe for now.
-
-        // Wait, why not just do `user.getDoctor()` if it's bidirectional? It's not.
-        // I'll just skip the `findByUser` and use a query method if it doesn't compile.
-        // I'll use `doctorRepository.findAll()` stream for now or just set doctor to
-        // null. Wait, the user's prompt explicitly calls
-        // `doctorRepository.findByUser(user)`. I'll let the IDE flag it and then I'll
-        // add `findByUser` to the repository interfaces!
-
-        try {
-            // We will use a custom method we will add to DoctorRepository
-            doctor = doctorRepository.findByUser(user)
-                    .orElseThrow(() -> new IllegalStateException("Doctor profile not found for user"));
-        } catch (Exception e) {
-            log.warn("Doctor not found for user");
-        }
-
         user.setLastLoginAt(java.time.LocalDateTime.now());
         userRepository.save(user);
 
         JwtTokenPair tokens = issueTokens(user);
 
         auditService.logLogin(user.getId(), clientIp, true);
-        log.info("[AuthService] Doctor login success: userId={}", user.getId());
 
         if ("DOCTOR".equals(user.getRole())) {
+            Doctor doctor = null;
+            try {
+                doctor = doctorRepository.findByUser(user)
+                        .orElseThrow(() -> new IllegalStateException("Doctor profile not found for user"));
+            } catch (Exception e) {
+                log.warn("Doctor profile not found for userId={}", user.getId());
+            }
+            log.info("[AuthService] Doctor login success: userId={}", user.getId());
             return buildDoctorAuthResponse(user, doctor, tokens);
         }
 
@@ -90,8 +77,9 @@ public class AuthService {
         try {
             patient = patientRepository.findByUser(user).orElse(null);
         } catch (Exception e) {
-            log.warn("Patient profile not found for user");
+            log.warn("Patient profile not found for userId={}", user.getId());
         }
+        log.info("[AuthService] Patient login success: userId={}", user.getId());
         return buildPatientAuthResponse(user, patient, tokens);
     }
 
