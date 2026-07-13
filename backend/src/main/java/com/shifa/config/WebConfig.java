@@ -64,7 +64,8 @@ public class WebConfig implements WebMvcConfigurer {
             List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of(
             "Authorization", "Content-Type", "Accept",
-            "Accept-Language", "X-Requested-With"));
+            "Accept-Language", "X-Requested-With",
+            "X-App-Version", "X-Platform"));
         config.setExposedHeaders(List.of(
             "X-Trace-Id",   // error correlation — frontend shows this in error dialogs
             "Retry-After"   // rate-limit — client knows when to retry
