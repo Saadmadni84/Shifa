@@ -1302,26 +1302,346 @@ function Modal({ title, onClose, icon, children, wide }) {
   )
 }
 
-function ReferenceModal({ references, onClose }) {
-  const TYPE_COLORS = {
-    Article: { bg: '#eff6ff', text: '#1d4ed8' }, Medication: { bg: '#f0fdf4', text: '#15803d' },
-    Diet: { bg: '#fef9c3', text: '#92400e' }, Guide: { bg: '#fdf4ff', text: '#7e22ce' }, Emergency: { bg: '#fef2f2', text: '#dc2626' },
-  }
+// ─── REFERENCE PAGE (inline, 3 tabs) ──────────────────────────────────────────
+function ReferencePage({ patient, onBack, onAsk }) {
+  const [refTab, setRefTab] = useState('Relevant for You')
+  const REF_TABS = ['Relevant for You', 'Search Databases', 'My Library']
+
   return (
-    <Modal title="Reference" onClose={onClose} icon={<BookOpen size={18} color="#7c3aed" />}>
-      {references.map((r, i) => {
-        const clr = TYPE_COLORS[r.type] || TYPE_COLORS.Article
-        return (
-          <div key={i} style={{ padding: '12px 14px', borderRadius: 10, background: '#fafafa', border: '1px solid #f3f4f6', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#111827', marginBottom: 4 }}>{r.title}</div>
-              <span style={{ background: clr.bg, color: clr.text, fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 6 }}>{r.type}</span>
-            </div>
-            <ExternalLink size={14} color="#9ca3af" />
+    <div>
+      {/* Header row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+        <div>
+          <div style={{ fontWeight: 800, fontSize: 24, color: '#111827', marginBottom: 4 }}>Reference</div>
+          <div style={{ fontSize: 13.5, color: '#9ca3af' }}>Evidence-based references and medical databases relevant to your care.</div>
+        </div>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#10b981', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+          ← Back to Profile
+        </button>
+      </div>
+
+      {/* 3-tab switcher — pill-style with white active bg */}
+      <div style={{ display: 'flex', background: '#f3f4f6', borderRadius: 12, padding: 4, gap: 2, marginTop: 20, marginBottom: 24 }}>
+        {REF_TABS.map(t => (
+          <button key={t} onClick={() => setRefTab(t)} style={{
+            flex: 1, padding: '10px 16px', borderRadius: 9, border: 'none',
+            background: refTab === t ? '#fff' : 'transparent',
+            color: refTab === t ? '#111827' : '#6b7280',
+            fontWeight: refTab === t ? 700 : 500, fontSize: 13.5,
+            cursor: 'pointer', fontFamily: 'inherit',
+            boxShadow: refTab === t ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 0.15s',
+          }}>{t}</button>
+        ))}
+      </div>
+
+      {refTab === 'Relevant for You' && <ReferenceRelevantTab patient={patient} onAsk={onAsk} />}
+      {refTab === 'Search Databases' && <ReferenceSearchTab />}
+      {refTab === 'My Library' && <ReferenceLibraryTab patient={patient} />}
+    </div>
+  )
+}
+
+// ── Tab 1: Relevant for You ────────────────────────────────────────────────────
+function ReferenceRelevantTab({ patient, onAsk }) {
+  const visit = patient.visits[0]
+
+  // Build conditions list from diagnosis + known conditions
+  const conditions = [
+    visit.diagnosis,
+    ...(patient.chronicConditions || []),
+  ].filter(Boolean).slice(0, 5)
+
+  // Build medications list
+  const medications = visit.medications || []
+
+  // Static curated resources
+  const resources = patient.references || []
+
+  const SectionHeader = ({ icon, label, count }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
+      <span style={{ fontSize: 16 }}>{icon}</span>
+      <span style={{ fontWeight: 700, fontSize: 14.5, color: '#111827' }}>{label}</span>
+      <span style={{
+        background: '#fef9c3', color: '#92400e',
+        fontSize: 11.5, fontWeight: 700, padding: '1px 8px', borderRadius: 20, minWidth: 22, textAlign: 'center',
+      }}>{count}</span>
+    </div>
+  )
+
+  const ItemRow = ({ text, sub, onAskClick }) => (
+    <div style={{
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      padding: '14px 0',
+      borderBottom: '1px solid #f3f4f6',
+    }}>
+      <div>
+        <div style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>{text}</div>
+        {sub && <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{sub}</div>}
+      </div>
+      <button onClick={onAskClick} style={askBtn()}><CheckCircle2 size={13} /> Ask</button>
+    </div>
+  )
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Your Conditions */}
+      <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e5e7eb', padding: '18px 24px' }}>
+        <SectionHeader icon="⚠️" label="Your Conditions" count={conditions.length} />
+        {conditions.map((c, i) => (
+          <ItemRow key={i} text={c} onAskClick={onAsk} />
+        ))}
+      </div>
+
+      {/* Your Medications */}
+      {medications.length > 0 && (
+        <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e5e7eb', padding: '18px 24px' }}>
+          <SectionHeader icon="🧪" label="Your Medications" count={medications.length} />
+          {medications.map((m, i) => (
+            <ItemRow key={i} text={m.name} sub={`${m.freq}${m.notes ? ' · ' + m.notes : ''}`} onAskClick={onAsk} />
+          ))}
+        </div>
+      )}
+
+      {/* Curated Resources */}
+      {resources.length > 0 && (
+        <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e5e7eb', padding: '18px 24px' }}>
+          <SectionHeader icon="📚" label="Curated Resources" count={resources.length} />
+          {resources.map((r, i) => {
+            const TYPE_COLORS = {
+              Article: { bg: '#eff6ff', text: '#1d4ed8' }, Medication: { bg: '#f0fdf4', text: '#15803d' },
+              Diet: { bg: '#fef9c3', text: '#92400e' }, Guide: { bg: '#fdf4ff', text: '#7c3aed' }, Emergency: { bg: '#fef2f2', text: '#dc2626' },
+            }
+            const clr = TYPE_COLORS[r.type] || TYPE_COLORS.Article
+            return (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < resources.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 36, height: 36, background: '#eff6ff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth={2}><circle cx={12} cy={12} r={10}/><line x1={2} y1={12} x2={22} y2={12}/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: '#111827', marginBottom: 3 }}>{r.title}</div>
+                    <span style={{ background: clr.bg, color: clr.text, fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 6 }}>{r.type}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <button onClick={onAsk} style={askBtn()}><CheckCircle2 size={13} /> Ask</button>
+                  <ExternalLink size={14} color="#9ca3af" style={{ cursor: 'pointer' }} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Tab 2: Search Databases ────────────────────────────────────────────────────
+function ReferenceSearchTab() {
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('Conditions')
+  const CATEGORIES = ['Conditions', 'Drugs', 'Procedures', 'Guidelines']
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* OpenEvidence banner */}
+      <div style={{ background: '#f5f3ff', border: '1px solid #e0d9ff', borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+        <div style={{ width: 40, height: 40, background: '#ede9fe', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth={2}><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>OpenEvidence Integration</span>
+            <span style={{ background: '#e0d9ff', color: '#6d28d9', fontSize: 10.5, fontWeight: 800, padding: '2px 8px', borderRadius: 6, letterSpacing: 0.3 }}>COMING SOON</span>
           </div>
-        )
-      })}
-    </Modal>
+          <div style={{ fontSize: 12.5, color: '#6b7280', lineHeight: 1.5 }}>
+            AI-powered evidence-based answers cross-referenced with your visit context. Ask clinical questions and get responses grounded in peer-reviewed research.
+          </div>
+        </div>
+      </div>
+
+      {/* Search bar */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <svg style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth={2}><circle cx={11} cy={11} r={8}/><line x1={21} y1={21} x2={16.65} y2={16.65}/></svg>
+          <input
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Search conditions, drugs, procedures..."
+            style={{ width: '100%', padding: '12px 14px 12px 40px', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 13.5, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+            onFocus={e => e.target.style.borderColor = '#10b981'}
+            onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+          />
+        </div>
+        <select
+          value={category}
+          onChange={e => setCategory(e.target.value)}
+          style={{ padding: '12px 14px', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 13, color: '#374151', outline: 'none', cursor: 'pointer', fontFamily: 'inherit', background: '#fff' }}
+        >
+          {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+        </select>
+        <button style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 24px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+          Search
+        </button>
+      </div>
+
+      {/* Powered-by note */}
+      <div style={{ textAlign: 'center', fontSize: 12, color: '#9ca3af', lineHeight: 1.6 }}>
+        Powered by NIH Clinical Tables, NLM RxTerms, DailyMed, and PubMed<br />
+        Medical references are for informational purposes only. Always consult your healthcare provider.
+      </div>
+    </div>
+  )
+}
+
+// ── Tab 3: My Library ──────────────────────────────────────────────────────────
+function ReferenceLibraryTab({ patient }) {
+  const [url, setUrl] = useState('')
+  const [dragging, setDragging] = useState(false)
+  const [libraryItems, setLibraryItems] = useState([
+    {
+      title: 'WHO Cardiovascular Risk Assessment and Management',
+      status: 'Completed',
+      tags: ['Cardiovascular Disease', 'Risk Assessment', 'Primary Prevention', 'Hypertension'],
+      expanded: false,
+    },
+    {
+      title: 'AHA Patient Education: Premature Ventricular Contractions (PVCs)',
+      status: 'Completed',
+      tags: ['Premature Ventricular Contractions', 'Arrhythmia', 'Patient Education'],
+      expanded: false,
+    },
+    {
+      title: 'NIH MedlinePlus: Heart Arrhythmia Guide',
+      status: 'Completed',
+      tags: ['Arrhythmia', 'Heart Rhythm Disorders', 'Cardiac Monitoring', 'Treatment Options'],
+      expanded: false,
+    },
+  ])
+
+  const addUrl = () => {
+    if (!url.trim()) return
+    setLibraryItems(prev => [{
+      title: url,
+      status: 'Processing',
+      tags: [],
+      expanded: false,
+    }, ...prev])
+    setUrl('')
+  }
+
+  const toggleExpand = (i) => setLibraryItems(prev => prev.map((item, idx) => idx === i ? { ...item, expanded: !item.expanded } : item))
+  const removeItem = (i) => setLibraryItems(prev => prev.filter((_, idx) => idx !== i))
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Add to library section */}
+      <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e5e7eb', padding: '20px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+          <div style={{ width: 32, height: 32, background: '#eff6ff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <BookOpen size={16} color="#3b82f6" />
+          </div>
+          <span style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Add to Your Library</span>
+        </div>
+
+        {/* PDF upload zone */}
+        <div
+          onDragOver={e => { e.preventDefault(); setDragging(true) }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={e => {
+            e.preventDefault(); setDragging(false)
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf')
+            files.forEach(f => setLibraryItems(prev => [{ title: f.name, status: 'Processing', tags: [], expanded: false }, ...prev]))
+          }}
+          style={{
+            border: `2px dashed ${dragging ? '#6366f1' : '#e5e7eb'}`,
+            borderRadius: 12, padding: '28px 24px', textAlign: 'center',
+            background: dragging ? '#f5f3ff' : '#fafafa',
+            marginBottom: 14, cursor: 'pointer', transition: 'all 0.15s',
+          }}
+        >
+          <div style={{ marginBottom: 8 }}>
+            <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={dragging ? '#6366f1' : '#9ca3af'} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="12" x2="12" y2="18"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+          </div>
+          <div style={{ fontSize: 13.5, color: '#374151' }}>
+            <span style={{ color: '#6366f1', fontWeight: 600, cursor: 'pointer' }}>Click to upload</span> or drag and drop
+          </div>
+          <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>PDF files only</div>
+        </div>
+
+        {/* URL input */}
+        <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <svg style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth={2}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <input
+              value={url}
+              onChange={e => setUrl(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && addUrl()}
+              placeholder="Paste a URL to a medical article..."
+              style={{ width: '100%', padding: '11px 14px 11px 36px', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+              onFocus={e => e.target.style.borderColor = '#6366f1'}
+              onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+            />
+          </div>
+          <button onClick={addUrl} style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, padding: '11px 22px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+            Add
+          </button>
+        </div>
+      </div>
+
+      {/* Library items */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {libraryItems.map((item, i) => (
+          <div key={i} style={{ background: '#fff', borderRadius: 14, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', cursor: 'pointer' }}
+              onClick={() => toggleExpand(i)}>
+              <div style={{ width: 36, height: 36, background: '#eff6ff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2}><circle cx={12} cy={12} r={10}/><line x1={2} y1={12} x2={22} y2={12}/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                  <span style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>{item.title}</span>
+                  <span style={{
+                    background: item.status === 'Completed' ? '#f0fdf4' : '#fef9c3',
+                    color: item.status === 'Completed' ? '#15803d' : '#92400e',
+                    fontSize: 11, fontWeight: 700, padding: '2px 9px', borderRadius: 20, flexShrink: 0,
+                  }}>{item.status}</span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {item.tags.map(tag => (
+                    <span key={tag} style={{ background: '#f3f4f6', color: '#374151', fontSize: 11, padding: '2px 8px', borderRadius: 20 }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button onClick={e => { e.stopPropagation(); removeItem(i) }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
+                  <X size={14} color="#9ca3af" />
+                </button>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth={2}
+                  style={{ transform: item.expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </div>
+            </div>
+            {item.expanded && (
+              <div style={{ padding: '0 20px 16px', borderTop: '1px solid #f3f4f6' }}>
+                <div style={{ paddingTop: 12, fontSize: 13, color: '#6b7280', lineHeight: 1.6 }}>
+                  {item.status === 'Completed'
+                    ? 'This reference has been processed and is available for AI-powered Q&A. Click "Ask" in the chat to get evidence-based answers about this document.'
+                    : 'This document is being processed. It will be available for AI-powered Q&A shortly.'}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -1420,37 +1740,306 @@ function VisitDetailModal({ visit, doctor, onClose }) {
   )
 }
 
-function RecordVisitModal({ onClose }) {
-  const [recording, setRecording] = useState(false)
-  const [done, setDone] = useState(false)
+// ─── RECORD VISIT PAGE (full-page inline, matching screenshot) ────────────────
+function RecordVisitPage({ patient, onBack }) {
+  const visit = patient.visits[0]
+
+  // ── Setup form state ───────────────────────────────────────────────────────
+  const [provider, setProvider] = useState(`${patient.doctor.name} — ${patient.doctor.specialty}`)
+  const [visitDate, setVisitDate] = useState(new Date().toISOString().split('T')[0])
+  const [customProvider, setCustomProvider] = useState('')
+  const [showAddProvider, setShowAddProvider] = useState(false)
+  const providers = [
+    `${patient.doctor.name} — ${patient.doctor.specialty}`,
+    'Other Provider — General Medicine',
+  ]
+
+  // ── Recording state ────────────────────────────────────────────────────────
+  const [phase, setPhase] = useState('setup')   // 'setup' | 'recording' | 'done' | 'error'
   const [seconds, setSeconds] = useState(0)
-  const timer = useRef(null)
-  const start = () => { setRecording(true); timer.current = setInterval(() => setSeconds(s => s + 1), 1000) }
-  const stop = () => { setRecording(false); clearInterval(timer.current); setDone(true) }
-  useEffect(() => () => clearInterval(timer.current), [])
+  const [micError, setMicError] = useState('')
+  const [waveform, setWaveform] = useState(Array(40).fill(4))
+
+  const timerRef = useRef(null)
+  const mediaRef = useRef(null)
+  const animRef = useRef(null)
+
   const fmt = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
-  return (
-    <Modal title="Record New Visit" onClose={onClose} icon={<Mic size={18} color="#ef4444" />}>
-      <div style={{ textAlign: 'center', padding: '24px 0' }}>
-        {done ? (
-          <><CheckCircle2 size={48} color="#10b981" style={{ marginBottom: 12 }} />
-            <div style={{ fontWeight: 700, fontSize: 16, color: '#111827', marginBottom: 6 }}>Visit Recorded!</div>
-            <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 20 }}>Duration: {fmt(seconds)} — AI is processing your summary.</div>
-            <button onClick={onClose} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 24px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Done</button>
-          </>
-        ) : (
-          <><div style={{ width: 80, height: 80, background: recording ? '#fef2f2' : '#f9fafb', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', border: recording ? '2px solid #fca5a5' : '2px solid #e5e7eb', animation: recording ? 'pulse 1.5s ease infinite' : 'none' }}>
-            {recording ? <MicOff size={32} color="#ef4444" /> : <Mic size={32} color="#374151" />}
+
+  // Animate waveform bars
+  const animateWaveform = () => {
+    setWaveform(Array.from({ length: 40 }, () => Math.random() * 36 + 4))
+    animRef.current = requestAnimationFrame(() => setTimeout(animateWaveform, 100))
+  }
+
+  const startRecording = async () => {
+    setMicError('')
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaRef.current = stream
+      setPhase('recording')
+      setSeconds(0)
+      timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000)
+      animateWaveform()
+    } catch (err) {
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setMicError('Microphone access was denied. Please allow microphone access in your browser settings and try again.')
+      } else if (err.name === 'NotFoundError') {
+        setMicError('No microphone found. Please connect a microphone and try again.')
+      } else {
+        setMicError(`Could not access microphone: ${err.message}`)
+      }
+    }
+  }
+
+  const stopRecording = () => {
+    clearInterval(timerRef.current)
+    cancelAnimationFrame(animRef.current)
+    if (mediaRef.current) {
+      mediaRef.current.getTracks().forEach(t => t.stop())
+      mediaRef.current = null
+    }
+    setPhase('done')
+  }
+
+  useEffect(() => () => {
+    clearInterval(timerRef.current)
+    cancelAnimationFrame(animRef.current)
+    if (mediaRef.current) mediaRef.current.getTracks().forEach(t => t.stop())
+  }, [])
+
+  // ── Centered card wrapper ──────────────────────────────────────────────────
+  const cardStyle = {
+    background: '#fff', borderRadius: 18, border: '1px solid #e5e7eb',
+    padding: '40px 44px', width: '100%', maxWidth: 560, margin: '0 auto',
+    boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
+  }
+
+  // ── PHASE: Setup ──────────────────────────────────────────────────────────
+  if (phase === 'setup') return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 24, minHeight: '60vh' }}>
+      <div style={cardStyle}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ fontWeight: 900, fontSize: 26, color: '#111827', marginBottom: 10 }}>Companion Scribe</div>
+          <div style={{ fontSize: 14, color: '#9ca3af', lineHeight: 1.6 }}>
+            Record your doctor's visit to get a complete, understandable summary afterwards.
           </div>
-            {recording && <div style={{ fontSize: 20, fontWeight: 800, color: '#ef4444', marginBottom: 8 }}>{fmt(seconds)}</div>}
-            <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 24 }}>{recording ? 'Recording in progress… speak clearly.' : 'Press the button to start recording your consultation.'}</div>
-            <button onClick={recording ? stop : start} style={{ background: recording ? '#ef4444' : '#10b981', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 28px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
-              {recording ? 'Stop Recording' : 'Start Recording'}
-            </button>
-          </>
+        </div>
+
+        {/* Healthcare Provider */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+            Healthcare Provider
+          </label>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <select
+              value={provider}
+              onChange={e => setProvider(e.target.value)}
+              style={{
+                flex: 1, padding: '12px 14px', border: '1.5px solid #e5e7eb', borderRadius: 10,
+                fontSize: 13.5, color: '#111827', outline: 'none', cursor: 'pointer',
+                fontFamily: 'inherit', background: '#fff',
+              }}
+            >
+              {providers.map(p => <option key={p} value={p}>{p}</option>)}
+              {customProvider && <option value={customProvider}>{customProvider}</option>}
+            </select>
+            <button
+              onClick={() => setShowAddProvider(v => !v)}
+              style={{
+                width: 44, height: 44, border: '1.5px solid #e5e7eb', borderRadius: 10,
+                background: '#fff', cursor: 'pointer', fontSize: 22, color: '#6b7280',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}
+            >+</button>
+          </div>
+          {showAddProvider && (
+            <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+              <input
+                value={customProvider}
+                onChange={e => setCustomProvider(e.target.value)}
+                placeholder="Dr. Name — Specialty"
+                style={{ flex: 1, padding: '10px 12px', border: '1.5px solid #e5e7eb', borderRadius: 10, fontSize: 13, outline: 'none', fontFamily: 'inherit' }}
+                onFocus={e => e.target.style.borderColor = '#10b981'}
+                onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+              />
+              <button onClick={() => { if (customProvider) { setProvider(customProvider); setShowAddProvider(false) } }}
+                style={{ padding: '10px 16px', background: '#10b981', color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                Add
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Visit Date */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+            Visit Date
+          </label>
+          <input
+            type="date" value={visitDate}
+            onChange={e => setVisitDate(e.target.value)}
+            style={{
+              width: '100%', padding: '12px 14px', border: '1.5px solid #e5e7eb', borderRadius: 10,
+              fontSize: 13.5, color: '#111827', outline: 'none', fontFamily: 'inherit',
+              boxSizing: 'border-box', cursor: 'pointer',
+            }}
+            onFocus={e => e.target.style.borderColor = '#10b981'}
+            onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+          />
+        </div>
+
+        {/* Provider info row */}
+        <div style={{
+          background: '#f9fafb', borderRadius: 10, padding: '12px 16px',
+          fontSize: 13, color: '#9ca3af', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <span style={{ fontWeight: 700, color: '#374151' }}>MD</span>
+          <span>·</span>
+          <span>{patient.doctor.specialty}</span>
+        </div>
+
+        {/* Consent warning */}
+        <div style={{
+          background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 12,
+          padding: '16px 18px', marginBottom: 24,
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 13.5, color: '#92400e', marginBottom: 6 }}>
+            Both parties must consent
+          </div>
+          <div style={{ fontSize: 13, color: '#78350f', lineHeight: 1.6, marginBottom: 8 }}>
+            By pressing the button below, you confirm that both the healthcare provider and the patient have agreed to record this visit.
+          </div>
+          <span style={{ fontSize: 12.5, color: '#d97706', textDecoration: 'underline', cursor: 'pointer' }}>
+            Privacy Policy
+          </span>
+        </div>
+
+        {/* Mic error */}
+        {micError && (
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '12px 14px', marginBottom: 16, fontSize: 13, color: '#dc2626', lineHeight: 1.5 }}>
+            {micError}
+          </div>
         )}
+
+        {/* Start button */}
+        <button
+          onClick={startRecording}
+          style={{
+            width: '100%', padding: '16px', background: '#10b981', color: '#fff',
+            border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700,
+            cursor: 'pointer', fontFamily: 'inherit', letterSpacing: 0.2,
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#059669'}
+          onMouseLeave={e => e.currentTarget.style.background = '#10b981'}
+        >
+          Both Parties Consent — Start Recording
+        </button>
       </div>
-    </Modal>
+    </div>
+  )
+
+  // ── PHASE: Recording ──────────────────────────────────────────────────────
+  if (phase === 'recording') return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 24, minHeight: '60vh' }}>
+      <div style={cardStyle}>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ fontWeight: 900, fontSize: 22, color: '#111827', marginBottom: 6 }}>Recording in Progress</div>
+          <div style={{ fontSize: 13.5, color: '#9ca3af' }}>{provider}</div>
+        </div>
+
+        {/* Pulsing mic icon */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <div style={{
+            width: 80, height: 80, background: '#fef2f2', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: '3px solid #fca5a5',
+            animation: 'pulse 1.5s ease infinite',
+          }}>
+            <Mic size={34} color="#ef4444" />
+          </div>
+        </div>
+
+        {/* Timer */}
+        <div style={{ textAlign: 'center', fontSize: 42, fontWeight: 900, color: '#ef4444', marginBottom: 20, fontVariantNumeric: 'tabular-nums' }}>
+          {fmt(seconds)}
+        </div>
+
+        {/* Live waveform */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: 3, height: 52, marginBottom: 28, overflow: 'hidden',
+        }}>
+          {waveform.map((h, i) => (
+            <div key={i} style={{
+              width: 4, borderRadius: 4,
+              height: `${h}px`,
+              background: `hsl(${140 + i * 3}, 70%, ${50 + Math.random() * 10}%)`,
+              transition: 'height 0.1s ease',
+              flexShrink: 0,
+            }} />
+          ))}
+        </div>
+
+        {/* Status line */}
+        <div style={{ textAlign: 'center', fontSize: 13, color: '#9ca3af', marginBottom: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.2s ease infinite' }} />
+          Live · Speak clearly · Recording all audio
+        </div>
+
+        {/* Stop button */}
+        <button
+          onClick={stopRecording}
+          style={{
+            width: '100%', padding: '15px', background: '#ef4444', color: '#fff',
+            border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700,
+            cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#dc2626'}
+          onMouseLeave={e => e.currentTarget.style.background = '#ef4444'}
+        >
+          Stop Recording
+        </button>
+      </div>
+    </div>
+  )
+
+  // ── PHASE: Done ───────────────────────────────────────────────────────────
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 24, minHeight: '60vh' }}>
+      <div style={{ ...cardStyle, textAlign: 'center' }}>
+        <div style={{ width: 72, height: 72, background: '#f0fdf4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+          <CheckCircle2 size={36} color="#10b981" />
+        </div>
+        <div style={{ fontWeight: 800, fontSize: 22, color: '#111827', marginBottom: 8 }}>Visit Recorded!</div>
+        <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 6 }}>Duration: <strong>{fmt(seconds)}</strong></div>
+        <div style={{ fontSize: 13.5, color: '#9ca3af', marginBottom: 32, lineHeight: 1.6 }}>
+          Shifa AI is processing your visit summary. You'll receive a WhatsApp message when it's ready.
+        </div>
+
+        {/* Summary card */}
+        <div style={{ background: '#f9fafb', borderRadius: 12, padding: '16px 18px', textAlign: 'left', marginBottom: 28 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Visit Summary</div>
+          <div style={{ fontSize: 13, color: '#374151', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div><strong>Provider:</strong> {provider}</div>
+            <div><strong>Date:</strong> {new Date(visitDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+            <div><strong>Duration:</strong> {fmt(seconds)}</div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button onClick={onBack}
+            style={{ flex: 1, padding: '13px', border: '1.5px solid #e5e7eb', borderRadius: 12, background: '#fff', fontSize: 14, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'inherit' }}>
+            Back to Profile
+          </button>
+          <button onClick={() => { setPhase('setup'); setSeconds(0) }}
+            style={{ flex: 1, padding: '13px', border: 'none', borderRadius: 12, background: '#10b981', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>
+            Record Another
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -1580,12 +2169,10 @@ export default function DemoPatientView() {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
-    setModal(null)                            // clear any open modal on tab switch
-    if (tab === 'Reference') setModal('reference')
-    if (tab === 'Record Visit') setModal('record')
+    setModal(null)
   }
 
-  const chatContext = activeTab === 'My Health' ? 'health' : 'default'
+  const chatContext = activeTab === 'My Health' ? 'health' : activeTab === 'Reference' ? 'reference' : 'default'
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif", background: '#f3f4f6' }}>
@@ -1645,6 +2232,17 @@ export default function DemoPatientView() {
                 onBack={() => setActiveTab('Profile')}
                 onAsk={() => setChatOpen(true)}
               />
+            ) : activeTab === 'Reference' ? (
+              <ReferencePage
+                patient={patient}
+                onBack={() => setActiveTab('Profile')}
+                onAsk={() => setChatOpen(true)}
+              />
+            ) : activeTab === 'Record Visit' ? (
+              <RecordVisitPage
+                patient={patient}
+                onBack={() => setActiveTab('Profile')}
+              />
             ) : (
               <>
                 <ProfileContent
@@ -1674,8 +2272,8 @@ export default function DemoPatientView() {
           </div>
         </div>
 
-        {/* AI Chat Panel */}
-        {chatOpen && (
+        {/* AI Chat Panel — hidden on Record Visit */}
+        {chatOpen && activeTab !== 'Record Visit' && (
           <AIChatPanel
             patient={patient}
             context={chatContext}
@@ -1685,8 +2283,8 @@ export default function DemoPatientView() {
           />
         )}
 
-        {/* Chat re-open fab */}
-        {!chatOpen && (
+        {/* Chat re-open fab — hidden on Record Visit */}
+        {!chatOpen && activeTab !== 'Record Visit' && (
           <button onClick={() => setChatOpen(true)} style={{ position: 'fixed', bottom: 24, right: 24, background: '#10b981', color: '#fff', border: 'none', borderRadius: '50%', width: 52, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 16px rgba(16,185,129,0.4)', zIndex: 100 }}>
             <CheckCircle2 size={22} />
           </button>
@@ -1694,10 +2292,8 @@ export default function DemoPatientView() {
       </div>
 
       {/* Modals */}
-      {modal === 'reference' && <ReferenceModal references={patient.references} onClose={() => { setModal(null); setActiveTab('Profile') }} />}
       {modal === 'schedule' && <ScheduleModal doctor={patient.doctor} followUp={visit.followUp} onClose={() => setModal(null)} />}
       {modal === 'visit' && <VisitDetailModal visit={visit} doctor={patient.doctor} onClose={() => setModal(null)} />}
-      {modal === 'record' && <RecordVisitModal onClose={() => { setModal(null); setActiveTab('Profile') }} />}
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg) } }
