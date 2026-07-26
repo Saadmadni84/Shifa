@@ -1,6 +1,5 @@
 package com.shifa.integration.email.config;
 
-import com.shifa.integration.email.config.SesProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

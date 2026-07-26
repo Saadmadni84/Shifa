@@ -148,7 +148,10 @@ public class AuthService {
         user.setPreferredLanguage(request.getPreferredLanguage());
         user = userRepository.save(user);
 
-        Patient patient = new Patient();
+        Patient patient = patientRepository.findByUser(user)
+                .or(() -> patientRepository.findByPhoneNumberAndDeletedFalse(request.getPhoneNumber()))
+                .orElseGet(Patient::new);
+
         patient.setUser(user);
         patient.setFirstName(request.getFirstName());
         patient.setLastName(request.getLastName());
@@ -156,7 +159,9 @@ public class AuthService {
         if (request.getEmail() != null && !request.getEmail().isBlank()) {
             patient.setEmail(request.getEmail());
         }
-        patient.setPreferredLanguage(request.getPreferredLanguage());
+        if (request.getPreferredLanguage() != null) {
+            patient.setPreferredLanguage(request.getPreferredLanguage());
+        }
         patient = patientRepository.save(patient);
 
         JwtTokenPair tokens = issueTokens(user);
@@ -172,11 +177,21 @@ public class AuthService {
         User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseGet(() -> createPatientUser(phoneNumber));
 
-        Patient patient = null;
-        try {
-            patient = patientRepository.findByUser(user).orElse(null);
-        } catch (Exception e) {
-            // will fix compiling errors
+        Patient patient = patientRepository.findByUser(user)
+                .or(() -> patientRepository.findByPhoneNumberAndDeletedFalse(phoneNumber))
+                .orElseGet(() -> {
+                    Patient p = new Patient();
+                    p.setUser(user);
+                    p.setFirstName("Patient");
+                    p.setLastName("");
+                    p.setPhoneNumber(phoneNumber);
+                    p.setPreferredLanguage("hi");
+                    return patientRepository.save(p);
+                });
+
+        if (patient.getUser() == null) {
+            patient.setUser(user);
+            patient = patientRepository.save(patient);
         }
 
         user.setLastLoginAt(java.time.LocalDateTime.now());
@@ -257,7 +272,22 @@ public class AuthService {
         user.setPhoneNumber(phoneNumber);
         user.setRole("PATIENT");
         user.setPreferredLanguage("hi");
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        final User savedUser = user;
+        Patient patient = patientRepository.findByPhoneNumberAndDeletedFalse(phoneNumber)
+                .orElseGet(() -> {
+                    Patient p = new Patient();
+                    p.setFirstName("Patient");
+                    p.setLastName("");
+                    p.setPhoneNumber(phoneNumber);
+                    p.setPreferredLanguage("hi");
+                    return p;
+                });
+        patient.setUser(savedUser);
+        patientRepository.save(patient);
+
+        return user;
     }
 
     private AuthResponse buildDoctorAuthResponse(User user, Doctor doctor, JwtTokenPair tokens) {

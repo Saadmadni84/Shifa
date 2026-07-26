@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DoctorService {
 
-    private final DoctorRepository doctorRepository;
-
     public DoctorProfileResponse getProfile(String username) {
         return null; // TODO implement
     }

@@ -15,8 +15,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReminderService {
 
-    private final ReminderRepository reminderRepository;
-
     public ReminderResponse scheduleReminder(ReminderCreateRequest request) {
         return null; // TODO implement
     }

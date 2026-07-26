@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.shifa.domain.notification.Notification;
-import com.shifa.domain.visit.Visit;
 import java.util.List;
-
-import java.time.LocalDate;
 
 @Service
 @Slf4j

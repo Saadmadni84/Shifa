@@ -77,6 +77,28 @@ public class PatientService {
         return patientMapper.toResponse(patient);
     }
 
+    public PatientResponse getPatientProfileByUserId(UUID userId) {
+        Patient patient = patientRepository.findAll().stream()
+            .filter(p -> p.getUser() != null && userId.equals(p.getUser().getId()))
+            .findFirst()
+            .orElseGet(() -> {
+                Patient p = new Patient();
+                p.setFirstName("Patient");
+                p.setLastName("");
+                p.setPreferredLanguage("hi");
+                return patientRepository.save(p);
+            });
+        return patientMapper.toResponse(patient);
+    }
+
+    public PatientResponse updatePatientProfileByUserId(UUID userId, PatientUpdateRequest request) {
+        Patient patient = patientRepository.findAll().stream()
+            .filter(p -> p.getUser() != null && userId.equals(p.getUser().getId()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Patient profile not found"));
+        return updatePatient(patient.getId(), request);
+    }
+
     public PageResponse<PatientResponse> searchPatients(String query, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Patient> result;

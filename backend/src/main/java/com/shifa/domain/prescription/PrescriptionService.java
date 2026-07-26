@@ -11,7 +11,5 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PrescriptionService {
 
-    private final PrescriptionRepository prescriptionRepository;
-
     // stub service methods go here
 }

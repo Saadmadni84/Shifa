@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface DocumentRepository extends JpaRepository<UploadedDocument, UUID> {
     List<UploadedDocument> findByVisitId(UUID visitId);
     List<UploadedDocument> findByPatientId(UUID patientId);
+    long countByVisitId(UUID visitId);
+
 }

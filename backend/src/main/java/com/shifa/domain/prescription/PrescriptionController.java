@@ -19,8 +19,6 @@ import java.util.UUID;
 @SecurityRequirement(name = "bearerAuth")
 public class PrescriptionController {
 
-    private final PrescriptionService prescriptionService;
-
     @GetMapping("/{id}/prescription")
     public ResponseEntity<PrescriptionResponse> getPrescription(@PathVariable UUID id) {
         return null; // TODO implement

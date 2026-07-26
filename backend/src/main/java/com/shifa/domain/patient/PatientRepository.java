@@ -24,6 +24,10 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
                         "p.phoneNumber LIKE CONCAT('%', :query, '%'))")
         Page<Patient> searchByNameOrPhoneAndDeletedFalse(@Param("query") String query, Pageable pageable);
 
+        @Query("SELECT p FROM Patient p WHERE p.user.id = :userId AND p.deleted = false")
+        Optional<Patient> findByUserId(@Param("userId") UUID userId);
+
+
         List<Patient> findByIsDemoTrue();
 
         @Query("SELECT p FROM Patient p WHERE p.deleted = false AND p.id NOT IN " +
@@ -32,6 +36,10 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
                         @Param("recentDate") LocalDate recentDate);
 
         Optional<Patient> findByUser(User user);
+
+        Optional<Patient> findByPhoneNumber(String phoneNumber);
+
+        Optional<Patient> findByPhoneNumberAndDeletedFalse(String phoneNumber);
 
         boolean existsByPhoneNumberAndDeletedFalse(String phoneNumber);
 
