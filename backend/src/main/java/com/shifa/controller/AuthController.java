@@ -1,8 +1,5 @@
 package com.shifa.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,45 +7,43 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.shifa.security.dto.AuthRequest;
+import com.shifa.security.dto.AuthResponse;
+import com.shifa.security.dto.RegisterRequest;
+import com.shifa.security.service.AuthService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+
 @RestController("apiAuthController")
 @RequestMapping("/api/v1/auth")
-@CrossOrigin(origins = "*") // Allow localhost
+@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AuthController {
 
+    private final AuthService authService;
+
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, Object> payload) {
-        Map<String, Object> response = new HashMap<>();
-        
-        Map<String, Object> user = new HashMap<>();
-        user.put("id", 1);
-        user.put("firstName", payload.get("firstName"));
-        user.put("lastName", payload.get("lastName"));
-        user.put("email", payload.get("email"));
-        user.put("role", "DOCTOR");
-        
-        Map<String, Object> data = new HashMap<>();
-        data.put("accessToken", "mock-access-token-1234");
-        data.put("refreshToken", "mock-refresh-token-5678");
-        data.put("user", user);
-
-        response.put("data", data);
-        response.put("status", "success");
-
-        return ResponseEntity.ok(data); // frontend api wrapper destructures { data } natively in axios interceptor sometimes or directly returns data
+    public ResponseEntity<AuthResponse> register(
+            @RequestBody RegisterRequest request,
+            HttpServletRequest httpRequest) {
+        AuthResponse response = authService.registerDoctor(request, getClientIp(httpRequest));
+        return ResponseEntity.ok(response);
     }
-    
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, Object> payload) {
-        Map<String, Object> user = new HashMap<>();
-        user.put("id", 1);
-        user.put("email", payload.get("email"));
-        user.put("role", "DOCTOR");
-        
-        Map<String, Object> data = new HashMap<>();
-        data.put("accessToken", "mock-access-token-1234");
-        data.put("refreshToken", "mock-refresh-token-5678");
-        data.put("user", user);
 
-        return ResponseEntity.ok(data);
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(
+            @RequestBody AuthRequest request,
+            HttpServletRequest httpRequest) {
+        AuthResponse response = authService.authenticateDoctor(request, getClientIp(httpRequest));
+        return ResponseEntity.ok(response);
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }

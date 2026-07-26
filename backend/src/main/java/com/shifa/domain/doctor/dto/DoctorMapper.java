@@ -12,8 +12,18 @@ public interface DoctorMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    @Mapping(target = "deleteReason", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "clinicName", ignore = true)
+    @Mapping(target = "clinicAddress", ignore = true)
+    @Mapping(target = "profilePhotoUrl", ignore = true)
+    @Mapping(target = "totalPatients", ignore = true)
+    @Mapping(target = "totalVisits", ignore = true)
+    @Mapping(target = "digestEnabled", ignore = true)
     @Mapping(target = "available", constant = "true")
     Doctor toEntity(DoctorRegisterRequest request);
 

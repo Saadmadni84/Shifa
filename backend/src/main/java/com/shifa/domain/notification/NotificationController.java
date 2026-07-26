@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @SecurityRequirement(name = "bearerAuth")
 public class NotificationController {
 
-    private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
     private final VisitRepository visitRepository;
 

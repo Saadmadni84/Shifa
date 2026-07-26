@@ -51,8 +51,12 @@ public class Visit extends AuditableEntity {
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id", nullable = false)
+    @JoinColumn(name = "doctor_id", nullable = true)
     private Doctor doctor;
+
+    /** Who initiated this visit: DOCTOR (default) or PATIENT (self-uploaded) */
+    @Column(name = "source", length = 20, nullable = false)
+    private String source = "DOCTOR";
 
     @Column(name = "visit_date", nullable = false)
     private LocalDate visitDate;

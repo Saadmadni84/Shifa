@@ -12,9 +12,14 @@ public interface VitalsMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    @Mapping(target = "deleteReason", ignore = true)
     @Mapping(target = "visit", ignore = true)
     @Mapping(target = "bmi", ignore = true) // Handled by @PrePersist
+    @Mapping(target = "abnormalFindings", ignore = true)
     VitalSigns toEntity(VitalsRequest request);
 
     @Mapping(target = "visitId", source = "visit.id")

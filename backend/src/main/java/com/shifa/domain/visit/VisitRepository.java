@@ -13,12 +13,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import com.shifa.common.enums.WhatsAppStatus;
+import com.shifa.common.enums.VisitStatus;
+
 
 public interface VisitRepository extends JpaRepository<Visit, UUID> {
 
     // Portal token methods
     Optional<Visit> findByPatientPortalToken(String token);
     List<Visit> findByPatientId(UUID patientId);
+    List<Visit> findByPatientIdOrderByVisitDateDesc(UUID patientId);
+
 
 
     // Doctor-based queries using UUID

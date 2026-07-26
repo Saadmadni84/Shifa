@@ -14,8 +14,6 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class VitalsService {
-    
-    private final VitalsRepository vitalsRepository;
 
     public VitalsResponse recordVitals(UUID visitId, VitalsRequest request) {
         return null; // TODO implement

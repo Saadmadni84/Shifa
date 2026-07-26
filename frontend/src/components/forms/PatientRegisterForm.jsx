@@ -25,11 +25,15 @@ export default function PatientRegisterForm({ onSuccess }) {
       toast.success('Patient account created successfully')
       onSuccess?.(data.firstName)
     } catch (err) {
-      if (err.isShifaError && err.fieldErrors) {
+      const msg = err.message ?? 'Patient registration failed'
+      if (msg.toLowerCase().includes('phone number')) {
+        setError('phoneNumber', { message: 'An account with this phone number already exists. Please log in.' })
+      } else if (msg.toLowerCase().includes('email')) {
+        setError('email', { message: 'An account with this email already exists. Please log in.' })
+      } else if (err.isShifaError && err.fieldErrors) {
         Object.entries(err.fieldErrors).forEach(([f, m]) => setError(f, { message: m }))
-      } else {
-        toast.error(err.message ?? 'Patient registration failed')
       }
+      toast.error(msg)
     } finally {
       setLoading(false)
     }

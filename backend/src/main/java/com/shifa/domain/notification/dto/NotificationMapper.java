@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 public interface NotificationMapper {
 
     @Mapping(target = "patientId", source = "patient.id")
+    @Mapping(target = "doctorId", source = "visit.doctor.id")
+    @Mapping(target = "recipient", source = "recipientPhone")
     NotificationResponse toResponse(Notification notification);
 
 }

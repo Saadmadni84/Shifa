@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/v1/webhooks/razorpay")
 @Slf4j
@@ -17,7 +15,6 @@ import java.util.Map;
 @ConditionalOnProperty(name = "integration.razorpay.enabled", havingValue = "true")
 public class RazorpayWebhookController {
 
-    private final RazorpayClient razorpayClient;
     private final PaymentService paymentService;
 
     @PostMapping

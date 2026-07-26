@@ -22,15 +22,20 @@ public class VisitSummaryData implements Serializable {
     private String diagnosisDetails;
     private String icd10Code;
 
+    @Builder.Default
     private List<MedicationSummary> medications = new ArrayList<>();
 
+    @Builder.Default
     private List<String> dietaryAdvice = new ArrayList<>();
+    @Builder.Default
     private List<String> activityRestrictions = new ArrayList<>();
 
     private Integer followUpInDays;
 
+    @Builder.Default
     private List<String> redFlags = new ArrayList<>();
 
+    @Builder.Default
     private List<String> testsOrdered = new ArrayList<>();
 
     private String doctorInstructions;
@@ -48,6 +53,7 @@ public class VisitSummaryData implements Serializable {
         private String timing;
         private Integer durationDays;
         private String purpose;
+        @Builder.Default
         private List<String> sideEffectsToWatch = new ArrayList<>();
         private boolean needsRefrigeration;
         private boolean critical;

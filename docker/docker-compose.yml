@@ -3,7 +3,7 @@ services:
     image: postgres:15
     container_name: shifa-postgres
     environment:
-      POSTGRES_DB: shifadb
+      POSTGRES_DB: shifa_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:

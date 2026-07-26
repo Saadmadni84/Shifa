@@ -1,5 +1,15 @@
 import apiClient from './client'
 
+export async function getPatientProfile() {
+	const { data } = await apiClient.get('/patient/profile')
+	return data
+}
+
+export async function updatePatientProfile(updates) {
+	const { data } = await apiClient.put('/patient/profile', updates)
+	return data
+}
+
 export async function registerPatient(payload) {
 	const { data } = await apiClient.post('/patients', payload)
 	return data

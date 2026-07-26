@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
     // Missing WhatsAppService and SmsService, will add them implicitly to make compiling work later
 
     public void sendVisitSummary(Visit visit) {
