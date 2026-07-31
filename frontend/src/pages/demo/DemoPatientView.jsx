@@ -28,8 +28,8 @@ const SCENARIOS = {
     allergies: ['Penicillin', 'Sulfa drugs'],
     emergencyContact: { name: 'Sunita Sharma', relation: 'Spouse', phone: '+91-98765-43211' },
     language: 'Hindi', specialty: 'Cardiology',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-    doctor: { name: 'Dr. Ananya Krishnan', specialty: 'Cardiology', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf0NCwQJT3J2O2DUqIaQcM0dxWX3gzNO0UWG6DWqhNFA&s',
+    doctor: { name: 'Dr. Ananya Krishnan', specialty: 'Cardiology', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7vF-azDrcPAyYEQCmdiW7LuUdoCVpY-w0c-VsGaplbA&s=10' },
     visits: [{
       id: 'v1', date: 'JUN 28', type: 'Office Visit',
       diagnosis: 'Premature Ventricular Contractions (PVCs)',
@@ -95,8 +95,8 @@ Doctor: Dr. Ananya Krishnan, Cardiologist.`,
     allergies: ['Aspirin'],
     emergencyContact: { name: 'Rajesh Patel', relation: 'Spouse', phone: '+91-99887-76656' },
     language: 'Gujarati', specialty: 'Endocrinology',
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    doctor: { name: 'Dr. Suresh Mehta', specialty: 'Endocrinology', avatar: 'https://randomuser.me/api/portraits/men/55.jpg' },
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYReKbWFu1Wsk6tJGu8oNClbczhPceg252OlvyXn5Kw&s=10',
+    doctor: { name: 'Dr. Suresh Mehta', specialty: 'Endocrinology', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmPwHh3B72qnA6bI913O3ToqWFFAnk7mQGJGkgDNitEw&s=10' },
     visits: [{
       id: 'v1', date: 'JUN 27', type: 'Office Visit',
       diagnosis: 'Type 2 Diabetes Mellitus — Poorly Controlled',
@@ -161,8 +161,8 @@ Doctor: Dr. Suresh Mehta, Endocrinologist.`,
     allergies: ['Dust mites', 'Cat dander'],
     emergencyContact: { name: 'Meena Kumar', relation: 'Mother', phone: '+91-97654-32108' },
     language: 'Kannada', specialty: 'Pulmonology',
-    avatar: 'https://randomuser.me/api/portraits/men/55.jpg',
-    doctor: { name: 'Dr. Kavita Rao', specialty: 'Pulmonology', avatar: 'https://randomuser.me/api/portraits/women/29.jpg' },
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT536fn6P6l1FY4z83ZUwV7DJFgFfTNEI68ITFGIHumuQ&s=10',
+    doctor: { name: 'Dr. Kavita Rao', specialty: 'Pulmonology', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvKhIx2t-WMKEAb8iJuDklBjCaoXhNBxcTUsDly4ZuIA&s=10' },
     visits: [{
       id: 'v1', date: 'JUN 26', type: 'Office Visit',
       diagnosis: 'Moderate Persistent Asthma — Undertreated',
@@ -218,14 +218,15 @@ for (let i = 4; i <= 12; i++) {
   const id = `pat-00${i}`
   if (!SCENARIOS[id]) {
     SCENARIOS[id] = {
-      id, name: `Patient ${i}`, age: 40 + i, gender: i % 2 === 0 ? 'Female' : 'Male',
+      id, name: `Sunita Devi`, age: 56 + i, gender: i % 2 === 0 ? 'Female' : 'Male',
       dob: 'January 1, 1980', phone: '+91-90000-00000', mrn: `MRN-00${i}`,
       email: `patient${i}@demo.shifa.health`,
       bloodType: 'O+', height: 165, weight: 70, bmi: 25.7,
       allergies: [], emergencyContact: { name: 'Family Member', relation: 'Spouse', phone: '+91-90000-00001' },
       language: 'Hindi', specialty: 'General',
-      avatar: `https://randomuser.me/api/portraits/${i % 2 === 0 ? 'women' : 'men'}/${i * 5}.jpg`,
-      doctor: { name: 'Dr. Demo Doctor', specialty: 'General Medicine', avatar: 'https://randomuser.me/api/portraits/men/1.jpg' },
+      avatar: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSWd5GELZp3_lzFcBEH2n_Pwlohigot0O6NLV8BTwY9A&s=10/${i % 2 === 0 ? 'women' : 'men'}/${i * 5}.jpg`,
+      doctor: { name: 'Dr. Demo Doctor', specialty: 'General Medicine', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7vF-azDrcPAyYEQCmdiW7LuUdoCVpY-w0c-VsGaplbA&s=10
+        ' },
       visits: [{
         id: 'v1', date: 'JUN 28', type: 'Office Visit', diagnosis: 'General Consultation',
         diagnosisSince: 'June 28, 2026', severity: 'mild', status: 'resolved',

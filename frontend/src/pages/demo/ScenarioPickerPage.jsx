@@ -39,7 +39,7 @@ const DEMO_SCENARIOS = [
     bmi: 27.4,
     specialty: 'Cardiology',
     language: 'HI',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf0NCwQJT3J2O2DUqIaQcM0dxWX3gzNO0UWG6DWqhNFA&s',
     chiefComplaint: 'Heart palpitations and irregular heartbeat for 3 weeks. EKG shows PVCs. Started on Propranolol 40mg BID.',
   },
   {
@@ -51,7 +51,7 @@ const DEMO_SCENARIOS = [
     bmi: 24.1,
     specialty: 'Endocrinology',
     language: 'GU',
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYReKbWFu1Wsk6tJGu8oNClbczhPceg252OlvyXn5Kw&s=10',
     chiefComplaint: 'Poorly controlled Type 2 Diabetes. HbA1c at 8.2%. Metformin dose adjustment and dietary counselling.',
   },
   {
@@ -63,7 +63,7 @@ const DEMO_SCENARIOS = [
     bmi: 22.8,
     specialty: 'Pulmonology',
     language: 'KN',
-    avatar: 'https://randomuser.me/api/portraits/men/55.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT536fn6P6l1FY4z83ZUwV7DJFgFfTNEI68ITFGIHumuQ&s=10',
     chiefComplaint: 'Moderate persistent asthma with nocturnal symptoms. Inhaler technique corrected, added ICS-LABA.',
   },
   {
@@ -75,7 +75,7 @@ const DEMO_SCENARIOS = [
     bmi: 30.2,
     specialty: 'Cardiology',
     language: 'HI',
-    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSWd5GELZp3_lzFcBEH2n_Pwlohigot0O6NLV8BTwY9A&s=10',
     chiefComplaint: 'Hypertension follow-up. BP 158/96. Amlodipine 5mg added; sodium restriction counselled.',
   },
   {
@@ -87,7 +87,7 @@ const DEMO_SCENARIOS = [
     bmi: 26.7,
     specialty: 'Gastroenterology',
     language: 'TE',
-    avatar: 'https://randomuser.me/api/portraits/men/71.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWqeEyduSVO9xFx8FhhaBNwbkaxbV_jUd5UKWAByrHWg&s=10',
     chiefComplaint: 'Chronic GERD with erosive esophagitis. Upper endoscopy done, PPI therapy escalated.',
   },
   {
@@ -99,7 +99,7 @@ const DEMO_SCENARIOS = [
     bmi: 21.3,
     specialty: 'Endocrinology',
     language: 'TA',
-    avatar: 'https://randomuser.me/api/portraits/women/29.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8iiBd_R-fK0sJbv2PQf5T4uFeqJHRfPzs-w_qAubUQw&s=10',
     chiefComplaint: 'Hypothyroidism follow-up. TSH 7.8 mIU/L. Levothyroxine dose titrated to 75mcg.',
   },
   {
@@ -111,7 +111,7 @@ const DEMO_SCENARIOS = [
     bmi: 29.1,
     specialty: 'Orthopedics',
     language: 'HI',
-    avatar: 'https://randomuser.me/api/portraits/men/80.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWWJCz927mYLI4qTEP-cl5uKaOXX1ofVxDEMK48kKwYg&s=10',
     chiefComplaint: 'Bilateral knee osteoarthritis Grade II. Physiotherapy initiated, intra-articular injection planned.',
   },
   {
@@ -123,7 +123,7 @@ const DEMO_SCENARIOS = [
     bmi: 28.5,
     specialty: 'Cardiology',
     language: 'TE',
-    avatar: 'https://randomuser.me/api/portraits/women/52.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBKnWg6fymzckZcxTF0hG2r_V_kn7zUwatcjRDN1UH1g&s=10',
     chiefComplaint: 'Post-MI follow-up at 6 weeks. Echo EF 48%. Dual antiplatelet and statin therapy continued.',
   },
   {
@@ -135,7 +135,7 @@ const DEMO_SCENARIOS = [
     bmi: 23.6,
     specialty: 'Neurology',
     language: 'KN',
-    avatar: 'https://randomuser.me/api/portraits/men/43.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd7TRxLUO7YRhFpjRIz85RTCuw64qbIrKMlytY-rxzBQ&s=10',
     chiefComplaint: 'Migraine with aura, 6 attacks/month. Topiramate initiated for prophylaxis; trigger diary advised.',
   },
   {
@@ -147,7 +147,7 @@ const DEMO_SCENARIOS = [
     bmi: 25.9,
     specialty: 'Rheumatology',
     language: 'GU',
-    avatar: 'https://randomuser.me/api/portraits/women/38.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVVEDWCzasUsaNhL7evaeKrcA18A4qfsdOajDZDFqG9A&s=10',
     chiefComplaint: 'Rheumatoid arthritis with elevated CRP. Methotrexate 15mg/week started, folic acid supplement.',
   },
   {
@@ -159,7 +159,7 @@ const DEMO_SCENARIOS = [
     bmi: 31.0,
     specialty: 'Pulmonology',
     language: 'TA',
-    avatar: 'https://randomuser.me/api/portraits/men/61.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWof5UUrRjo3_lqNoyznLB8dD1mZiIP-d1Evtkwh9CmA&s=10',
     chiefComplaint: 'COPD exacerbation, GOLD Stage II. Short course of oral steroids and antibiotics. LAMA added.',
   },
   {
@@ -171,7 +171,7 @@ const DEMO_SCENARIOS = [
     bmi: 19.8,
     specialty: 'Endocrinology',
     language: 'HI',
-    avatar: 'https://randomuser.me/api/portraits/women/17.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuRfCF3SYiB0j__Qxs4d-G9y3dPvAtpUHEV7uYYL_WbQ&s',
     chiefComplaint: 'PCOS with irregular cycles. Metformin 500mg OD initiated; low GI diet plan provided.',
   },
 ]
