@@ -1,0 +1,62 @@
+DOCTOR-PATIENT CONSULTATION TRANSCRIPT
+=======================================
+Date: July 28, 2026
+Location: Shifa Medical Center, Mumbai
+Physician: Dr. Anika Mehta, MD (Pulmonology)
+Patient: Hari Patel (DOB: May 14, 1988)
+Duration: Approximately 4 minutes
+
+---------------------------------------
+
+DR. MEHTA: Good morning, Mr. Patel. Please have a seat. How are you feeling today?
+
+PATIENT: Good morning, Doctor. I have been feeling quite unwell for the past ten days. I have this persistent cough that just will not go away, and I have been running a low fever on and off.
+
+DR. MEHTA: I see. Can you describe the cough for me? Is it dry or productive? Do you notice any particular pattern?
+
+PATIENT: It is productive. I am coughing up yellowish-green mucus, especially in the mornings. The cough gets worse at night and sometimes wakes me up. I also feel short of breath when I climb stairs or walk quickly, which is unusual for me.
+
+DR. MEHTA: Given your history of childhood asthma, have you been using your rescue inhaler more frequently?
+
+PATIENT: Yes, definitely. Normally I only use the Albuterol inhaler maybe once or twice a week, but for the past two weeks I have been needing it four or five times a day. It helps temporarily but the tightness comes back.
+
+DR. MEHTA: That is concerning. Let me check your vital signs first. Your blood pressure is 128 over 82, which is normal. Heart rate is 92 beats per minute, slightly elevated. Temperature is 100.2 degrees Fahrenheit, confirming the low-grade fever. Your oxygen saturation is 96 percent, which is acceptable but we will monitor it. Your respiratory rate is 22 breaths per minute, slightly above normal.
+
+PATIENT: Is the elevated respiratory rate a concern?
+
+DR. MEHTA: It indicates your body is working a bit harder to breathe, which is consistent with your symptoms. Now, I have reviewed your lab results from this morning. Your white blood cell count is elevated at 12,800, which suggests an active infection. Your neutrophils are high at 72 percent, and your eosinophils are elevated at 5 percent, which can be associated with your asthma. Your CRP, which is a marker of inflammation, is also elevated at 18.5 milligrams per liter.
+
+PATIENT: Does that mean I have an infection?
+
+DR. MEHTA: Yes, the combination of elevated WBC, high CRP, and your symptoms strongly suggests acute bronchitis, which is an infection of the bronchial tubes. Additionally, your chest X-ray shows bilateral peribronchial cuffing and mild basal haziness, which could indicate early bronchopneumonic changes. We have also ordered a sputum culture to identify the specific bacteria involved.
+
+PATIENT: Oh, that sounds serious. Is it pneumonia?
+
+DR. MEHTA: Not full pneumonia at this stage. The findings are more consistent with acute bronchitis with a possible early community-acquired pneumonia component. We will know more when the sputum culture results come back in three to five days. The good news is that your procalcitonin level is normal, which suggests the infection is not severe or systemic.
+
+PATIENT: What about my asthma?
+
+DR. MEHTA: Your pulmonary function test shows your FEV1 is at 78 percent of predicted, which is lower than ideal. However, you showed a 15 percent improvement after using the bronchodilator, which confirms this is a reversible obstruction consistent with an asthma flare-up. The infection is likely triggering the asthma exacerbation.
+
+PATIENT: What is the treatment plan?
+
+DR. MEHTA: I am prescribing several medications. First, Amoxicillin 500 milligrams three times daily for seven days to treat the bacterial infection. Second, Azithromycin 500 milligrams, which you will take for three days as additional antibiotic coverage. Third, I am restarting Montelukast 10 milligrams at bedtime as an asthma controller. Continue using your Albuterol inhaler as needed for wheezing. I am also prescribing Guaifenesin syrup to help with the productive cough, and Paracetamol for fever management.
+
+PATIENT: Should I take all of these at the same time?
+
+DR. MEHTA: The Amoxicillin should be taken after meals three times a day. The Azithromycin is once daily with food. Montelukast is taken at bedtime. Guaifenesin syrup three times a day. And Paracetamol only as needed when your fever goes above 100 degrees. Make sure to complete the full course of antibiotics even if you start feeling better.
+
+PATIENT: Are there any dietary recommendations?
+
+DR. MEHTA: Yes. Increase your fluid intake to at least two and a half liters per day, preferably warm water and herbal teas. Avoid cold beverages and refrigerated foods. Stick to light warm meals like soups, dal, and steamed vegetables. Rest as much as possible for the next two to three days. Avoid dust, smoke, and strong fragrances as these can trigger your asthma.
+
+PATIENT: When should I come back?
+
+DR. MEHTA: I would like to see you in one week, on August 4th. We will review the sputum culture results and see how you are responding to treatment. If your symptoms persist after ten days, we will repeat the chest X-ray. However, if you experience high fever above 102 degrees, severe difficulty breathing, chest pain, or cough up blood, please come to the emergency department immediately.
+
+PATIENT: Thank you, Doctor Mehta. I appreciate your thoroughness.
+
+DR. MEHTA: You are welcome, Mr. Patel. Please also monitor your peak flow readings twice daily, morning and evening, and bring the log when you come for your follow-up. Take care and rest well.
+
+---------------------------------------
+END OF TRANSCRIPT
