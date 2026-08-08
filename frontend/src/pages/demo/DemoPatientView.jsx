@@ -21,15 +21,15 @@ import {
 // ─── SCENARIO DATA ────────────────────────────────────────────────────────────
 const SCENARIOS = {
   'pat-001': {
-    id: 'pat-001', name: 'Arjun Sharma', age: 52, gender: 'Male',
+    id: 'pat-001', name: 'Arjun Sharma', age: 33, gender: 'Male',
     dob: 'March 12, 1972', phone: '+91-98765-43210', mrn: 'MRN-001',
     email: 'arjun.sharma.pvc@demo.shifa.health',
     bloodType: 'B+', height: 172, weight: 74, bmi: 25.0,
     allergies: ['Penicillin', 'Sulfa drugs'],
     emergencyContact: { name: 'Sunita Sharma', relation: 'Spouse', phone: '+91-98765-43211' },
     language: 'Hindi', specialty: 'Cardiology',
-    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf0NCwQJT3J2O2DUqIaQcM0dxWX3gzNO0UWG6DWqhNFA&s',
-    doctor: { name: 'Dr. Ananya Krishnan', specialty: 'Cardiology', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7vF-azDrcPAyYEQCmdiW7LuUdoCVpY-w0c-VsGaplbA&s=10' },
+    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+    doctor: { name: 'Dr. Ananya Krishnan', specialty: 'Cardiology', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
     visits: [{
       id: 'v1', date: 'JUN 28', type: 'Office Visit',
       diagnosis: 'Premature Ventricular Contractions (PVCs)',
@@ -88,15 +88,15 @@ Follow-up in 2 weeks. Red flags: chest pain, fainting, prolonged palpitations.
 Doctor: Dr. Ananya Krishnan, Cardiologist.`,
   },
   'pat-002': {
-    id: 'pat-002', name: 'Priya Patel', age: 45, gender: 'Female',
+    id: 'pat-002', name: 'Priya Patel', age: 26, gender: 'Female',
     dob: 'August 5, 1979', phone: '+91-99887-76655', mrn: 'MRN-002',
     email: 'priya.patel.diabetes@demo.shifa.health',
     bloodType: 'A+', height: 158, weight: 68, bmi: 27.2,
     allergies: ['Aspirin'],
     emergencyContact: { name: 'Rajesh Patel', relation: 'Spouse', phone: '+91-99887-76656' },
     language: 'Gujarati', specialty: 'Endocrinology',
-    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYReKbWFu1Wsk6tJGu8oNClbczhPceg252OlvyXn5Kw&s=10',
-    doctor: { name: 'Dr. Suresh Mehta', specialty: 'Endocrinology', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmPwHh3B72qnA6bI913O3ToqWFFAnk7mQGJGkgDNitEw&s=10' },
+    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    doctor: { name: 'Dr. Suresh Mehta', specialty: 'Endocrinology', avatar: 'https://randomuser.me/api/portraits/men/55.jpg' },
     visits: [{
       id: 'v1', date: 'JUN 27', type: 'Office Visit',
       diagnosis: 'Type 2 Diabetes Mellitus — Poorly Controlled',
@@ -154,15 +154,15 @@ Follow-up in 3 months for HbA1c. Red flags: hypoglycaemia (< 70 mg/dL), hypergly
 Doctor: Dr. Suresh Mehta, Endocrinologist.`,
   },
   'pat-003': {
-    id: 'pat-003', name: 'Ravi Kumar', age: 38, gender: 'Male',
+    id: 'pat-003', name: 'Ravi Kumar', age: 33, gender: 'Male',
     dob: 'February 20, 1986', phone: '+91-97654-32109', mrn: 'MRN-003',
     email: 'ravi.kumar.asthma@demo.shifa.health',
     bloodType: 'O+', height: 168, weight: 71, bmi: 25.2,
     allergies: ['Dust mites', 'Cat dander'],
     emergencyContact: { name: 'Meena Kumar', relation: 'Mother', phone: '+91-97654-32108' },
     language: 'Kannada', specialty: 'Pulmonology',
-    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT536fn6P6l1FY4z83ZUwV7DJFgFfTNEI68ITFGIHumuQ&s=10',
-    doctor: { name: 'Dr. Kavita Rao', specialty: 'Pulmonology', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvKhIx2t-WMKEAb8iJuDklBjCaoXhNBxcTUsDly4ZuIA&s=10' },
+    avatar: 'https://randomuser.me/api/portraits/men/55.jpg',
+    doctor: { name: 'Dr. Kavita Rao', specialty: 'Pulmonology', avatar: 'https://randomuser.me/api/portraits/women/29.jpg' },
     visits: [{
       id: 'v1', date: 'JUN 26', type: 'Office Visit',
       diagnosis: 'Moderate Persistent Asthma — Undertreated',
@@ -218,15 +218,14 @@ for (let i = 4; i <= 12; i++) {
   const id = `pat-00${i}`
   if (!SCENARIOS[id]) {
     SCENARIOS[id] = {
-      id, name: `Sunita Devi`, age: 56 + i, gender: i % 2 === 0 ? 'Female' : 'Male',
+      id, name: `Patient ${i}`, age: 40 + i, gender: i % 2 === 0 ? 'Female' : 'Male',
       dob: 'January 1, 1980', phone: '+91-90000-00000', mrn: `MRN-00${i}`,
       email: `patient${i}@demo.shifa.health`,
       bloodType: 'O+', height: 165, weight: 70, bmi: 25.7,
       allergies: [], emergencyContact: { name: 'Family Member', relation: 'Spouse', phone: '+91-90000-00001' },
       language: 'Hindi', specialty: 'General',
-      avatar: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSWd5GELZp3_lzFcBEH2n_Pwlohigot0O6NLV8BTwY9A&s=10/${i % 2 === 0 ? 'women' : 'men'}/${i * 5}.jpg`,
-      doctor: { name: 'Dr. Demo Doctor', specialty: 'General Medicine', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7vF-azDrcPAyYEQCmdiW7LuUdoCVpY-w0c-VsGaplbA&s=10
-        ' },
+      avatar: `https://randomuser.me/api/portraits/${i % 2 === 0 ? 'women' : 'men'}/${i * 5}.jpg`,
+      doctor: { name: 'Dr. Demo Doctor', specialty: 'General Medicine', avatar: 'https://randomuser.me/api/portraits/men/1.jpg' },
       visits: [{
         id: 'v1', date: 'JUN 28', type: 'Office Visit', diagnosis: 'General Consultation',
         diagnosisSince: 'June 28, 2026', severity: 'mild', status: 'resolved',
