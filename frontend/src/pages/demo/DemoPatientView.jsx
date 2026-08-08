@@ -21,7 +21,7 @@ import {
 // ─── SCENARIO DATA ────────────────────────────────────────────────────────────
 const SCENARIOS = {
   'pat-001': {
-    id: 'pat-001', name: 'Arjun Sharma', age: 52, gender: 'Male',
+    id: 'pat-001', name: 'Arjun Sharma', age: 33, gender: 'Male',
     dob: 'March 12, 1972', phone: '+91-98765-43210', mrn: 'MRN-001',
     email: 'arjun.sharma.pvc@demo.shifa.health',
     bloodType: 'B+', height: 172, weight: 74, bmi: 25.0,
@@ -88,7 +88,7 @@ Follow-up in 2 weeks. Red flags: chest pain, fainting, prolonged palpitations.
 Doctor: Dr. Ananya Krishnan, Cardiologist.`,
   },
   'pat-002': {
-    id: 'pat-002', name: 'Priya Patel', age: 45, gender: 'Female',
+    id: 'pat-002', name: 'Priya Patel', age: 26, gender: 'Female',
     dob: 'August 5, 1979', phone: '+91-99887-76655', mrn: 'MRN-002',
     email: 'priya.patel.diabetes@demo.shifa.health',
     bloodType: 'A+', height: 158, weight: 68, bmi: 27.2,
@@ -154,7 +154,7 @@ Follow-up in 3 months for HbA1c. Red flags: hypoglycaemia (< 70 mg/dL), hypergly
 Doctor: Dr. Suresh Mehta, Endocrinologist.`,
   },
   'pat-003': {
-    id: 'pat-003', name: 'Ravi Kumar', age: 38, gender: 'Male',
+    id: 'pat-003', name: 'Ravi Kumar', age: 33, gender: 'Male',
     dob: 'February 20, 1986', phone: '+91-97654-32109', mrn: 'MRN-003',
     email: 'ravi.kumar.asthma@demo.shifa.health',
     bloodType: 'O+', height: 168, weight: 71, bmi: 25.2,
