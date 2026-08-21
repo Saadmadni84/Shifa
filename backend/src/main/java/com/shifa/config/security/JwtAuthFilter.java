@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.shifa.common.constants.ShifaConstants;
+import com.shifa.domain.user.User;
+import com.shifa.domain.user.UserRepository;
+import com.shifa.security.dto.UserPrincipal;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,6 +31,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(
@@ -58,18 +62,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmailOrPhone);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
+                    User user = userRepository.findByEmailOrPhoneNumber(userEmailOrPhone, userEmailOrPhone)
+                            .orElseThrow(() -> new IllegalStateException("User not found for token subject"));
+                    UserPrincipal principal = UserPrincipal.from(user);
+
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            principal,
                             null,
-                            userDetails.getAuthorities()
+                            principal.getAuthorities()
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                     
                     // Enrich MDC for structured logging
-                    MDC.put("userId", userDetails.getUsername());
-                    if (!userDetails.getAuthorities().isEmpty()) {
-                        MDC.put("userRole", userDetails.getAuthorities().iterator().next().getAuthority());
+                    MDC.put("userId", principal.getUserId().toString());
+                    if (!principal.getAuthorities().isEmpty()) {
+                        MDC.put("userRole", principal.getAuthorities().iterator().next().getAuthority());
                     }
                 }
             }

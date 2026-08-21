@@ -82,6 +82,7 @@ public class Visit extends AuditableEntity {
     private Map<String, VisitPatientSummary> patientSummaries = new HashMap<>();
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status", nullable = false)
     private VisitStatus status = VisitStatus.DRAFT;
 
@@ -107,6 +108,7 @@ public class Visit extends AuditableEntity {
     private String whatsappMessageId;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "whatsapp_status")
     private WhatsAppStatus whatsappStatus = WhatsAppStatus.NOT_SENT;
 
@@ -121,6 +123,16 @@ public class Visit extends AuditableEntity {
 
     @Column(name = "ai_error_message", columnDefinition = "TEXT")
     private String aiErrorMessage;
+
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "audio_data", columnDefinition = "BYTEA")
+    private byte[] audioData;
+
+    @Column(name = "audio_filename", length = 255)
+    private String audioFilename;
+
+    @Column(name = "audio_content_type", length = 100)
+    private String audioContentType;
 
     public boolean isPortalAccessValid() {
         return patientPortalToken != null &&
@@ -169,5 +181,29 @@ public class Visit extends AuditableEntity {
 
     public void setWhatsappMetaMessageId(String whatsappMetaMessageId) {
         this.whatsappMessageId = whatsappMetaMessageId;
+    }
+
+    public byte[] getAudioData() {
+        return audioData;
+    }
+
+    public void setAudioData(byte[] audioData) {
+        this.audioData = audioData;
+    }
+
+    public String getAudioFilename() {
+        return audioFilename;
+    }
+
+    public void setAudioFilename(String audioFilename) {
+        this.audioFilename = audioFilename;
+    }
+
+    public String getAudioContentType() {
+        return audioContentType;
+    }
+
+    public void setAudioContentType(String audioContentType) {
+        this.audioContentType = audioContentType;
     }
 }

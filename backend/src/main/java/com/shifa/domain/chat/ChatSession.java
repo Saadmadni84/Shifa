@@ -14,11 +14,13 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@RedisHash("chat_session")
 @Entity
 @Table(name = "chat_sessions")
 @Getter @Setter @NoArgsConstructor

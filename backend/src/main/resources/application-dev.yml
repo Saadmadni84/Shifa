@@ -2,6 +2,11 @@ spring:
   config:
     activate:
       on-profile: dev
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
   datasource:
     url: jdbc:postgresql://localhost:5432/shifa_db
     username: postgres
@@ -16,6 +21,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
+    baseline-on-migrate: true
   data:
     redis:
       host: localhost

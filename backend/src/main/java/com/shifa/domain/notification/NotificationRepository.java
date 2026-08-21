@@ -1,6 +1,6 @@
 package com.shifa.domain.notification;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,7 @@ import java.util.UUID;
 import com.shifa.common.enums.NotificationStatus;
 
 @Repository
-public interface NotificationRepository extends JpaRepository<Notification, UUID> {
+public interface NotificationRepository extends KeyValueRepository<Notification, String> {
 
         @Query("SELECT n FROM Notification n " +
                         "WHERE n.status = :status " +
@@ -82,4 +82,14 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
                         "WHERE n.patient.id = :patientId " +
                         "AND n.status = 'PENDING'")
         int cancelPatientNotifications(@Param("patientId") UUID patientId);
+
+        default Optional<Notification> findById(UUID id) {
+                return id == null ? Optional.empty() : findById(id.toString());
+        }
+
+        default void deleteById(UUID id) {
+                if (id != null) {
+                        deleteById(id.toString());
+                }
+        }
 }

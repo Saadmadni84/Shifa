@@ -3,7 +3,7 @@ package com.shifa.domain.notification;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.shifa.common.audit.AuditableEntity;
+import com.shifa.common.audit.RedisAuditableEntity;
 import com.shifa.common.enums.NotificationChannel;
 import com.shifa.common.enums.NotificationStatus;
 import com.shifa.common.enums.NotificationType;
@@ -11,7 +11,6 @@ import com.shifa.domain.patient.Patient;
 import com.shifa.domain.visit.Visit;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -22,15 +21,16 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisHash;
 
-@Entity
+@RedisHash("notification")
 @Table(name = "notifications", indexes = {
     @Index(name = "idx_notif_patient", columnList = "patient_id"),
     @Index(name = "idx_notif_status", columnList = "status"),
     @Index(name = "idx_notif_created", columnList = "created_at")
 })
 @Getter @Setter @NoArgsConstructor
-public class Notification extends AuditableEntity {
+public class Notification extends RedisAuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)

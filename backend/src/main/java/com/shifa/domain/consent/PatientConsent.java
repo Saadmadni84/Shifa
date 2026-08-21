@@ -1,10 +1,9 @@
 package com.shifa.domain.consent;
 
-import com.shifa.common.audit.AuditableEntity;
+import com.shifa.common.audit.RedisAuditableEntity;
 import com.shifa.common.enums.ConsentType;
 import com.shifa.domain.patient.Patient;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -15,16 +14,17 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
 
-@Entity
+@RedisHash("consent")
 @Table(name = "patient_consents", indexes = {
     @Index(name = "idx_consent_patient", columnList = "patient_id"),
     @Index(name = "idx_consent_type", columnList = "consent_type")
 })
 @Getter @Setter @NoArgsConstructor
-public class PatientConsent extends AuditableEntity {
+public class PatientConsent extends RedisAuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)

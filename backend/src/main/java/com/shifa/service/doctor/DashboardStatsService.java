@@ -3,7 +3,7 @@ package com.shifa.service.doctor;
 import com.shifa.domain.notification.NotificationRepository;
 import com.shifa.service.dto.DashboardStatsDTO;
 import com.shifa.domain.visit.VisitRepository;
-import com.shifa.domain.visit.VisitStatus;
+import com.shifa.common.enums.VisitStatus;
 import com.shifa.common.enums.WhatsAppStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

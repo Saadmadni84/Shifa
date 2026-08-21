@@ -82,8 +82,8 @@ public class ReminderScheduler {
 
                 results.add(ReminderResult.ok(
                         notification.getId(),
-                        notification.getPatientId(),
-                    notification.getTypeCode(),
+                        notification.getPatientId() != null ? notification.getPatientId().toString() : null,
+                        notification.getTypeCode(),
                         "WHATSAPP",
                         System.currentTimeMillis() - sendStart));
 
@@ -97,8 +97,8 @@ public class ReminderScheduler {
 
                 results.add(ReminderResult.fail(
                         notification.getId(),
-                        notification.getPatientId(),
-                    notification.getTypeCode(),
+                        notification.getPatientId() != null ? notification.getPatientId().toString() : null,
+                        notification.getTypeCode(),
                         "WHATSAPP",
                         ex.getMessage()));
 

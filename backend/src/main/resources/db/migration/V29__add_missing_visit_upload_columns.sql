@@ -1,0 +1,12 @@
+ALTER TABLE visits
+    ADD COLUMN IF NOT EXISTS ai_error_message TEXT,
+    ADD COLUMN IF NOT EXISTS ai_processed_at TIMESTAMP(6),
+    ADD COLUMN IF NOT EXISTS delete_reason TEXT,
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP(6),
+    ADD COLUMN IF NOT EXISTS follow_up_notes TEXT,
+    ADD COLUMN IF NOT EXISTS sent_to_patient_at TIMESTAMP(6),
+    ADD COLUMN IF NOT EXISTS updated_by VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS whatsapp_sent_at TIMESTAMP(6),
+    ADD COLUMN IF NOT EXISTS audio_data BYTEA,
+    ADD COLUMN IF NOT EXISTS audio_filename VARCHAR(255),
+    ADD COLUMN IF NOT EXISTS audio_content_type VARCHAR(100);
