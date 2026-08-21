@@ -328,7 +328,7 @@ Keep answers concise (3-5 sentences unless more is needed).`
       <div style={{ padding: '14px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 10 }}>
         <CheckCircle2 size={18} color="#10b981" strokeWidth={2.5} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>PostVisit AI</div>
+          <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Shifa AI</div>
           <div style={{ fontSize: 11, color: '#9ca3af' }}>Ask anything about your visit</div>
         </div>
         <button onClick={onToggleExpand} style={iconBtn}>{isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}</button>
