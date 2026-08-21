@@ -30,6 +30,35 @@ export async function uploadVisitDocumentByPatient(visitId, file, documentType =
 }
 
 /**
+ * Upload an audio recording to an existing visit.
+ * POST /api/patient/visits/:visitId/audio
+ */
+export async function uploadVisitAudioByPatient(visitId, file, onProgress) {
+  const form = new FormData()
+  form.append('file', file)
+  const { data } = await uploadFile(`/patient/visits/${visitId}/audio`, form, onProgress)
+  return data
+}
+
+/**
+ * Create visit first, then optionally upload one document and/or one audio file.
+ */
+export async function submitPatientVisit({ visit, documentFile, audioFile, documentType = 'OTHER', onProgress }) {
+  const created = await createPatientVisit(visit)
+  const visitId = created?.visitId
+
+  if (documentFile && visitId) {
+    await uploadVisitDocumentByPatient(visitId, documentFile, documentType, onProgress)
+  }
+
+  if (audioFile && visitId) {
+    await uploadVisitAudioByPatient(visitId, audioFile, onProgress)
+  }
+
+  return created
+}
+
+/**
  * Fetch all visits belonging to the logged-in patient.
  * GET /api/patient/visits
  */
@@ -41,5 +70,7 @@ export async function getMyVisits() {
 export const patientVisitsApi = {
   createPatientVisit,
   uploadVisitDocumentByPatient,
+  uploadVisitAudioByPatient,
+  submitPatientVisit,
   getMyVisits,
 }
