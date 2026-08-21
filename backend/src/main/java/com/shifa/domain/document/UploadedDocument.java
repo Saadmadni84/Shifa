@@ -1,12 +1,11 @@
 package com.shifa.domain.document;
 
-import com.shifa.common.audit.AuditableEntity;
+import com.shifa.common.audit.RedisAuditableEntity;
 import com.shifa.common.enums.DocumentType;
 import com.shifa.common.enums.OcrStatus;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.visit.Visit;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -17,11 +16,12 @@ import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisHash;
 
-@Entity
+@RedisHash("document")
 @Table(name = "uploaded_documents")
 @Getter @Setter @NoArgsConstructor
-public class UploadedDocument extends AuditableEntity {
+public class UploadedDocument extends RedisAuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visit_id")

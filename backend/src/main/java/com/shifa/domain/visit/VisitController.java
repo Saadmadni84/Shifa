@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -38,11 +39,19 @@ public class VisitController {
 
     @PostMapping("/api/visits")
     @PreAuthorize("hasRole('DOCTOR')")
-    public ResponseEntity<VisitResponse> createVisit(
+    public ResponseEntity<?> createVisit(
         @Valid @RequestBody VisitCreateRequest request,
         @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(visitService.createVisit(request, userDetails.getUsername()));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(visitService.createVisit(request, userDetails.getUsername()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                "error", e.getClass().getName(),
+                "message", e.getMessage() != null ? e.getMessage() : "Null pointer or unhandled exception"
+            ));
+        }
     }
 
     @PutMapping("/api/visits/{id}/notes")

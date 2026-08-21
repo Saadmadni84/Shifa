@@ -13,7 +13,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisHash;
 
+@RedisHash("chat_message")
 @Entity
 @Table(name = "chat_messages")
 @Getter @Setter @NoArgsConstructor

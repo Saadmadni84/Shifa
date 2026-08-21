@@ -71,7 +71,12 @@ public class VisitService {
             VisitStatusMachine.transition(VisitStatus.DRAFT, VisitStatus.NOTES_TAKEN);
             saved.setStatus(VisitStatus.NOTES_TAKEN);
             saved = visitRepository.save(saved);
-            triggerAIProcessingAsync(saved.getId());
+            try {
+                triggerAIProcessingAsync(saved.getId());
+            } catch (Exception ex) {
+                log.error("[VisitService] Failed to start async AI processing; returning saved visit: visitId={}",
+                        saved.getId(), ex);
+            }
         }
 
         return saved;

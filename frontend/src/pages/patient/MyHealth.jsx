@@ -67,6 +67,10 @@ export default function MyHealth() {
   const [chatInput, setChatInput] = useState('')
   const [isChatLoading, setIsChatLoading] = useState(false)
   const [showChat, setShowChat] = useState(true)
+  const recordingTimerRef = useRef(null)
+  const mediaRecorderRef = useRef(null)
+  const mediaStreamRef = useRef(null)
+  const recordingChunksRef = useRef([])
 
   // ── Load profile ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -74,7 +78,12 @@ export default function MyHealth() {
     getPatientProfile()
       .then(data => { if (mounted && data) setProfile(data) })
       .catch(err => console.warn('Could not load patient profile:', err))
-    return () => { mounted = false }
+    return () => {
+      mounted = false
+      clearInterval(recordingTimerRef.current)
+      mediaRecorderRef.current?.state !== 'inactive' && mediaRecorderRef.current?.stop()
+      mediaStreamRef.current?.getTracks().forEach(track => track.stop())
+    }
   }, [])
 
   // ── Load real visits ──────────────────────────────────────────────────────
@@ -610,9 +619,11 @@ export default function MyHealth() {
     const [docFiles, setDocFiles] = useState([]) // [{file, docType, id}]
     const docInputRef = useRef(null)
 
-    // Step 3 — audio
-    const [audioFile, setAudioFile] = useState(null)
-    const audioInputRef = useRef(null)
+  // Step 3 — audio
+  const [audioFile, setAudioFile] = useState(null)
+  const audioInputRef = useRef(null)
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
 
     // Submission state
     const [submitting, setSubmitting] = useState(false)
@@ -670,6 +681,64 @@ export default function MyHealth() {
       if (f.size > 50 * 1024 * 1024) { toast.error('Audio file must be under 50 MB'); return }
       setAudioFile(f)
     }
+
+    const stopLiveRecording = useCallback(() => {
+      clearInterval(recordingTimerRef.current)
+      recordingTimerRef.current = null
+      setIsRecordingAudio(false)
+      setRecordingSeconds(0)
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop()
+      }
+    }, [])
+
+    const startLiveRecording = useCallback(async () => {
+      if (isRecordingAudio) return
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        mediaStreamRef.current = stream
+
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : MediaRecorder.isTypeSupported('audio/webm')
+            ? 'audio/webm'
+            : ''
+
+        const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined)
+        mediaRecorderRef.current = recorder
+        recordingChunksRef.current = []
+
+        recorder.ondataavailable = (event) => {
+          if (event.data.size > 0) recordingChunksRef.current.push(event.data)
+        }
+
+        recorder.onstop = () => {
+          const blob = new Blob(recordingChunksRef.current, {
+            type: recorder.mimeType || 'audio/webm',
+          })
+          recordingChunksRef.current = []
+          mediaStreamRef.current?.getTracks().forEach(track => track.stop())
+          mediaStreamRef.current = null
+          if (blob.size > 0) {
+            const file = new File([blob], 'live-recording.webm', {
+              type: blob.type || 'audio/webm',
+            })
+            setAudioFile(file)
+          }
+        }
+
+        recorder.start()
+        setIsRecordingAudio(true)
+        setRecordingSeconds(0)
+        recordingTimerRef.current = setInterval(() => {
+          setRecordingSeconds(prev => prev + 1)
+        }, 1000)
+      } catch (err) {
+        toast.error(err?.name === 'NotAllowedError'
+          ? 'Microphone access was denied'
+          : 'Could not start live recording')
+      }
+    }, [isRecordingAudio])
 
     // ── Submit ─────────────────────────────────────────────────────────
     const handleSubmit = async () => {
@@ -955,18 +1024,48 @@ export default function MyHealth() {
                   </button>
                 </div>
               ) : (
-                <div
-                  id="audio-drop-zone"
-                  className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all"
-                  onDragOver={e => e.preventDefault()}
-                  onDrop={handleAudioDrop}
-                  onClick={() => audioInputRef.current?.click()}
-                >
-                  <Mic size={22} className="mx-auto text-gray-300 mb-2" />
-                  <div className="text-[11px] text-gray-500">
-                    Drag & drop audio here, or <span className="text-emerald-600 font-medium">browse</span>
+                <div className="space-y-2">
+                  <div
+                    id="audio-drop-zone"
+                    className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all"
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={handleAudioDrop}
+                    onClick={() => audioInputRef.current?.click()}
+                  >
+                    <Mic size={22} className="mx-auto text-gray-300 mb-2" />
+                    <div className="text-[11px] text-gray-500">
+                      Drag & drop audio here, or <span className="text-emerald-600 font-medium">browse</span>
+                    </div>
+                    <div className="text-[10px] text-gray-400 mt-1">MP3, WAV, M4A, OGG, WebM — max 50 MB</div>
                   </div>
-                  <div className="text-[10px] text-gray-400 mt-1">MP3, WAV, M4A, OGG, WebM — max 50 MB</div>
+                  <button
+                    type="button"
+                    onClick={isRecordingAudio ? stopLiveRecording : startLiveRecording}
+                    className={`w-full py-2.5 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border ${
+                      isRecordingAudio
+                        ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {isRecordingAudio ? (
+                      <>
+                        <span className="relative flex items-center justify-center">
+                          <span className="absolute w-3 h-3 rounded-full bg-red-500 animate-ping opacity-75" />
+                          <span className="relative w-2 h-2 rounded-full bg-red-500" />
+                        </span>
+                        Stop Recording
+                        <span className="font-mono text-[11px] tabular-nums">
+                          {String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:
+                          {String(recordingSeconds % 60).padStart(2, '0')}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-2 h-2 rounded-full bg-red-500" />
+                        Record Live Audio
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
               <input

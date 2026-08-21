@@ -71,9 +71,14 @@ async function doRefresh() {
   const refreshToken = tokenStore.getRefresh()
   if (!refreshToken) throw new Error('NO_REFRESH_TOKEN')
   const { data } = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken })
-  tokenStore.setAccess(data.accessToken)
+  
+  // Extract token matching backend payload key
+  const newToken = data.token || data.accessToken
+  if (!newToken) throw new Error('INVALID_REFRESH_RESPONSE')
+
+  tokenStore.setAccess(newToken)
   if (data.refreshToken) tokenStore.setRefresh(data.refreshToken)
-  return data.accessToken
+  return newToken
 }
 
 apiClient.interceptors.request.use(
@@ -159,6 +164,7 @@ apiClient.interceptors.response.use(
         failQueue(e)
         tokenStore.clearAll()
         window.dispatchEvent(new CustomEvent('shifa:session-expired'))
+        window.location.href = '/login'
         return Promise.reject(normaliseError(e))
       } finally {
         isRefreshing = false

@@ -1,13 +1,14 @@
 package com.shifa.config.security;
 
+import com.shifa.domain.user.User;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ShifaUserRepository extends Repository<Object, UUID> {
+public interface ShifaUserRepository extends JpaRepository<User, UUID> {
     
     interface UserSecurityProjection {
         UUID getId();
