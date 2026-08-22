@@ -55,9 +55,18 @@
       depend on fonts installed locally on the developer's machine.
     -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lovers+Quarrel&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Match the branded Shifa wordmark even though the component keeps
+         its existing Great Vibes inline fallback declaration. -->
+    <style>
+      h1[style*="Great Vibes"],
+      span[style*="Great Vibes"] {
+        font-family: "Lovers Quarrel", cursive !important;
+      }
+    </style>
 
     <!-- ── Security headers (supplementary — real ones set server-side) -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
