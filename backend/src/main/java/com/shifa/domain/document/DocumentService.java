@@ -7,6 +7,7 @@ import com.shifa.domain.patient.Patient;
 import com.shifa.domain.patient.PatientRepository;
 import com.shifa.domain.visit.Visit;
 import com.shifa.domain.visit.VisitRepository;
+import com.shifa.integration.storage.S3StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final PatientRepository patientRepository;
     private final VisitRepository visitRepository;
+    private final S3StorageService s3StorageService;
 
     public DocumentUploadResponse uploadDocument(UUID patientId, UUID visitId, MultipartFile file) {
         Visit visit = null;
@@ -52,15 +54,18 @@ public class DocumentService {
         doc.setMimeType(file.getContentType());
         doc.setFileSizeBytes(file.getSize());
         doc.setDocumentType(DocumentType.OTHER);
-        doc.setS3Bucket("local-dev");
-        doc.setS3Key("documents/" + patientId + "/" + System.currentTimeMillis() + "-" + file.getOriginalFilename());
+        try {
+            doc.setS3Key(s3StorageService.uploadFile(file, "documents", patient.getId()));
+        } catch (Exception storageFailure) {
+            throw new IllegalStateException("Document storage failed", storageFailure);
+        }
         doc.setOcrStatus(OcrStatus.PENDING);
         doc.setCreatedAt(LocalDateTime.now());
 
         UploadedDocument saved = documentRepository.save(doc);
 
         DocumentUploadResponse response = new DocumentUploadResponse();
-        response.setId(saved.getId());
+        response.setId(saved.getId().toString());
         response.setOriginalFilename(saved.getOriginalFilename());
         response.setDocumentType(saved.getDocumentType() != null ? saved.getDocumentType().name() : null);
         response.setStatus("UPLOADED");
@@ -81,7 +86,13 @@ public class DocumentService {
     public Map<String, String> getDocumentUrl(UUID documentId) {
         UploadedDocument doc = documentRepository.findById(documentId)
                 .orElseThrow(() -> new IllegalArgumentException("Document not found"));
-        return Map.of("url", "http://localhost:8080/api/documents/" + doc.getId() + "/download");
+        return Map.of("url", s3StorageService.generatePresignedUrl(doc.getS3Key()));
+    }
+
+    @Transactional(readOnly = true)
+    public UploadedDocument get(UUID documentId) {
+        return documentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
     }
 
     public void delete(UUID documentId) {

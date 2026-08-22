@@ -8,6 +8,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @EnableJpaRepositories(basePackages = {
     "com.shifa.config.security",
     "com.shifa.domain.doctor",
+    "com.shifa.domain.document",
     "com.shifa.domain.patient",
     "com.shifa.domain.prescription",
     "com.shifa.domain.reminder",
@@ -19,7 +20,6 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @EnableRedisRepositories(basePackages = {
     "com.shifa.domain.chat",
     "com.shifa.domain.consent",
-    "com.shifa.domain.document",
     "com.shifa.domain.notification"
 })
 public class DataConfig {

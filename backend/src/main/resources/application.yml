@@ -15,7 +15,7 @@ spring:
 
 shifa:
   rag:
-    base-url: ${RAG_BASE_URL:http://localhost:5050}
+    base-url: ${RAG_BASE_URL:http://localhost:8000}
   scheduler:
     enabled: true
     pool-size: 5

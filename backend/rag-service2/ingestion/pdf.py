@@ -350,6 +350,7 @@ class PDFProcessor:
         # 6. Save to rag_documents and rag_document_chunks (PostgreSQL)
         rag_doc_id = self.doc_repo.save_document(
             session_id=effective_session,
+               patient_id=patient_id,
             document_type="pdf",
             original_filename=file_name,
             file_hash=file_hash,

@@ -15,11 +15,13 @@ from pydantic import BaseModel, Field, ConfigDict
 class ChatRequest(BaseModel):
     session_id: str = Field(..., description="UUID of active chat session")
     question: str = Field(..., min_length=1, description="User question or prompt")
+    patient_id: str = Field(..., min_length=1, description="Server-resolved patient UUID")
 
     model_config = ConfigDict(json_schema_extra={
         "example": {
             "session_id": "123e4567-e89b-12d3-a456-426614174000",
-            "question": "What medicines were prescribed during my last visit?"
+            "question": "What medicines were prescribed during my last visit?",
+            "patient_id": "8f8a1e2f-5b6d-9c7e-4a3b-1c5d9e8f2a4c"
         }
     })
 

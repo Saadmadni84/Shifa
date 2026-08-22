@@ -87,6 +87,7 @@ class Retriever:
         self,
         query: str,
         session_id: str,
+        patient_id: str,
         limit: int = 8,
     ) -> List[Document]:
         """
@@ -100,6 +101,7 @@ class Retriever:
             # Try full-text search first
             results = self.doc_repo.search_chunks_by_keyword(
                 session_id=session_id,
+                patient_id=patient_id,
                 search_query=query.strip(),
                 limit=limit,
             )
@@ -108,6 +110,7 @@ class Retriever:
             if not results:
                 results = self.doc_repo.get_chunks_by_session(
                     session_id=session_id,
+                    patient_id=patient_id,
                     limit=limit,
                 )
 
@@ -148,9 +151,13 @@ class Retriever:
         top_k = k if k is not None else DEFAULT_TOP_K
 
         # 1. ChromaDB vector search (session-scoped if available, else patient-scoped)
+        if not patient_id:
+            return []
+
         vector_results = self.search(
             query=query,
             session_id=session_id,
+            patient_id=patient_id,
             k=top_k,
         )
 
@@ -167,6 +174,7 @@ class Retriever:
         pg_results = self.search_session_chunks(
             query=query,
             session_id=session_id,
+            patient_id=patient_id,
             limit=top_k,
         )
 

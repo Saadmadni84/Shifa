@@ -43,6 +43,10 @@ frontend/dist/
 ### User Additions ###
 node_modules/
 target/
+target_test-classes/
+uploads/
+backend/uploads/
+backend/target_test-classes/
 .env
 *.log
 

@@ -28,10 +28,125 @@ def get_patient(patient_id):
         date_of_birth, gender, blood_group, preferred_language,
         address, city, state, known_conditions, current_medicines_text
     FROM patients
-    WHERE id=%s AND deleted=FALSE;
+    WHERE (id::text = %s OR user_id::text = %s) AND deleted = FALSE;
     """
-    rows = execute_query(query, (patient_id,))
+    rows = execute_query(query, (str(patient_id), str(patient_id)))
     return rows[0] if rows else None
+
+
+def build_patient_context_string(patient_data: dict) -> str:
+    """Formats structured patient database records into a clean, comprehensive text block for RAG."""
+    if not patient_data or not patient_data.get("patient"):
+        return "NO PATIENT RECORD FOUND"
+
+    p = patient_data["patient"]
+    first_name = p.get("first_name", "") or ""
+    last_name = p.get("last_name", "") or ""
+    full_name = f"{first_name} {last_name}".strip() or "Patient"
+    phone = p.get("phone_number") or "Not set"
+    email = p.get("email") or "Not set"
+    dob = str(p.get("date_of_birth")) if p.get("date_of_birth") else "Not set"
+    gender = p.get("gender") or "Not set"
+    blood_group = p.get("blood_group") or "Not set"
+    language = p.get("preferred_language") or "English"
+    address = p.get("address") or ""
+    city = p.get("city") or ""
+    state = p.get("state") or ""
+    full_address = ", ".join(filter(None, [address, city, state])) or "Not set"
+    known_conditions = p.get("known_conditions") or "None recorded"
+    current_medicines = p.get("current_medicines_text") or "None recorded"
+
+    profile_text = (
+        f"PATIENT PROFILE:\n"
+        f"- Full Name: {full_name}\n"
+        f"- First Name: {first_name}\n"
+        f"- Last Name: {last_name}\n"
+        f"- MRN / ID: MRN-{str(p.get('id', ''))[:8].upper()}\n"
+        f"- Phone: {phone}\n"
+        f"- Email: {email}\n"
+        f"- Date of Birth: {dob}\n"
+        f"- Gender: {gender}\n"
+        f"- Blood Group: {blood_group}\n"
+        f"- Preferred Language: {language}\n"
+        f"- Address: {full_address}\n"
+        f"- Known Conditions: {known_conditions}\n"
+        f"- Current Medications: {current_medicines}"
+    )
+
+    allergies = patient_data.get("allergies", [])
+    if allergies:
+        allergy_items = [a.get("allergy") for a in allergies if a.get("allergy")]
+        allergies_text = "ALLERGIES:\n" + ("\n".join(f"- {a}" for a in allergy_items) if allergy_items else "- None recorded")
+    else:
+        allergies_text = "ALLERGIES:\n- None recorded"
+
+    chronic = patient_data.get("chronic_conditions", [])
+    if chronic:
+        cond_items = [c.get("condition_name") for c in chronic if c.get("condition_name")]
+        conditions_text = "CHRONIC CONDITIONS & DIAGNOSES:\n" + ("\n".join(f"- {c}" for c in cond_items) if cond_items else "- None recorded")
+    else:
+        conditions_text = "CHRONIC CONDITIONS & DIAGNOSES:\n- None recorded"
+
+    vitals = patient_data.get("vital_signs", [])
+    if vitals:
+        v_lines = []
+        for v in vitals[:3]:
+            bp = v.get("blood_pressure") or "N/A"
+            hr = v.get("heart_rate") or "N/A"
+            recorded_at = str(v.get("recorded_at", ""))[:10]
+            v_lines.append(f"- Recorded {recorded_at}: BP {bp}, Heart Rate {hr} bpm")
+        vitals_text = "VITAL SIGNS:\n" + "\n".join(v_lines)
+    else:
+        vitals_text = "VITAL SIGNS:\n- No vitals recorded yet"
+
+    visits = patient_data.get("visits", [])
+    if visits:
+        v_items = []
+        for v in visits[:5]:
+            v_date = str(v.get("visit_date", ""))
+            doc_name = v.get("doctor_name") or "Doctor"
+            spec = v.get("specialization") or "General"
+            complaint = v.get("chief_complaint") or "N/A"
+            diag = v.get("diagnosis") or "N/A"
+            notes = v.get("raw_notes") or ""
+            v_items.append(f"- Visit Date: {v_date} | Doctor: {doc_name} ({spec}) | Chief Complaint: {complaint} | Diagnosis: {diag}" + (f" | Notes: {notes}" if notes else ""))
+        visits_text = f"VISIT HISTORY ({len(visits)} visit(s) recorded):\n" + "\n".join(v_items)
+    else:
+        visits_text = "VISIT HISTORY:\n- No visits recorded yet"
+
+    prescriptions = patient_data.get("prescriptions", [])
+    if prescriptions:
+        rx_items = []
+        for rx in prescriptions:
+            meds = rx.get("medications", [])
+            for m in meds:
+                med_name = m.get("name") or m.get("generic_name") or "Medication"
+                dosage = m.get("dosage") or ""
+                freq = m.get("frequency") or ""
+                timing = m.get("timing") or ""
+                dur = m.get("duration_days")
+                instructions = m.get("instructions") or ""
+                rx_items.append(f"- {med_name} {dosage} ({freq}, {timing})" + (f" for {dur} days" if dur else "") + (f". {instructions}" if instructions else ""))
+        prescriptions_text = "PRESCRIPTIONS & MEDICATIONS:\n" + ("\n".join(rx_items) if rx_items else "- No active medications listed")
+    else:
+        prescriptions_text = "PRESCRIPTIONS & MEDICATIONS:\n- No active prescriptions recorded"
+
+    docs = patient_data.get("uploaded_documents", [])
+    if docs:
+        d_items = [f"- {d.get('original_filename', 'Document')} ({d.get('document_type', 'OTHER')})" for d in docs[:5]]
+        docs_text = f"UPLOADED DOCUMENTS ({len(docs)} file(s)):\n" + "\n".join(d_items)
+    else:
+        docs_text = "UPLOADED DOCUMENTS:\n- No documents uploaded yet"
+
+    return "\n\n".join([
+        profile_text,
+        allergies_text,
+        conditions_text,
+        vitals_text,
+        visits_text,
+        prescriptions_text,
+        docs_text
+    ])
 
 
 def get_visits(patient_id):
@@ -122,78 +237,23 @@ def load_complete_patient(patient_id):
     patient = get_patient(patient_id)
 
     if not patient:
-        logger.info(f"Patient '{patient_id}' not found in DB. Returning demo patient profile.")
-        patient = {
-            "id": patient_id,
-            "first_name": "Hari",
-            "last_name": "Patel",
-            "phone_number": "+1-555-0192",
-            "email": "hari.patel@example.com",
-            "date_of_birth": "1988-05-14",
-            "gender": "Male",
-            "blood_group": "O+",
-            "preferred_language": "English",
-            "address": "123 Healthcare Way",
-            "city": "Mumbai",
-            "state": "Maharashtra",
-            "known_conditions": "Childhood Asthma, Acute Bronchitis",
-            "current_medicines_text": "Amoxicillin 500mg, Albuterol HFA inhaler PRN"
-        }
-        visits = [{
-            "id": "demo-visit-001",
-            "patient_id": patient_id,
-            "doctor_name": "Dr. Mehta",
-            "specialization": "General Pulmonology",
-            "visit_date": "2026-03-01",
-            "chief_complaint": "Persistent cough and low grade fever for 3 days",
-            "diagnosis": "Acute Bronchitis with mild asthma exacerbation",
-            "raw_notes": "Patient presents with productive cough and mild dyspnea. Prescribed Amoxicillin 500mg TID and Albuterol inhaler.",
-            "follow_up_date": "2026-03-08"
-        }]
-        prescriptions = [{
-            "id": "demo-rx-001",
-            "patient_id": patient_id,
-            "visit_id": "demo-visit-001",
-            "special_instructions": "Take medication after meals. Drink plenty of water.",
-            "diet_advice": "Light warm fluids, avoid cold beverages.",
-            "medications": [
-                {
-                    "name": "Amoxicillin",
-                    "generic_name": "Amoxicillin",
-                    "dosage": "500 mg",
-                    "frequency": "Three times daily",
-                    "timing": "After meals",
-                    "duration_days": 7,
-                    "instructions": "Complete full course"
-                },
-                {
-                    "name": "Albuterol HFA",
-                    "generic_name": "Albuterol",
-                    "dosage": "2 puffs",
-                    "frequency": "Every 4-6 hours PRN",
-                    "timing": "As needed",
-                    "duration_days": 30,
-                    "instructions": "Inhale deeply for shortness of breath"
-                }
-            ]
-        }]
-        return {
-            "patient": patient,
-            "visits": visits,
-            "prescriptions": prescriptions,
-            "uploaded_documents": [],
-            "vital_signs": [{"blood_pressure": "120/78", "heart_rate": 88}],
-            "allergies": [{"allergy": "None known"}],
-            "chronic_conditions": [{"condition_name": "Asthma"}],
-            "visit_summaries": []
-        }
+        logger.warning(f"Patient '{patient_id}' not found in DB; no patient context will be created.")
+        return {}
 
     visits = get_visits(patient_id)
-    prescriptions = get_prescriptions(patient_id)
+    try:
+        prescriptions = get_prescriptions(patient_id)
+    except Exception as e:
+        logger.warning(f"Optional prescription context unavailable for patient '{patient_id}': {e}")
+        prescriptions = []
 
     for prescription in prescriptions:
         prescription["patient_id"] = patient_id
-        medications = get_medications(prescription["id"])
+        try:
+            medications = get_medications(prescription["id"])
+        except Exception as e:
+            logger.warning(f"Optional medication context unavailable for patient '{patient_id}': {e}")
+            medications = []
         for medicine in medications:
             medicine["patient_id"] = patient_id
             medicine["prescription_id"] = prescription["id"]
@@ -206,7 +266,11 @@ def load_complete_patient(patient_id):
             ocr["patient_id"] = patient_id
         document["ocr_results"] = ocr_results
 
-    visit_summaries = get_visit_summaries(patient_id)
+    try:
+        visit_summaries = get_visit_summaries(patient_id)
+    except Exception as e:
+        logger.warning(f"Optional visit summary context unavailable for patient '{patient_id}': {e}")
+        visit_summaries = []
     for summary in visit_summaries:
         summary["patient_id"] = patient_id
 

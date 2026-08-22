@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '@/store'
 import { getPatientProfile } from '@/api/patients'
-import { createPatientVisit, uploadVisitDocumentByPatient, getMyVisits } from '@/api/patientVisits'
+import { createPatientVisit, uploadVisitDocumentByPatient, getMyVisits, sendPatientChat } from '@/api/patientVisits'
 import { validateFile } from '@/api/documents'
 import toast from 'react-hot-toast'
 
@@ -109,13 +109,25 @@ export default function MyHealth() {
     profile?.age ? `${profile.age} y.o.` : null
   ].filter(Boolean).join(', ') || ''
 
-  const sendChatMessage = (text) => {
+  const [sessionId, setSessionId] = useState(null)
+
+  const sendChatMessage = async (text) => {
     const question = text || chatInput.trim()
-    if (!question) return
+    if (!question || isChatLoading) return
+
     setChatMessages(prev => [...prev, { role: 'user', content: question }])
     setChatInput('')
     setIsChatLoading(true)
-    setTimeout(() => {
+
+    try {
+      const res = await sendPatientChat({ question, sessionId })
+      if (res?.sessionId) {
+        setSessionId(res.sessionId)
+      }
+      const answer = res?.answer || "I couldn't retrieve an answer at this moment."
+      setChatMessages(prev => [...prev, { role: 'assistant', content: answer, sources: res?.sources }])
+    } catch (err) {
+      console.warn('Patient RAG chat failed:', err)
       let answer = ''
       const q = question.toLowerCase()
       if (visits.length === 0) {
@@ -130,8 +142,9 @@ export default function MyHealth() {
         answer = "Everything looks stable based on your latest visit. Follow your doctor's advice and reach out if symptoms worsen."
       }
       setChatMessages(prev => [...prev, { role: 'assistant', content: answer }])
+    } finally {
       setIsChatLoading(false)
-    }, 900)
+    }
   }
 
   const getSuggestedQuestions = () => activePage === 'myhealth'
@@ -756,24 +769,14 @@ export default function MyHealth() {
         })
         const visitId = created.visitId
 
-        // 2. Upload documents
+        // 2. A failed file fails the submission, so success is never misleading.
         for (const { file, docType } of docFiles) {
-          try {
-            await uploadVisitDocumentByPatient(visitId, file, docType)
-          } catch (e) {
-            console.warn('Document upload failed:', file.name, e)
-            toast.error(`Failed to upload ${file.name}`)
-          }
+          await uploadVisitDocumentByPatient(visitId, file, docType)
         }
 
         // 3. Upload audio
         if (audioFile) {
-          try {
-            await uploadVisitDocumentByPatient(visitId, audioFile, 'OTHER')
-          } catch (e) {
-            console.warn('Audio upload failed:', audioFile.name, e)
-            toast.error('Audio upload failed — visit was still saved')
-          }
+          await uploadVisitDocumentByPatient(visitId, audioFile, 'OTHER')
         }
 
         toast.success('Visit uploaded successfully!')

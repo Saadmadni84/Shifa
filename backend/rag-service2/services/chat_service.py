@@ -47,8 +47,10 @@ class ChatService:
         self.retriever = retriever or Retriever()
         self.prompt_builder = prompt_builder or PromptBuilder()
         self.generator = generator or Generator()
+        from services.indexer import Indexer
+        self.indexer = Indexer()
 
-    def chat(self, session_id: str, question: str) -> Dict[str, Any]:
+    def chat(self, session_id: str, question: str, patient_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Processes a chat turn for a given session and user question.
         Uses combined retrieval from ChromaDB and PostgreSQL session chunks.
@@ -63,16 +65,29 @@ class ChatService:
         }
 
         # 1. Validate / Auto-Create Chat Session
-        chat_context = self.repository.get_chat_context(session_id)
+        chat_context = self.repository.get_chat_context(session_id, patient_id)
         if not chat_context:
             logger.warning(f"Invalid or deleted chat session: '{session_id}'")
             raise InvalidSessionError(f"Chat session '{session_id}' not found or deleted.")
+
+        # Load Patient Structured Database Context
+        patient_ctx_str = ""
+        if patient_id:
+            try:
+                from services.loader import load_complete_patient, build_patient_context_string
+                p_data = load_complete_patient(patient_id)
+                if p_data:
+                    patient_ctx_str = build_patient_context_string(p_data)
+
+                self.indexer.index_patient(patient_id)
+            except Exception as e:
+                logger.warning(f"Patient context/indexing for '{patient_id}' skipped/warned: {e}")
 
         # session_id is the primary key for retrieval scope
         language = "en"
 
         # 2. Conversation History
-        history = self.conversation.format_history(session_id=session_id)
+        history = self.conversation.format_history(session_id=session_id, patient_id=patient_id)
         has_history = bool(history.strip())
 
         # 3. Intent Classification
@@ -87,6 +102,7 @@ class ChatService:
                 documents = self.retriever.combined_search(
                     query=question,
                     session_id=session_id,
+                    patient_id=patient_id,
                 )
             latencies["retrieval_ms"] = t.elapsed_ms
 
@@ -94,6 +110,7 @@ class ChatService:
         with _Timer("Prompt Building") as t:
             prompt = self.prompt_builder.build(
                 question=question,
+                patient_context=patient_ctx_str,
                 documents=documents,
                 conversation_history=history
             )
@@ -108,6 +125,7 @@ class ChatService:
         tokens_used = gen_stats.get("tokens_used")
         self.conversation.save_exchange(
             session_id=session_id,
+            patient_id=patient_id,
             user_message=question,
             assistant_message=answer,
             language_code=language,
@@ -127,7 +145,7 @@ class ChatService:
             for doc in documents
         ]
 
-        logger.info(f"[CHAT_SERVICE] Session '{session_id}' completed in {total_elapsed}ms (retrieval={should_retrieve}, docs={len(documents)})")
+        logger.info(f"[CHAT_SERVICE] Patient chat completed: patient_id={patient_id}, retrieval={should_retrieve}, docs={len(documents)}, elapsed_ms={total_elapsed}")
 
         return {
             "session_id": session_id,

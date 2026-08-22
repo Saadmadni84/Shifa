@@ -19,6 +19,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE IF NOT EXISTS rag_documents (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id      VARCHAR(255) NOT NULL,
+    patient_id      UUID,
     document_type   VARCHAR(50)  NOT NULL CHECK (document_type IN ('pdf', 'audio')),
     original_filename VARCHAR(500) NOT NULL,
     file_hash       VARCHAR(64),
@@ -49,6 +50,7 @@ CREATE TABLE IF NOT EXISTS rag_document_chunks (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS rag_chat_sessions (
     id              VARCHAR(255) PRIMARY KEY,
+    patient_id      UUID,
     created_at      TIMESTAMP    DEFAULT NOW(),
     updated_at      TIMESTAMP    DEFAULT NOW(),
     total_messages  INTEGER      DEFAULT 0,
@@ -76,8 +78,14 @@ CREATE TABLE IF NOT EXISTS rag_chat_messages (
 -- ---------------------------------------------------------
 -- Indexes for query performance
 -- ---------------------------------------------------------
+ALTER TABLE rag_documents ADD COLUMN IF NOT EXISTS patient_id UUID;
+ALTER TABLE rag_chat_sessions ADD COLUMN IF NOT EXISTS patient_id UUID;
+
 CREATE INDEX IF NOT EXISTS idx_rag_docs_session
     ON rag_documents(session_id);
+
+CREATE INDEX IF NOT EXISTS idx_rag_docs_patient
+    ON rag_documents(patient_id);
 
 CREATE INDEX IF NOT EXISTS idx_rag_docs_type
     ON rag_documents(document_type);

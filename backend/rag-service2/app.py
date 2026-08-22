@@ -166,7 +166,8 @@ async def chat_endpoint(request: ChatRequest):
     """
     result = chat_service.chat(
         session_id=request.session_id,
-        question=request.question
+        question=request.question,
+        patient_id=request.patient_id
     )
     return ChatResponse(**result)
 
