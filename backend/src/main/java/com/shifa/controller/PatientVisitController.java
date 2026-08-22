@@ -13,6 +13,8 @@ import com.shifa.domain.patient.PatientRepository;
 import com.shifa.domain.user.UserRepository;
 import com.shifa.domain.visit.Visit;
 import com.shifa.domain.visit.VisitRepository;
+import com.shifa.integration.storage.S3StorageService;
+import com.shifa.service.document.PatientDocumentRagService;
 import com.shifa.security.dto.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -33,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +53,8 @@ public class PatientVisitController {
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
     private final DocumentRepository documentRepository;
+    private final S3StorageService s3StorageService;
+    private final PatientDocumentRagService patientDocumentRagService;
 
     // ──────────────────────────────────────────────────────────────────────────
     // POST /api/patient/visits/upload
@@ -210,7 +213,7 @@ public class PatientVisitController {
     @Operation(summary = "Upload a document or audio file to a patient visit")
     public ResponseEntity<?> uploadDocument(
             @PathVariable UUID visitId,
-            @RequestParam MultipartFile file,
+            @RequestParam("file") MultipartFile file,
             @RequestParam(defaultValue = "OTHER") String documentType,
             @AuthenticationPrincipal UserPrincipal currentUser) {
 
@@ -231,13 +234,20 @@ public class PatientVisitController {
 
         Patient patient = resolvePatient(currentUser.getUserId());
 
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new IllegalArgumentException("Visit not found: " + visitId));
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "File is empty"));
+        }
+
+        UUID visitPatientId = visitRepository.findPatientIdById(visitId)
+            .orElseThrow(() -> new IllegalArgumentException("Visit not found: " + visitId));
 
         // Security: the visit must belong to this patient
-        if (!visit.getPatient().getId().equals(patient.getId())) {
+        if (!visitPatientId.equals(patient.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
+        // Use a proxy so saving the document does not load unrelated prescription data.
+        Visit visit = visitRepository.getReferenceById(visitId);
 
         DocumentType dtype;
         try {
@@ -246,6 +256,16 @@ public class PatientVisitController {
             dtype = DocumentType.OTHER;
         }
 
+        String storageKey;
+        try {
+            storageKey = s3StorageService.uploadFile(file, "patient-documents", patient.getId());
+        } catch (Exception storageFailure) {
+            log.error("[PatientVisitController] Storage upload failed for patientId={}", patient.getId(), storageFailure);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "error", "File upload failed",
+                    "message", storageFailure.getMessage() != null ? storageFailure.getMessage() : "The file could not be stored"
+            ));
+        }
         UploadedDocument doc = new UploadedDocument();
         doc.setPatient(patient);
         doc.setVisit(visit);
@@ -253,21 +273,26 @@ public class PatientVisitController {
         doc.setMimeType(file.getContentType());
         doc.setFileSizeBytes(file.getSize());
         doc.setDocumentType(dtype);
-        doc.setS3Bucket("local-dev");
-        // placeholder key — real S3 upload will be implemented in a later module
-        doc.setS3Key("patient-documents/" + patient.getId() + "/" + visitId + "/"
-                + System.currentTimeMillis() + "-" + file.getOriginalFilename());
+        doc.setS3Key(storageKey);
         doc.setOcrStatus(OcrStatus.PENDING);
-        doc.setCreatedAt(LocalDateTime.now());
-        doc.setUpdatedAt(LocalDateTime.now());
-
-        UploadedDocument saved = documentRepository.save(doc);
+        UploadedDocument saved;
+        try {
+            saved = documentRepository.saveAndFlush(doc);
+        } catch (RuntimeException persistenceFailure) {
+            log.error("[PatientVisitController] Document persistence failed after storage upload", persistenceFailure);
+            s3StorageService.deleteFile(storageKey);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "error", "Document could not be recorded",
+                "message", "The file was not added to the health profile"
+            ));
+        }
 
         log.info("[PatientVisitController] Document attached: docId={} visitId={} patientId={}",
                 saved.getId(), visitId, patient.getId());
+        patientDocumentRagService.prepareAndIndex(saved.getId(), patient.getId(), file);
 
         DocumentUploadResponse response = new DocumentUploadResponse();
-        response.setId(saved.getId());
+        response.setId(saved.getId().toString());
         response.setOriginalFilename(saved.getOriginalFilename());
         response.setDocumentType(saved.getDocumentType().name());
         response.setStatus("UPLOADED");
@@ -287,32 +312,28 @@ public class PatientVisitController {
 
         Patient patient = resolvePatient(currentUser.getUserId());
 
-        List<Visit> visits = visitRepository.findByPatientIdOrderByVisitDateDesc(patient.getId());
+        List<Object[]> visits = visitRepository.findPatientVisitSummaries(patient.getId());
 
         List<PatientVisitUploadResponse> result = visits.stream()
-                .map(v -> {
-                    long docCount = documentRepository.countByVisitId(v.getId());
+                .map(row -> {
+                    UUID visitId = (UUID) row[0];
+                    long docCount = documentRepository.countByVisitId(visitId);
                     String doctorName = null;
                     String hospitalName = null;
-                    if (v.getDoctor() != null) {
-                        doctorName = "Dr. " + v.getDoctor().getFirstName() + " " + v.getDoctor().getLastName();
-                        hospitalName = v.getDoctor().getClinicName();
-                    } else {
-                        // For patient-uploaded visits, try to extract from rawNotes
-                        String[] lines = v.getRawNotes() != null ? v.getRawNotes().split("\n") : new String[0];
-                        for (String line : lines) {
-                            if (line.startsWith("Doctor: ")) doctorName = line.substring(8).trim();
-                            if (line.startsWith("Hospital: ")) hospitalName = line.substring(10).trim();
-                        }
+                    String rawNotes = (String) row[5];
+                    String[] lines = rawNotes != null ? rawNotes.split("\n") : new String[0];
+                    for (String line : lines) {
+                        if (line.startsWith("Doctor: ")) doctorName = line.substring(8).trim();
+                        if (line.startsWith("Hospital: ")) hospitalName = line.substring(10).trim();
                     }
                     return PatientVisitUploadResponse.builder()
-                            .visitId(v.getId())
-                            .visitDate(v.getVisitDate())
+                            .visitId(visitId)
+                            .visitDate((LocalDate) row[1])
                             .hospitalName(hospitalName)
                             .doctorName(doctorName)
-                            .chiefComplaint(v.getChiefComplaint())
-                            .visitType(v.getVisitType())
-                            .status(v.getStatus().name())
+                            .chiefComplaint((String) row[4])
+                            .visitType((String) row[2])
+                            .status(row[3].toString())
                             .documentCount((int) docCount)
                             .build();
                 })

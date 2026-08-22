@@ -20,42 +20,39 @@ from common.logging import logger
 class ChatRepository:
     """Handles database persistence for chatbot conversations and sessions."""
 
-    def get_chat_context(self, session_id: str) -> Dict[str, Any]:
+    def get_chat_context(self, session_id: str, patient_id: str) -> Dict[str, Any]:
         """
         Returns chat session details. Auto-creates session if not found.
         Uses rag_chat_sessions table (RAG-service owned).
         """
         query = """
-        SELECT id AS session_id, created_at, total_messages, total_tokens
+        SELECT id AS session_id, patient_id, created_at, total_messages, total_tokens
         FROM rag_chat_sessions
-        WHERE id = %s;
+        WHERE id = %s AND patient_id = %s;
         """
-        result = execute_single_query(query, (session_id,))
+        result = execute_single_query(query, (session_id, patient_id))
         if result:
             return result
 
         # Auto-create session for seamless usage
         insert_query = """
-        INSERT INTO rag_chat_sessions (id, created_at, updated_at, total_messages, total_tokens)
-        VALUES (%s, NOW(), NOW(), 0, 0)
+        INSERT INTO rag_chat_sessions (id, patient_id, created_at, updated_at, total_messages, total_tokens)
+        VALUES (%s, %s, NOW(), NOW(), 0, 0)
         ON CONFLICT (id) DO NOTHING;
         """
         try:
             with get_db_transaction() as (_, cursor):
                 if cursor:
-                    cursor.execute(insert_query, (session_id,))
+                    cursor.execute(insert_query, (session_id, patient_id))
         except Exception as e:
             logger.warning(f"Session auto-create skipped (DB may be offline): {e}")
 
-        logger.info(f"Auto-created RAG chat session '{session_id}'.")
-        return {
-            "session_id": session_id,
-            "created_at": None,
-            "total_messages": 0,
-            "total_tokens": 0,
-        }
+        result = execute_single_query(query, (session_id, patient_id))
+        if result:
+            logger.info(f"Created RAG chat session for patient '{patient_id}'.")
+        return result
 
-    def get_messages(self, session_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+    def get_messages(self, session_id: str, patient_id: str, limit: int = 20) -> List[Dict[str, Any]]:
         """
         Returns the most recent non-deleted chat messages ordered chronologically.
         """
@@ -78,12 +75,16 @@ class ChatRepository:
             FROM rag_chat_messages
             WHERE session_id = %s
               AND deleted = FALSE
+                            AND EXISTS (
+                                    SELECT 1 FROM rag_chat_sessions s
+                                    WHERE s.id = session_id AND s.patient_id = %s
+                            )
             ORDER BY created_at DESC
             LIMIT %s
         ) AS recent_messages
         ORDER BY created_at ASC;
         """
-        return execute_query(query, (session_id, limit))
+        return execute_query(query, (session_id, patient_id, limit))
 
     def save_message(
         self,
@@ -92,7 +93,8 @@ class ChatRepository:
         content: str,
         language_code: str = "en",
         tokens_used: Optional[int] = None,
-        created_by: str = "SYSTEM"
+        created_by: str = "SYSTEM",
+        patient_id: str = None
     ) -> bool:
         """
         Saves a single chat message and updates session statistics.
@@ -106,17 +108,20 @@ class ChatRepository:
             tokens_used,
             created_by,
             created_at
-        ) VALUES (%s, %s, %s, %s, %s, %s, NOW());
+                ) SELECT %s, %s, %s, %s, %s, %s, NOW()
+                    WHERE EXISTS (
+                            SELECT 1 FROM rag_chat_sessions
+                            WHERE id = %s AND patient_id = %s
+                    );
         """
 
         update_session_query = """
-        INSERT INTO rag_chat_sessions (id, created_at, updated_at, total_messages, total_tokens, last_message_at)
-        VALUES (%s, NOW(), NOW(), 1, COALESCE(%s, 0), NOW())
-        ON CONFLICT (id) DO UPDATE SET
-            total_messages = rag_chat_sessions.total_messages + 1,
-            total_tokens = rag_chat_sessions.total_tokens + COALESCE(%s, 0),
+        UPDATE rag_chat_sessions
+        SET total_messages = total_messages + 1,
+            total_tokens = total_tokens + COALESCE(%s, 0),
             last_message_at = NOW(),
-            updated_at = NOW();
+            updated_at = NOW()
+        WHERE id = %s AND patient_id = %s;
         """
 
         try:
@@ -124,11 +129,11 @@ class ChatRepository:
                 if cursor:
                     cursor.execute(
                         insert_query,
-                        (session_id, role, content, language_code, tokens_used, created_by)
+                        (session_id, role, content, language_code, tokens_used, created_by, session_id, patient_id)
                     )
                     cursor.execute(
                         update_session_query,
-                        (session_id, tokens_used or 0, tokens_used or 0)
+                        (tokens_used or 0, session_id, patient_id)
                     )
             return True
         except Exception as e:

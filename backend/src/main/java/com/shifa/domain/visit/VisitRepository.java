@@ -23,6 +23,13 @@ public interface VisitRepository extends JpaRepository<Visit, UUID> {
     List<Visit> findByPatientId(UUID patientId);
     List<Visit> findByPatientIdOrderByVisitDateDesc(UUID patientId);
 
+        @Query("SELECT v.id, v.visitDate, v.visitType, v.status, v.chiefComplaint, v.rawNotes "
+            + "FROM Visit v WHERE v.patient.id = :patientId ORDER BY v.visitDate DESC")
+        List<Object[]> findPatientVisitSummaries(@Param("patientId") UUID patientId);
+
+    @Query("SELECT v.patient.id FROM Visit v WHERE v.id = :visitId")
+    Optional<UUID> findPatientIdById(@Param("visitId") UUID visitId);
+
 
 
     // Doctor-based queries using UUID

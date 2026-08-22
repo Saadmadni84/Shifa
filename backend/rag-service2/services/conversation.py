@@ -38,16 +38,16 @@ class ConversationService:
             return 0
         return len(self.tokenizer.encode(text))
 
-    def get_history(self, session_id: str, limit: int = MAX_HISTORY_MESSAGES) -> List[Dict[str, Any]]:
+    def get_history(self, session_id: str, patient_id: str, limit: int = MAX_HISTORY_MESSAGES) -> List[Dict[str, Any]]:
         """Fetch raw chat history from repository."""
-        return self.repo.get_messages(session_id, limit=limit)
+        return self.repo.get_messages(session_id, patient_id, limit=limit)
 
-    def format_history(self, session_id: str, limit: int = MAX_HISTORY_MESSAGES) -> str:
+    def format_history(self, session_id: str, patient_id: str, limit: int = MAX_HISTORY_MESSAGES) -> str:
         """
         Formats conversation history into a clean string, ensuring total tokens
         do not exceed MAX_HISTORY_TOKENS.
         """
-        messages = self.get_history(session_id, limit=limit)
+        messages = self.get_history(session_id, patient_id, limit=limit)
         if not messages:
             return ""
 
@@ -108,11 +108,14 @@ class ConversationService:
     def save_exchange(
         self,
         session_id: str,
+        patient_id: str,
         user_message: str,
         assistant_message: str,
         language_code: str = "en",
         assistant_tokens: int = None
     ) -> None:
         """Saves both user and assistant messages."""
-        self.save_user_message(session_id, user_message, language_code)
-        self.save_assistant_message(session_id, assistant_message, language_code, assistant_tokens)
+        self.repo.save_message(session_id, "user", user_message, language_code,
+                       self.count_tokens(user_message), "USER", patient_id)
+        self.repo.save_message(session_id, "assistant", assistant_message, language_code,
+                       assistant_tokens, "SHIFA_AI", patient_id)

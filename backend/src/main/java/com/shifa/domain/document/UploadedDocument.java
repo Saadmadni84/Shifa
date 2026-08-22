@@ -1,11 +1,13 @@
 package com.shifa.domain.document;
 
-import com.shifa.common.audit.RedisAuditableEntity;
+import com.shifa.common.audit.AuditableEntity;
 import com.shifa.common.enums.DocumentType;
 import com.shifa.common.enums.OcrStatus;
 import com.shifa.domain.patient.Patient;
 import com.shifa.domain.visit.Visit;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -16,12 +18,11 @@ import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash("document")
+@Entity
 @Table(name = "uploaded_documents")
 @Getter @Setter @NoArgsConstructor
-public class UploadedDocument extends RedisAuditableEntity {
+public class UploadedDocument extends AuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visit_id")
@@ -37,10 +38,10 @@ public class UploadedDocument extends RedisAuditableEntity {
     @Column(name = "s3_key", nullable = false, length = 500)
     private String s3Key;
 
-    @Column(name = "s3_bucket", length = 100)
+    @Transient
     private String s3Bucket;
 
-    @Column(name = "mime_type", length = 100)
+    @Column(name = "content_type", length = 100)
     private String mimeType;
 
     @Column(name = "file_size_bytes")
@@ -50,19 +51,30 @@ public class UploadedDocument extends RedisAuditableEntity {
     @Column(name = "document_type")
     private DocumentType documentType;
 
-    @Column(name = "ocr_text", columnDefinition = "TEXT")
+    @Transient
     private String ocrText;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ocr_status")
+    @Column(name = "is_ocr_processed", nullable = false)
+    private boolean ocrProcessed;
+
+    @Transient
     private OcrStatus ocrStatus = OcrStatus.PENDING;
 
-    @Column(name = "ocr_confidence")
+    @Transient
     private Double ocrConfidence;
 
-    @Column(name = "ocr_language", length = 10)
+    @Transient
     private String ocrLanguage;
 
     @Transient
     private String presignedUrl;
+
+    public OcrStatus getOcrStatus() {
+        return ocrProcessed ? OcrStatus.COMPLETE : ocrStatus;
+    }
+
+    public void setOcrStatus(OcrStatus status) {
+        this.ocrStatus = status;
+        this.ocrProcessed = status == OcrStatus.COMPLETE;
+    }
 }

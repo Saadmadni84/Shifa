@@ -16,4 +16,6 @@ public class S3Properties {
     private int presignedUrlExpiryMinutes = 60;
     private long maxFileSizeBytes = 10485760;
     private List<String> allowedMimeTypes;
+    private boolean localMode = false;
+    private String localRoot = "uploads";
 }

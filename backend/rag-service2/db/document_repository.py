@@ -23,6 +23,7 @@ class DocumentRepository:
     def save_document(
         self,
         session_id: str,
+        patient_id: str,
         document_type: str,
         original_filename: str,
         file_hash: Optional[str] = None,
@@ -34,14 +35,14 @@ class DocumentRepository:
         doc_id = str(uuid4())
         query = """
         INSERT INTO rag_documents (
-            id, session_id, document_type, original_filename,
+            id, session_id, patient_id, document_type, original_filename,
             file_hash, file_size_bytes, total_pages, total_chunks,
             processing_status, created_at, updated_at
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'completed', NOW(), NOW());
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'completed', NOW(), NOW());
         """
         success = execute_non_query(
             query,
-            (doc_id, session_id, document_type, original_filename,
+            (doc_id, session_id, patient_id, document_type, original_filename,
              file_hash, file_size_bytes, total_pages, total_chunks)
         )
         if not success:
@@ -113,6 +114,7 @@ class DocumentRepository:
     def get_chunks_by_session(
         self,
         session_id: str,
+        patient_id: str,
         limit: int = 50
     ) -> List[Dict[str, Any]]:
         """Retrieves all chunks for documents uploaded in a given session."""
@@ -123,11 +125,11 @@ class DocumentRepository:
             d.document_type, d.original_filename
         FROM rag_document_chunks c
         JOIN rag_documents d ON c.document_id = d.id
-        WHERE d.session_id = %s
+        WHERE d.session_id = %s AND d.patient_id = %s
         ORDER BY d.created_at ASC, c.chunk_index ASC
         LIMIT %s;
         """
-        return execute_query(query, (session_id, limit))
+        return execute_query(query, (session_id, patient_id, limit))
 
     def get_chunks_by_document(
         self,
@@ -147,6 +149,7 @@ class DocumentRepository:
     def search_chunks_by_keyword(
         self,
         session_id: str,
+        patient_id: str,
         search_query: str,
         limit: int = 10
     ) -> List[Dict[str, Any]]:
@@ -162,12 +165,12 @@ class DocumentRepository:
             ts_rank(to_tsvector('english', c.content), plainto_tsquery('english', %s)) AS rank
         FROM rag_document_chunks c
         JOIN rag_documents d ON c.document_id = d.id
-        WHERE d.session_id = %s
+        WHERE d.session_id = %s AND d.patient_id = %s
           AND to_tsvector('english', c.content) @@ plainto_tsquery('english', %s)
         ORDER BY rank DESC
         LIMIT %s;
         """
-        return execute_query(query, (search_query, session_id, search_query, limit))
+        return execute_query(query, (search_query, session_id, patient_id, search_query, limit))
 
     def get_documents_by_session(
         self,

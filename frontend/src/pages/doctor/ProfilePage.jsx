@@ -13,7 +13,7 @@ export default function ProfilePage() {
         <p className="text-gray-500 mt-2">Clinic Settings • Manage Profile</p>
         
         <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm text-gray-400">
-          This is a static demo environment focusing on the PostVisit AI flow. Detailed clinic settings are restricted in the preview.
+          This is a static demo environment focusing on the Shifa AI flow. Detailed clinic settings are restricted in the preview.
         </div>
       </div>
     </DoctorLayout>

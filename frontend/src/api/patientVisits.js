@@ -67,10 +67,20 @@ export async function getMyVisits() {
   return Array.isArray(data) ? data : []
 }
 
+/**
+ * Send a chat message from authenticated patient to Shifa AI RAG service
+ * POST /api/patient/chat
+ */
+export async function sendPatientChat({ question, sessionId }) {
+  const { data } = await apiClient.post('/patient/chat', { question, sessionId })
+  return data
+}
+
 export const patientVisitsApi = {
   createPatientVisit,
   uploadVisitDocumentByPatient,
   uploadVisitAudioByPatient,
   submitPatientVisit,
   getMyVisits,
+  sendPatientChat,
 }
