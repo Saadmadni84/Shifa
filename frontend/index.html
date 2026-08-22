@@ -51,10 +51,11 @@
       DYNAMICALLY by languageStore._loadNotoFont() only when the user picks
       that language — avoids loading 8 heavy fonts upfront.
 
-      The base Latin font is loaded here for the default English UI.
+      Base UI fonts are explicitly loaded here so the appearance does not
+      depend on fonts installed locally on the developer's machine.
     -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
