@@ -30,3 +30,6 @@ dummy_data/sample_consultation.wav
 dummy_data/sample_consultation.mp3
 dummy_data/sample_medical_report.pdf
 dummy_data/__pycache__/
+
+### Evaluation scratch artifacts ###
+evaluation/results_smoke/

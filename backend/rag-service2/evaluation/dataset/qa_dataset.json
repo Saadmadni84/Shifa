@@ -1,0 +1,2009 @@
+{
+  "dataset_id": "shifa-med-benchmark-v2",
+  "version": "2.1.0",
+  "domain": "general internal medicine (educational summaries)",
+  "language": "en",
+  "created": "2026-08-20",
+  "description": "Controlled QA benchmark for retrieval and generation evaluation of the Shifa RAG pipeline. Questions are answerable from the paired medical corpus; relevance is annotated at document level. Educational research material only, not clinical guidance.",
+  "questions": [
+    {
+      "id": "q001",
+      "question": "A patient's blood pressure has been recorded at 145/92, 148/90, and 143/91 on three separate clinic visits. Which diagnostic label applies?",
+      "expected_answer": "Hypertension, defined as a sustained clinic blood pressure of 140/90 mmHg or higher.",
+      "relevant_doc_ids": [
+        "doc_hypertension"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q002",
+      "question": "Which medication classes are recommended as initial therapy for raised blood pressure without complications?",
+      "expected_answer": "ACE inhibitors, angiotensin receptor blockers (ARBs), calcium channel blockers, and thiazide diuretics; beta blockers are not first-line for uncomplicated hypertension.",
+      "relevant_doc_ids": [
+        "doc_hypertension"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q003",
+      "question": "Why is an ACE inhibitor preferred over a beta blocker when the hypertensive patient also has proteinuria from diabetic kidney disease?",
+      "expected_answer": "ACE inhibitors (or ARBs) have renoprotective effects, so they are preferred in patients with diabetes or chronic kidney disease.",
+      "relevant_doc_ids": [
+        "doc_hypertension",
+        "doc_ace_inhibitors"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q004",
+      "question": "A diabetic patient starting a blood pressure medication develops a persistent dry cough. Which drug class is responsible and what is the standard switch?",
+      "expected_answer": "ACE inhibitors cause a dry cough from bradykinin accumulation; the standard switch is to an angiotensin receptor blocker (ARB) such as losartan.",
+      "relevant_doc_ids": [
+        "doc_ace_inhibitors"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q005",
+      "question": "A hypertensive patient with a history of gout develops ankle swelling that does not improve with diuretics. Which antihypertensive class causes this and how is it managed?",
+      "expected_answer": "Calcium channel blockers (dihydropyridines such as amlodipine) cause dose-dependent ankle oedema that does not respond to diuretics; the dose can be reduced or the drug changed.",
+      "relevant_doc_ids": [
+        "doc_calcium_channel_blockers",
+        "doc_diuretics"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q006",
+      "question": "Which laboratory values establish the diagnosis of type 2 diabetes mellitus?",
+      "expected_answer": "Fasting plasma glucose of 126 mg/dL or higher, 2-hour OGTT of 200 mg/dL or higher, HbA1c of 6.5% or higher, or random glucose of 200 mg/dL or higher with symptoms.",
+      "relevant_doc_ids": [
+        "doc_diabetes_type2"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q007",
+      "question": "What is the initial drug of choice for a newly diagnosed patient with type 2 diabetes and how is it introduced?",
+      "expected_answer": "Metformin, started at diagnosis together with lifestyle intervention.",
+      "relevant_doc_ids": [
+        "doc_diabetes_type2",
+        "doc_metformin"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q008",
+      "question": "Which glucose-lowering agents are favoured when type 2 diabetes coexists with atherosclerotic cardiovascular disease, and what is the reason?",
+      "expected_answer": "SGLT2 inhibitors and GLP-1 receptor agonists, because they reduce cardiovascular events in patients with established cardiovascular disease, heart failure, or chronic kidney disease.",
+      "relevant_doc_ids": [
+        "doc_diabetes_type2"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q009",
+      "question": "A young adult presents with abrupt weight loss, excessive thirst, and fruity-smelling breath. What is the likely diagnosis and why would oral glucose-lowering pills fail?",
+      "expected_answer": "Type 1 diabetes, possibly with diabetic ketoacidosis; oral agents are ineffective because there is absolute insulin deficiency, so insulin is mandatory from diagnosis.",
+      "relevant_doc_ids": [
+        "doc_type1_diabetes"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q010",
+      "question": "An HbA1c of 6.1 percent is reported in an overweight adult. What does this represent and which intervention most effectively prevents progression?",
+      "expected_answer": "Prediabetes (HbA1c 5.7-6.4%); lifestyle intervention achieving 7% weight loss with 150 minutes of moderate exercise weekly reduces diabetes incidence by 58%.",
+      "relevant_doc_ids": [
+        "doc_prediabetes"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q011",
+      "question": "How does metformin lower circulating glucose and why does it not cause hypoglycaemia when used alone?",
+      "expected_answer": "It reduces hepatic glucose production (gluconeogenesis) and improves peripheral insulin sensitivity; it does not stimulate insulin release, so hypoglycaemia is not expected with monotherapy.",
+      "relevant_doc_ids": [
+        "doc_metformin"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q012",
+      "question": "A diabetic patient on metformin reports tingling in both feet. Apart from diabetic neuropathy, which metabolic deficiency should be checked and why?",
+      "expected_answer": "Vitamin B12 deficiency, because long-term metformin use impairs B12 absorption and can present with peripheral neuropathy.",
+      "relevant_doc_ids": [
+        "doc_metformin",
+        "doc_b12_anemia"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q013",
+      "question": "A patient with impaired kidney function is about to have a contrast-enhanced CT. Why should metformin be paused and at what eGFR is it contraindicated?",
+      "expected_answer": "Because of the risk of lactic acidosis with renal impairment and iodinated contrast; metformin is contraindicated below an eGFR of 30 mL/min per 1.73 m2.",
+      "relevant_doc_ids": [
+        "doc_metformin"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q014",
+      "question": "A diabetic on insulin wakes with sweating, tremor, and palpitations. What is the immediate treatment and when should it be repeated?",
+      "expected_answer": "Mild hypoglycaemia: 15 grams of fast-acting carbohydrate, repeated after 15 minutes if symptoms persist.",
+      "relevant_doc_ids": [
+        "doc_insulin"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q015",
+      "question": "Which insulin product provides a steady background supply over roughly a day and how often is it injected?",
+      "expected_answer": "Long-acting basal insulins such as glargine and detemir, given once daily.",
+      "relevant_doc_ids": [
+        "doc_insulin"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q016",
+      "question": "Why is it dangerous to stop insulin abruptly in a person with type 1 diabetes?",
+      "expected_answer": "Absolute insulin deficiency leads to diabetic ketoacidosis; patients also need sick-day rules with extra insulin and ketone testing.",
+      "relevant_doc_ids": [
+        "doc_type1_diabetes"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q017",
+      "question": "A pregnant woman is diagnosed with glucose intolerance at 26 weeks. What is the diagnosis, which treatment is standard first-line, and when should she be re-screened?",
+      "expected_answer": "Gestational diabetes; insulin is standard first-line pharmacotherapy (metformin is an alternative); re-screen with an OGTT 4-12 weeks postpartum.",
+      "relevant_doc_ids": [
+        "doc_gestational_diabetes"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q018",
+      "question": "Which spirometric pattern supports a diagnosis of asthma rather than fixed airflow obstruction?",
+      "expected_answer": "Reversible obstruction: FEV1 increase of at least 12% and 200 mL after bronchodilator; COPD shows a post-bronchodilator FEV1/FVC below 0.70.",
+      "relevant_doc_ids": [
+        "doc_asthma",
+        "doc_copd"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q019",
+      "question": "What is the mainstay anti-inflammatory treatment for persistent asthma and when is it added?",
+      "expected_answer": "Inhaled corticosteroids (ICS) such as budesonide or fluticasone, added when a SABA reliever is needed more than twice a week.",
+      "relevant_doc_ids": [
+        "doc_asthma"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q020",
+      "question": "An asthmatic patient reaches for the reliever inhaler every day. What does this pattern indicate clinically?",
+      "expected_answer": "Poor asthma control and the need for a daily controller such as inhaled corticosteroids.",
+      "relevant_doc_ids": [
+        "doc_salbutamol"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q021",
+      "question": "How quickly does an inhaled reliever bronchodilator act and how long does the effect last?",
+      "expected_answer": "Onset within about 5 minutes, effect lasting 3 to 6 hours.",
+      "relevant_doc_ids": [
+        "doc_salbutamol"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q022",
+      "question": "In a long-term smoker with breathlessness, which ratio on spirometry confirms chronic obstructive pulmonary disease?",
+      "expected_answer": "Post-bronchodilator FEV1/FVC ratio below 0.70.",
+      "relevant_doc_ids": [
+        "doc_copd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q023",
+      "question": "Which intervention changes the trajectory of COPD more than any medication?",
+      "expected_answer": "Smoking cessation, which slows disease progression.",
+      "relevant_doc_ids": [
+        "doc_copd"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q024",
+      "question": "Under what oxygen-level criteria does a COPD patient qualify for domiciliary oxygen, and for how many hours daily?",
+      "expected_answer": "Resting PaO2 of 55 mmHg or lower (or 56-59 mmHg with cor pulmonale), used at least 15 hours per day.",
+      "relevant_doc_ids": [
+        "doc_copd"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q025",
+      "question": "Which oral antibiotic is a standard first choice for an otherwise healthy adult with community-acquired pneumonia treated at home?",
+      "expected_answer": "Amoxicillin or doxycycline for 5 days.",
+      "relevant_doc_ids": [
+        "doc_pneumonia",
+        "doc_amoxicillin"
+      ],
+      "difficulty": "medium",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q026",
+      "question": "Name the five components of the score used to decide whether pneumonia requires hospital admission?",
+      "expected_answer": "CURB-65: confusion, urea above 7 mmol/L, respiratory rate 30 or more, low blood pressure, and age 65 or older.",
+      "relevant_doc_ids": [
+        "doc_pneumonia"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q027",
+      "question": "A patient on warfarin is started on rifampicin for tuberculosis. What monitoring problem arises?",
+      "expected_answer": "Rifampicin is a potent enzyme inducer that reduces warfarin's effect, so the INR falls and must be monitored closely with dose adjustment.",
+      "relevant_doc_ids": [
+        "doc_tuberculosis",
+        "doc_warfarin"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q028",
+      "question": "Outline the standard 6-month course for drug-susceptible pulmonary tuberculosis?",
+      "expected_answer": "2-month intensive phase with isoniazid, rifampicin, pyrazinamide, and ethambutol, then 4 months of isoniazid and rifampicin.",
+      "relevant_doc_ids": [
+        "doc_tuberculosis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q029",
+      "question": "Which vitamin supplement accompanies isoniazid and what side effect does it prevent?",
+      "expected_answer": "Pyridoxine (vitamin B6), which prevents isoniazid-induced peripheral neuropathy.",
+      "relevant_doc_ids": [
+        "doc_tuberculosis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q030",
+      "question": "A non-pregnant woman has burning on urination with negative nitrites. Which short antibiotic courses are first-line for uncomplicated cystitis?",
+      "expected_answer": "Nitrofurantoin 100 mg twice daily for 5 days, or trimethoprim-sulfamethoxazole for 3 days where resistance is low; fosfomycin is a single-dose alternative.",
+      "relevant_doc_ids": [
+        "doc_uti"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q031",
+      "question": "Which organism accounts for the majority of uncomplicated urinary tract infections?",
+      "expected_answer": "Escherichia coli, 75 to 90 percent of cases.",
+      "relevant_doc_ids": [
+        "doc_uti"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q032",
+      "question": "Which warning symptoms in a reflux patient should trigger endoscopy rather than empirical acid suppression?",
+      "expected_answer": "Dysphagia, odynophagia, unintentional weight loss, gastrointestinal bleeding, vomiting, and iron-deficiency anaemia.",
+      "relevant_doc_ids": [
+        "doc_gerd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q033",
+      "question": "What is the most potent class of acid suppressants, how is the prototype taken, and for how long in erosive disease?",
+      "expected_answer": "Proton pump inhibitors such as omeprazole, taken once daily 30-60 minutes before breakfast for 4-8 weeks.",
+      "relevant_doc_ids": [
+        "doc_gerd",
+        "doc_omeprazole"
+      ],
+      "difficulty": "medium",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q034",
+      "question": "What adverse outcomes are linked to years of continuous proton pump inhibitor use?",
+      "expected_answer": "Hypomagnesaemia, vitamin B12 deficiency, increased fracture risk, small intestinal bacterial overgrowth, and increased risk of Clostridioides difficile infection.",
+      "relevant_doc_ids": [
+        "doc_omeprazole"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q035",
+      "question": "A post-stent patient on clopidogrel needs long-term acid suppression. Which PPI minimally interferes with the antiplatelet drug?",
+      "expected_answer": "Pantoprazole, which is less affected by the CYP2C19 interaction than omeprazole.",
+      "relevant_doc_ids": [
+        "doc_omeprazole",
+        "doc_aspirin"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q036",
+      "question": "What are the two principal causes of peptic ulcer disease and which modifiable drug class is the other?",
+      "expected_answer": "Helicobacter pylori infection and NSAIDs.",
+      "relevant_doc_ids": [
+        "doc_peptic_ulcer"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q037",
+      "question": "A patient taking ibuprofen for knee arthritis develops gnawing epigastric pain. How is this complication treated?",
+      "expected_answer": "NSAID-associated peptic ulcer: stop the NSAID where possible, add a PPI, and treat H. pylori if present.",
+      "relevant_doc_ids": [
+        "doc_peptic_ulcer",
+        "doc_osteoarthritis"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q038",
+      "question": "Why can starting a proton pump inhibitor produce a false-negative test for H. pylori?",
+      "expected_answer": "PPIs suppress the organism, so testing should be done before long-term PPI therapy; a false-negative urea breath test or stool antigen test can result.",
+      "relevant_doc_ids": [
+        "doc_peptic_ulcer"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q039",
+      "question": "Which symptom-based criteria diagnose irritable bowel syndrome and how is it subtyped?",
+      "expected_answer": "Rome IV: abdominal pain at least one day/week for 3 months with two or more of pain related to defecation, change in stool frequency, or stool form; subtyped as IBS-C, IBS-D, IBS-M, or IBS-U.",
+      "relevant_doc_ids": [
+        "doc_ibs"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q040",
+      "question": "Which dietary strategy supervised by a professional helps a subset of IBS patients and what is it called?",
+      "expected_answer": "A low-FODMAP diet under dietitian supervision.",
+      "relevant_doc_ids": [
+        "doc_ibs"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q041",
+      "question": "What distinguishes Crohn's disease from ulcerative colitis in terms of bowel involvement and inflammation depth?",
+      "expected_answer": "Crohn's can affect any part of the GI tract with skip lesions and transmural inflammation (often terminal ileum); UC is confined to the colon and rectum with continuous mucosal inflammation from the rectum.",
+      "relevant_doc_ids": [
+        "doc_ibd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q042",
+      "question": "Which clinical finding points toward Crohn's disease rather than ulcerative colitis?",
+      "expected_answer": "Perianal fistulas and abscesses suggest Crohn's disease; bloody diarrhoea is more typical of ulcerative colitis.",
+      "relevant_doc_ids": [
+        "doc_ibd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q043",
+      "question": "After how many years of colonic inflammatory bowel disease does colonoscopic surveillance begin and why?",
+      "expected_answer": "After 8 to 10 years, because of increased colorectal cancer risk.",
+      "relevant_doc_ids": [
+        "doc_ibd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q044",
+      "question": "A patient with iron deficiency and an intensely itchy blistering rash over the elbows is suspected to have coeliac disease. What is the rash called and what antibody test confirms the diagnosis?",
+      "expected_answer": "Dermatitis herpetiformis; the diagnosis is supported by IgA tissue transglutaminase antibody (with duodenal biopsy confirmation).",
+      "relevant_doc_ids": [
+        "doc_celiac",
+        "doc_iron_deficiency_anemia"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q045",
+      "question": "What is the only effective therapy for coeliac disease and what must the patient continue for life?",
+      "expected_answer": "A strict lifelong gluten-free diet.",
+      "relevant_doc_ids": [
+        "doc_celiac"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q046",
+      "question": "Why is a patient advised to eat several slices of bread daily for weeks before coeliac blood tests?",
+      "expected_answer": "Serologic testing requires a gluten-containing diet (about 3-4 slices of bread daily for 6 weeks) to avoid false-negative results.",
+      "relevant_doc_ids": [
+        "doc_celiac"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q047",
+      "question": "Which surface antigen persisting beyond six months defines chronic hepatitis B?",
+      "expected_answer": "Hepatitis B surface antigen (HBsAg) persisting more than 6 months.",
+      "relevant_doc_ids": [
+        "doc_hepatitis_b"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q048",
+      "question": "Which two oral antivirals are preferred for chronic hepatitis B and what property makes them first-line?",
+      "expected_answer": "Tenofovir and entecavir, which are potent with a high barrier to resistance.",
+      "relevant_doc_ids": [
+        "doc_hepatitis_b"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q049",
+      "question": "What laboratory result constitutes a cure after completing direct-acting antiviral therapy for hepatitis C?",
+      "expected_answer": "Sustained virologic response: undetectable HCV RNA 12 weeks after completing therapy.",
+      "relevant_doc_ids": [
+        "doc_hepatitis_c"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q050",
+      "question": "Which class of oral medications achieves cure in over 95 percent of hepatitis C patients and for how long is it usually taken?",
+      "expected_answer": "Direct-acting antivirals (DAAs) such as sofosbuvir-velpatasvir, usually 8 to 12 weeks.",
+      "relevant_doc_ids": [
+        "doc_hepatitis_c"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q051",
+      "question": "List the four complications that mark the transition from compensated to decompensated cirrhosis?",
+      "expected_answer": "Ascites, variceal bleeding, hepatic encephalopathy, and jaundice.",
+      "relevant_doc_ids": [
+        "doc_cirrhosis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q052",
+      "question": "Which two drugs treat hepatic encephalopathy, and in what order?",
+      "expected_answer": "Lactulose first-line, with rifaximin added for recurrent episodes.",
+      "relevant_doc_ids": [
+        "doc_cirrhosis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q053",
+      "question": "Which prognostic score predicts short-term mortality in cirrhosis and informs transplant listing?",
+      "expected_answer": "The Model for End-Stage Liver Disease (MELD) score.",
+      "relevant_doc_ids": [
+        "doc_cirrhosis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q054",
+      "question": "Which medication classes slow kidney function decline in albuminuric chronic kidney disease?",
+      "expected_answer": "ACE inhibitors or ARBs, and SGLT2 inhibitors such as dapagliflozin.",
+      "relevant_doc_ids": [
+        "doc_ckd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q055",
+      "question": "Which agents must be avoided or used with extreme caution in advanced chronic kidney disease?",
+      "expected_answer": "NSAIDs, aminoglycosides, and iodinated contrast where alternatives exist.",
+      "relevant_doc_ids": [
+        "doc_ckd"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q056",
+      "question": "A diabetic with albuminuria and a reduced ejection fraction asks which new diabetes drug protects both the kidneys and the heart. What is it and its class?",
+      "expected_answer": "An SGLT2 inhibitor such as dapagliflozin or empagliflozin, which slows CKD progression and reduces heart failure hospitalisations and cardiovascular events.",
+      "relevant_doc_ids": [
+        "doc_ckd",
+        "doc_heart_failure"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q057",
+      "question": "Name the four drug classes that each reduce mortality in heart failure with reduced ejection fraction?",
+      "expected_answer": "ACE inhibitor or ARNI, beta blocker, mineralocorticoid receptor antagonist, and SGLT2 inhibitor.",
+      "relevant_doc_ids": [
+        "doc_heart_failure"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q058",
+      "question": "How is heart failure classified by ejection fraction and where are the boundaries?",
+      "expected_answer": "HFrEF is LVEF 40% or less, mildly reduced 41-49%, and HFpEF 50% or more.",
+      "relevant_doc_ids": [
+        "doc_heart_failure"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q059",
+      "question": "A patient with atrial fibrillation asks about stroke risk. Which scoring tool is used and what thresholds trigger anticoagulation?",
+      "expected_answer": "CHA2DS2-VASc; anticoagulation is recommended for men with score 2+ and women with score 3+.",
+      "relevant_doc_ids": [
+        "doc_atrial_fibrillation"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q060",
+      "question": "Why do direct oral anticoagulants generally replace warfarin in non-valvular atrial fibrillation?",
+      "expected_answer": "Lower intracranial bleeding risk and no need for routine monitoring.",
+      "relevant_doc_ids": [
+        "doc_atrial_fibrillation",
+        "doc_warfarin"
+      ],
+      "difficulty": "medium",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q061",
+      "question": "Which two lifestyle changes measurably reduce the burden of atrial fibrillation episodes?",
+      "expected_answer": "Weight loss and alcohol reduction.",
+      "relevant_doc_ids": [
+        "doc_atrial_fibrillation"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q062",
+      "question": "What INR range is targeted for most warfarin indications and which mechanical valve requires a higher range?",
+      "expected_answer": "2.0-3.0 for most indications; 2.5-3.5 for mechanical mitral valves.",
+      "relevant_doc_ids": [
+        "doc_warfarin"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q063",
+      "question": "Why is a warfarin patient advised to keep green leafy vegetable intake steady rather than avoid it entirely?",
+      "expected_answer": "Vitamin K-rich foods such as kale and spinach lower the INR; consistent intake keeps the INR stable.",
+      "relevant_doc_ids": [
+        "doc_warfarin"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q064",
+      "question": "Which anticoagulant is substituted for warfarin during pregnancy and what is the reason?",
+      "expected_answer": "Low-molecular-weight heparin, because warfarin is teratogenic.",
+      "relevant_doc_ids": [
+        "doc_warfarin"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q065",
+      "question": "A patient arrives with 40 minutes of crushing central chest pain and ST-segment elevation. What reperfusion strategy and time targets apply?",
+      "expected_answer": "Primary PCI within 90 minutes of first medical contact, or fibrinolysis within 30 minutes when PCI is unavailable.",
+      "relevant_doc_ids": [
+        "doc_myocardial_infarction"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q066",
+      "question": "What antiplatelet agents are given immediately in suspected acute coronary syndrome?",
+      "expected_answer": "Aspirin 300 mg chewed immediately plus a P2Y12 inhibitor such as ticagrelor or clopidogrel.",
+      "relevant_doc_ids": [
+        "doc_myocardial_infarction"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q067",
+      "question": "Which statin regimen is used for secondary prevention after a heart attack and why is the dose high?",
+      "expected_answer": "High-intensity atorvastatin 40-80 mg (or rosuvastatin 20-40 mg) to lower LDL aggressively and reduce recurrent events.",
+      "relevant_doc_ids": [
+        "doc_myocardial_infarction",
+        "doc_atorvastatin"
+      ],
+      "difficulty": "medium",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q068",
+      "question": "What does each letter of FAST stand for in acute stroke recognition?",
+      "expected_answer": "Facial droop, Arm weakness, Speech disturbance, Time is critical.",
+      "relevant_doc_ids": [
+        "doc_stroke"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q069",
+      "question": "Within what window after symptom onset can intravenous thrombolysis be given for ischaemic stroke?",
+      "expected_answer": "Within 4.5 hours in eligible patients.",
+      "relevant_doc_ids": [
+        "doc_stroke"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q070",
+      "question": "A transient neurological episode resolves in 20 minutes. What is the 90-day stroke risk and why is urgent evaluation needed?",
+      "expected_answer": "TIA carries up to 17% stroke risk within 90 days, highest in the first week, so urgent evaluation with imaging and secondary prevention is required.",
+      "relevant_doc_ids": [
+        "doc_stroke"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q071",
+      "question": "After a cardioembolic stroke from atrial fibrillation, when is anticoagulation typically started and which agents are used?",
+      "expected_answer": "A DOAC or warfarin, usually started within 1 to 2 weeks for moderate to large infarcts.",
+      "relevant_doc_ids": [
+        "doc_stroke",
+        "doc_atrial_fibrillation"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q072",
+      "question": "Which three pathophysiologic factors, named after a 19th-century physician, predispose to venous clot formation?",
+      "expected_answer": "Virchow's triad: venous stasis, hypercoagulability, and endothelial injury.",
+      "relevant_doc_ids": [
+        "doc_dvt"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q073",
+      "question": "In which patients can a negative D-dimer alone rule out a suspected deep vein thrombosis?",
+      "expected_answer": "Patients with a low-probability Wells score and a negative (age-adjusted) D-dimer.",
+      "relevant_doc_ids": [
+        "doc_dvt"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q074",
+      "question": "What is the minimum duration of anticoagulation after a deep vein thrombosis and when is it extended?",
+      "expected_answer": "At least 3 months; extended for unprovoked DVT, recurrence, or persistent risk factors such as active cancer.",
+      "relevant_doc_ids": [
+        "doc_dvt"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q075",
+      "question": "Which combination of blood results distinguishes iron deficiency from anaemia of chronic disease?",
+      "expected_answer": "Iron deficiency: low ferritin and low transferrin saturation; ACD: low/normal ferritin (normal or elevated) with low serum iron and low transferrin, driven by hepcidin.",
+      "relevant_doc_ids": [
+        "doc_iron_deficiency_anemia",
+        "doc_anemia_chronic_disease"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q076",
+      "question": "A patient with iron deficiency is found to have a craving for ice. What is the name of this eating of non-food substances?",
+      "expected_answer": "Pica.",
+      "relevant_doc_ids": [
+        "doc_iron_deficiency_anemia"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q077",
+      "question": "In which adult groups does iron deficiency anaemia warrant a two-directional endoscopic evaluation of the digestive tract?",
+      "expected_answer": "Men and postmenopausal women; faecal immunochemical testing is an alternative first step in lower-risk patients.",
+      "relevant_doc_ids": [
+        "doc_iron_deficiency_anemia"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q078",
+      "question": "Why does vitamin B12 deficiency produce large red blood cells and where is the vitamin absorbed?",
+      "expected_answer": "Impaired DNA synthesis causes megaloblastic macrocytic anaemia; B12 is absorbed in the terminal ileum bound to intrinsic factor.",
+      "relevant_doc_ids": [
+        "doc_b12_anemia"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q079",
+      "question": "A patient with B12 deficiency has unsteadiness and loss of vibration sense. What is the spinal cord syndrome?",
+      "expected_answer": "Subacute combined degeneration of the spinal cord (dorsal columns and corticospinal tracts).",
+      "relevant_doc_ids": [
+        "doc_b12_anemia"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q080",
+      "question": "A patient with chronic rheumatoid arthritis develops mild anaemia with a normal ferritin. What type of anaemia is most likely and what drives it?",
+      "expected_answer": "Anaemia of chronic disease: hepcidin-mediated iron sequestration and reduced erythropoiesis driven by inflammatory cytokines.",
+      "relevant_doc_ids": [
+        "doc_anemia_chronic_disease",
+        "doc_rheumatoid_arthritis"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q081",
+      "question": "Which inherited blood disorder causes pain crises from deformed red cells and which drug raises fetal haemoglobin to reduce them?",
+      "expected_answer": "Sickle cell disease; hydroxyurea.",
+      "relevant_doc_ids": [
+        "doc_sickle_cell"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q082",
+      "question": "What is the leading cause of death in sickle cell disease, combining chest pain, fever, and lung infiltrates?",
+      "expected_answer": "Acute chest syndrome.",
+      "relevant_doc_ids": [
+        "doc_sickle_cell"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q083",
+      "question": "Which autoimmune condition is the commonest cause of primary hypothyroidism where iodine is sufficient?",
+      "expected_answer": "Hashimoto's thyroiditis (autoimmune thyroiditis).",
+      "relevant_doc_ids": [
+        "doc_hypothyroidism"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q084",
+      "question": "Which hormone measurements confirm overt primary hypothyroidism and how does subclinical disease differ?",
+      "expected_answer": "Raised TSH with low free T4; subclinical hypothyroidism is raised TSH with normal free T4.",
+      "relevant_doc_ids": [
+        "doc_hypothyroidism"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q085",
+      "question": "Why is levothyroxine started at a low dose and titrated slowly in an older patient with coronary disease?",
+      "expected_answer": "To avoid precipitating angina or arrhythmia; overtreatment also increases the risk of atrial fibrillation and osteoporosis.",
+      "relevant_doc_ids": [
+        "doc_hypothyroidism",
+        "doc_levothyroxine"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q086",
+      "question": "Which timing and substance interactions reduce absorption of the daily thyroid replacement tablet?",
+      "expected_answer": "Take on an empty stomach 30-60 minutes before breakfast; food, coffee, calcium, iron, and magnesium supplements reduce absorption.",
+      "relevant_doc_ids": [
+        "doc_levothyroxine"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q087",
+      "question": "A young woman with weight loss, tremor, palpitations, and a diffusely enlarged thyroid gland with a bruit. What is the most likely cause?",
+      "expected_answer": "Graves' disease, the most common cause of hyperthyroidism.",
+      "relevant_doc_ids": [
+        "doc_hyperthyroidism"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q088",
+      "question": "A patient starting carbimazole develops a sore throat and fever after three weeks. Why must the drug be stopped and help sought immediately?",
+      "expected_answer": "Because antithyroid drugs can cause agranulocytosis, a life-threatening fall in neutrophils.",
+      "relevant_doc_ids": [
+        "doc_hyperthyroidism"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q089",
+      "question": "Which class of drug is first-line for osteoporosis, how is the weekly preparation taken, and what post-dose position is required?",
+      "expected_answer": "Bisphosphonates such as alendronate weekly, on an empty stomach with a full glass of water, remaining upright for 30 minutes.",
+      "relevant_doc_ids": [
+        "doc_osteoporosis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q090",
+      "question": "What bone density T-score separates osteoporosis from osteopenia?",
+      "expected_answer": "-2.5 or below defines osteoporosis; between -1 and -2.5 is osteopenia.",
+      "relevant_doc_ids": [
+        "doc_osteoporosis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q091",
+      "question": "A postmenopausal woman with coeliac disease has a vertebral fracture. Why is her fracture risk increased and what assessment is needed?",
+      "expected_answer": "Coeliac disease causes malabsorption-related osteoporosis; she needs DXA and FRAX assessment for pharmacotherapy.",
+      "relevant_doc_ids": [
+        "doc_osteoporosis",
+        "doc_celiac"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q092",
+      "question": "How does the pain pattern of osteoarthritis differ from inflammatory arthritis, particularly regarding morning stiffness?",
+      "expected_answer": "OA pain worsens with activity and improves with rest, with morning stiffness under 30 minutes; inflammatory arthritis has prolonged morning stiffness.",
+      "relevant_doc_ids": [
+        "doc_osteoarthritis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q093",
+      "question": "Which hand and wrist joints are the classic targets of rheumatoid arthritis?",
+      "expected_answer": "Metacarpophalangeal joints, proximal interphalangeal joints, and wrists, symmetrically.",
+      "relevant_doc_ids": [
+        "doc_rheumatoid_arthritis"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q094",
+      "question": "What is the anchor disease-modifying drug for rheumatoid arthritis, its dosing interval, and which supplement reduces its side effects?",
+      "expected_answer": "Methotrexate weekly at 15-25 mg with daily folic acid.",
+      "relevant_doc_ids": [
+        "doc_rheumatoid_arthritis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q095",
+      "question": "Which joint at the base of the big toe is the classic site of an acute gout flare and what name is given to this presentation?",
+      "expected_answer": "The first metatarsophalangeal joint; podagra.",
+      "relevant_doc_ids": [
+        "doc_gout"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q096",
+      "question": "What serum urate targets are set in gout treatment and which drug is the usual first-line urate-lowering agent?",
+      "expected_answer": "Below 6 mg/dL (below 5 mg/dL with tophi); allopurinol, started low and titrated slowly.",
+      "relevant_doc_ids": [
+        "doc_gout"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q097",
+      "question": "Why do patients receive colchicine or an NSAID for months when starting allopurinol?",
+      "expected_answer": "Starting urate-lowering therapy can precipitate acute attacks, so prophylaxis is given for the first 3 to 6 months.",
+      "relevant_doc_ids": [
+        "doc_gout"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q098",
+      "question": "A patient describes zig-zag lines in their vision for 20 minutes before a throbbing headache starts. What is the phenomenon and its duration limit?",
+      "expected_answer": "Migraine aura, typically visual, developing gradually over 5 to 60 minutes before the headache.",
+      "relevant_doc_ids": [
+        "doc_migraine"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q099",
+      "question": "In which cardiovascular and neurological conditions are triptans contraindicated?",
+      "expected_answer": "Uncontrolled hypertension, ischaemic heart disease, and previous stroke.",
+      "relevant_doc_ids": [
+        "doc_migraine"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q100",
+      "question": "A migraineur has 12 headache days per month. What threshold defines chronic migraine and what preventive options exist?",
+      "expected_answer": "Chronic migraine is 15+ headache days/month with 8+ migrainous; preventives include propranolol, amitriptyline, topiramate, candesartan, or CGRP monoclonal antibodies.",
+      "relevant_doc_ids": [
+        "doc_migraine"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q101",
+      "question": "What clinical definition separates epilepsy from a single provoked seizure?",
+      "expected_answer": "Two unprovoked seizures more than 24 hours apart, or one unprovoked seizure with high recurrence risk.",
+      "relevant_doc_ids": [
+        "doc_epilepsy"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q102",
+      "question": "Which antiseizure medication is strongly avoided in women of childbearing potential and why?",
+      "expected_answer": "Sodium valproate, because it is highly teratogenic.",
+      "relevant_doc_ids": [
+        "doc_epilepsy"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q103",
+      "question": "A seizure continues beyond five minutes. What is the condition and which first-line agents are given?",
+      "expected_answer": "Status epilepticus; intravenous lorazepam or intramuscular midazolam, then phenytoin or levetiracetam if it persists.",
+      "relevant_doc_ids": [
+        "doc_epilepsy"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q104",
+      "question": "Which three motor signs form the classic presentation of Parkinson's disease and which is required for diagnosis?",
+      "expected_answer": "Bradykinesia, rigidity, and resting tremor; bradykinesia is the essential feature.",
+      "relevant_doc_ids": [
+        "doc_parkinsons"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q105",
+      "question": "Which non-motor symptoms can precede the movement problems of Parkinson's disease by years?",
+      "expected_answer": "Anosmia, constipation, REM sleep behaviour disorder, depression, and anxiety.",
+      "relevant_doc_ids": [
+        "doc_parkinsons"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q106",
+      "question": "What is the most potent symptomatic therapy for Parkinson's disease and with which companion drug is it combined?",
+      "expected_answer": "Levodopa combined with a peripheral decarboxylase inhibitor such as carbidopa.",
+      "relevant_doc_ids": [
+        "doc_parkinsons"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q107",
+      "question": "Which memory function fails earliest in Alzheimer's disease?",
+      "expected_answer": "Short-term memory, with difficulty learning new information.",
+      "relevant_doc_ids": [
+        "doc_alzheimers"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q108",
+      "question": "Which two medication classes provide symptomatic cognitive benefit in Alzheimer's disease and at which stages are they used?",
+      "expected_answer": "Acetylcholinesterase inhibitors (donepezil, rivastigmine, galantamine) and memantine for moderate to severe disease.",
+      "relevant_doc_ids": [
+        "doc_alzheimers"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q109",
+      "question": "Which five symptoms must accompany depressed mood or loss of pleasure to diagnose a major depressive episode?",
+      "expected_answer": "At least five total symptoms including sleep disturbance, appetite/weight change, psychomotor changes, fatigue, worthlessness or guilt, poor concentration, or suicidal thoughts.",
+      "relevant_doc_ids": [
+        "doc_depression"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q110",
+      "question": "What is the first-line antidepressant class, how long until onset, and why is early review important in young patients?",
+      "expected_answer": "SSRIs (sertraline, fluoxetine, escitalopram); onset 2-4 weeks, full effect 6-8 weeks; small increased risk of suicidal thoughts in young people in the first weeks.",
+      "relevant_doc_ids": [
+        "doc_depression"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q111",
+      "question": "Before starting an antidepressant, why should the clinician screen for a personal or family history of mania?",
+      "expected_answer": "Because antidepressants can trigger mania in undiagnosed bipolar disorder.",
+      "relevant_doc_ids": [
+        "doc_depression"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q112",
+      "question": "For how long must excessive worry persist across multiple topics to diagnose generalised anxiety disorder?",
+      "expected_answer": "At least 6 months, on more days than not, with somatic symptoms such as muscle tension and sleep disturbance.",
+      "relevant_doc_ids": [
+        "doc_gad"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q113",
+      "question": "Why are benzodiazepines limited to a few weeks in anxiety treatment?",
+      "expected_answer": "Tolerance, dependence, sedation, and falls risk, especially in older adults.",
+      "relevant_doc_ids": [
+        "doc_gad"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q114",
+      "question": "What is the first-line evidence-based psychological treatment for chronic insomnia and which techniques does it combine?",
+      "expected_answer": "Cognitive behavioural therapy for insomnia (CBT-I): stimulus control, sleep restriction, cognitive restructuring, and relaxation.",
+      "relevant_doc_ids": [
+        "doc_insomnia"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q115",
+      "question": "Which frequency and duration criteria define chronic insomnia?",
+      "expected_answer": "At least 3 nights per week for at least 3 months, with daytime impairment.",
+      "relevant_doc_ids": [
+        "doc_insomnia"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q116",
+      "question": "How is obstructive sleep apnoea severity graded by the apnoea-hypopnoea index?",
+      "expected_answer": "Mild 5-14, moderate 15-29, severe 30+ events per hour.",
+      "relevant_doc_ids": [
+        "doc_sleep_apnea"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q117",
+      "question": "What is the standard treatment for moderate to severe sleep apnoea and what is the biggest practical barrier?",
+      "expected_answer": "Continuous positive airway pressure (CPAP); adherence is the main challenge.",
+      "relevant_doc_ids": [
+        "doc_sleep_apnea"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q118",
+      "question": "A hypertensive man snores loudly, dozes at work, and has a neck circumference of 44 cm. Which condition should be screened for and why is it relevant to his blood pressure?",
+      "expected_answer": "Obstructive sleep apnoea, which is associated with hypertension and cardiovascular disease; treating it can improve blood pressure control.",
+      "relevant_doc_ids": [
+        "doc_sleep_apnea",
+        "doc_hypertension"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q119",
+      "question": "What is the cornerstone of maintenance care in atopic dermatitis?",
+      "expected_answer": "Emollients \u2014 thick, fragrance-free moisturisers applied liberally and frequently, including after bathing.",
+      "relevant_doc_ids": [
+        "doc_eczema"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q120",
+      "question": "Which injectable biologic is highly effective for moderate to severe atopic dermatitis and what does it block?",
+      "expected_answer": "Dupilumab, an anti-IL-4/IL-13 antibody.",
+      "relevant_doc_ids": [
+        "doc_eczema"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q121",
+      "question": "What proportion of psoriasis patients develop joint disease and what are its characteristic features?",
+      "expected_answer": "Up to 30 percent; inflammatory joint pain, dactylitis (sausage digit), enthesitis, and nail disease.",
+      "relevant_doc_ids": [
+        "doc_psoriasis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q122",
+      "question": "A psoriasis patient develops new plaques where they scratched their arm. What phenomenon is this?",
+      "expected_answer": "The Koebner phenomenon \u2014 lesions appearing at sites of trauma.",
+      "relevant_doc_ids": [
+        "doc_psoriasis"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q123",
+      "question": "A gardener develops a burning, blistering rash in a band on one side of the chest with severe pain. What is the diagnosis, which drug must be started within 72 hours, and what is the feared chronic complication?",
+      "expected_answer": "Herpes zoster (shingles); antivirals such as aciclovir or valaciclovir within 72 hours; postherpetic neuralgia.",
+      "relevant_doc_ids": [
+        "doc_shingles"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q124",
+      "question": "A red, warm, tender lower leg with poorly demarcated borders and fever. What is the diagnosis, which organisms are typical, and which mimic should be excluded?",
+      "expected_answer": "Cellulitis (Streptococcus pyogenes, Staphylococcus aureus); deep vein thrombosis is an important mimic. Treat with flucloxacillin/dicloxacillin or alternatives.",
+      "relevant_doc_ids": [
+        "doc_cellulitis",
+        "doc_dvt"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q125",
+      "question": "Which childhood ear infection usually resolves without antibiotics and what are the criteria for immediate antibiotic treatment?",
+      "expected_answer": "Acute otitis media; watchful waiting is an option over 6 months with mild symptoms; antibiotics are immediate under 6 months, in severe illness, or with complications. High-dose amoxicillin is first-line.",
+      "relevant_doc_ids": [
+        "doc_otitis_media"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q126",
+      "question": "A patient has facial pain and purulent discharge for 12 days after a cold. Does this need antibiotics and what is the first-line choice?",
+      "expected_answer": "Yes \u2014 symptoms beyond 10 days suggest bacterial sinusitis; amoxicillin-clavulanate for 5-7 days (doxycycline as alternative).",
+      "relevant_doc_ids": [
+        "doc_sinusitis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q127",
+      "question": "What is the most effective daily treatment for persistent allergic rhinitis and which over-the-counter antihistamine class should be avoided during the day?",
+      "expected_answer": "Intranasal corticosteroids such as fluticasone or mometasone; first-generation sedating antihistamines such as chlorpheniramine should be avoided in the daytime.",
+      "relevant_doc_ids": [
+        "doc_allergic_rhinitis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q128",
+      "question": "A patient stung by a bee develops throat tightness and collapse within minutes. What is the first-line drug, dose, route, and site of injection?",
+      "expected_answer": "Intramuscular adrenaline 0.5 mg (1:1000) in the anterolateral thigh, repeated after 5 minutes if no improvement.",
+      "relevant_doc_ids": [
+        "doc_anaphylaxis"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q129",
+      "question": "Why are patients observed for hours after an anaphylactic reaction?",
+      "expected_answer": "Because of the risk of biphasic reactions, which occur in up to 5 percent of patients hours after the initial reaction.",
+      "relevant_doc_ids": [
+        "doc_anaphylaxis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q130",
+      "question": "Which eye condition is treated with once-daily drops at night and what side effects may develop?",
+      "expected_answer": "Open-angle glaucoma with prostaglandin analogues such as latanoprost; conjunctival hyperaemia, eyelash growth, and iris darkening.",
+      "relevant_doc_ids": [
+        "doc_glaucoma"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q131",
+      "question": "Why is primary open-angle glaucoma described as a silent thief of sight?",
+      "expected_answer": "It is asymptomatic until advanced, with gradual loss of peripheral vision.",
+      "relevant_doc_ids": [
+        "doc_glaucoma"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q132",
+      "question": "A patient develops severe eye pain with nausea and sees haloes around lights; the pupil is mid-dilated and fixed. What emergency is this and what is the immediate priority?",
+      "expected_answer": "Acute angle-closure glaucoma; immediate treatment to lower intraocular pressure to prevent permanent vision loss.",
+      "relevant_doc_ids": [
+        "doc_glaucoma"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q133",
+      "question": "When is cataract surgery indicated?",
+      "expected_answer": "When visual symptoms impair daily activities such as driving, reading, or working \u2014 not based on a specific visual acuity threshold.",
+      "relevant_doc_ids": [
+        "doc_cataracts"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q134",
+      "question": "Which nutritional supplement combination slows progression in intermediate dry age-related macular degeneration?",
+      "expected_answer": "The AREDS2 supplement: vitamins C and E, zinc, lutein, and zeaxanthin.",
+      "relevant_doc_ids": [
+        "doc_amd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q135",
+      "question": "A patient with sudden distortion of central vision and a dark spot is found to have leaking vessels under the retina. What treatment must start urgently?",
+      "expected_answer": "Intravitreal anti-VEGF injections such as ranibizumab, aflibercept, or bevacizumab for wet AMD.",
+      "relevant_doc_ids": [
+        "doc_amd"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q136",
+      "question": "Why must NSAIDs be avoided in a febrile patient with suspected dengue and which antipyretic is safe?",
+      "expected_answer": "NSAIDs increase bleeding risk in dengue; paracetamol is used for fever.",
+      "relevant_doc_ids": [
+        "doc_dengue",
+        "doc_ibuprofen"
+      ],
+      "difficulty": "medium",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q137",
+      "question": "In dengue, the fever falls around days 3 to 7. Which warning features at this point signal impending severe disease?",
+      "expected_answer": "Persistent vomiting, abdominal pain, mucosal bleeding, lethargy, hepatomegaly, and a rapid drop in platelets with rising haematocrit.",
+      "relevant_doc_ids": [
+        "doc_dengue"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q138",
+      "question": "Which malaria parasite causes the vast majority of fatal infections?",
+      "expected_answer": "Plasmodium falciparum.",
+      "relevant_doc_ids": [
+        "doc_malaria"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q139",
+      "question": "What is the treatment pathway for severe falciparum malaria?",
+      "expected_answer": "Intravenous artesunate followed by a full oral artemisinin-based combination therapy course.",
+      "relevant_doc_ids": [
+        "doc_malaria"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q140",
+      "question": "Which enzyme deficiency must be excluded before giving primaquine and why?",
+      "expected_answer": "G6PD deficiency, because primaquine can cause haemolysis.",
+      "relevant_doc_ids": [
+        "doc_malaria"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q141",
+      "question": "Which oral antiviral reduces severe COVID-19 in at-risk outpatients and within what window must it be started?",
+      "expected_answer": "Nirmatrelvir-ritonavir (Paxlovid), started within 5 days of symptom onset.",
+      "relevant_doc_ids": [
+        "doc_covid19"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q142",
+      "question": "Which inexpensive corticosteroid was shown to cut mortality in hospitalised COVID-19 patients needing oxygen?",
+      "expected_answer": "Dexamethasone, based on the RECOVERY trial.",
+      "relevant_doc_ids": [
+        "doc_covid19"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q143",
+      "question": "What defines septic shock under the Sepsis-3 framework?",
+      "expected_answer": "Vasopressors needed to keep mean arterial pressure at 65 mmHg or more plus lactate above 2 mmol/L despite adequate fluid resuscitation.",
+      "relevant_doc_ids": [
+        "doc_sepsis"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q144",
+      "question": "Which vasopressor is the first-line agent in septic shock?",
+      "expected_answer": "Noradrenaline (norepinephrine).",
+      "relevant_doc_ids": [
+        "doc_sepsis"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q145",
+      "question": "A febrile patient has neck stiffness and a purpuric rash that does not blanch. What must happen before any imaging?",
+      "expected_answer": "Empirical antibiotics for suspected meningococcal meningitis must not be delayed for imaging.",
+      "relevant_doc_ids": [
+        "doc_meningitis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q146",
+      "question": "What empirical regimen covers adult bacterial meningitis and which adjunct reduces mortality in pneumococcal disease?",
+      "expected_answer": "Ceftriaxone plus vancomycin (plus ampicillin in older adults for listeria); dexamethasone with or just before antibiotics.",
+      "relevant_doc_ids": [
+        "doc_meningitis"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q147",
+      "question": "Describe the classic temporal migration of pain in acute appendicitis?",
+      "expected_answer": "Visceral periumbilical pain migrating to the right lower quadrant over 12 to 24 hours.",
+      "relevant_doc_ids": [
+        "doc_appendicitis"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q148",
+      "question": "Which imaging is preferred first for suspected appendicitis in a child and which in an adult?",
+      "expected_answer": "Ultrasound first-line in children and pregnancy; CT with intravenous contrast in adults.",
+      "relevant_doc_ids": [
+        "doc_appendicitis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q149",
+      "question": "A patient with right upper quadrant pain, fever, and jaundice has an obstructed common bile duct. What emergency triad is this and what treatment is required?",
+      "expected_answer": "Charcot's triad \u2014 ascending cholangitis; urgent biliary drainage by ERCP plus antibiotics.",
+      "relevant_doc_ids": [
+        "doc_gallstones"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q150",
+      "question": "Which gallstone presentations require surgery and which do not?",
+      "expected_answer": "Symptomatic gallstones and acute cholecystitis are treated with laparoscopic cholecystectomy; asymptomatic gallstones do not require surgery.",
+      "relevant_doc_ids": [
+        "doc_gallstones"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q151",
+      "question": "A patient describes the worst pain of their life, radiating from the flank to the groin with blood in the urine. What is the likely diagnosis and which imaging is most sensitive?",
+      "expected_answer": "Renal colic from a kidney stone; non-contrast CT is the most sensitive imaging.",
+      "relevant_doc_ids": [
+        "doc_kidney_stones"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q152",
+      "question": "Which stone size passes spontaneously and which medication relaxes the ureter to speed passage?",
+      "expected_answer": "Most stones under 5 mm pass with analgesia and hydration; alpha blockers such as tamsulosin increase passage rates.",
+      "relevant_doc_ids": [
+        "doc_kidney_stones"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q153",
+      "question": "What dietary advice prevents recurrent calcium oxalate stones?",
+      "expected_answer": "High fluid intake for urine output above 2 L daily, moderate dietary calcium (not restriction), reduced sodium and animal protein, and limited oxalate-rich foods.",
+      "relevant_doc_ids": [
+        "doc_kidney_stones"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q154",
+      "question": "What are the two leading causes of acute pancreatitis and roughly what proportion do they account for together?",
+      "expected_answer": "Gallstones and alcohol, about 70 to 80 percent of cases.",
+      "relevant_doc_ids": [
+        "doc_pancreatitis"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q155",
+      "question": "Which combination of pain, enzymes, and imaging makes the diagnosis of acute pancreatitis?",
+      "expected_answer": "Two of three: characteristic epigastric pain, amylase or lipase at least 3 times the upper limit of normal, and imaging findings of pancreatitis.",
+      "relevant_doc_ids": [
+        "doc_pancreatitis"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q156",
+      "question": "Which antibiotic treats pneumonia, otitis media, and H. pylori as part of triple therapy, and which enzyme inhibitor extends its spectrum?",
+      "expected_answer": "Amoxicillin; amoxicillin-clavulanate adds clavulanic acid (a beta-lactamase inhibitor).",
+      "relevant_doc_ids": [
+        "doc_amoxicillin",
+        "doc_peptic_ulcer"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q157",
+      "question": "A teenager on amoxicillin for a sore throat breaks out in a generalised rash but has no wheeze or lip swelling. How should this be interpreted?",
+      "expected_answer": "Likely a non-allergic maculopapular rash (especially with Epstein-Barr virus), distinct from true penicillin allergy which causes urticaria, angioedema, or anaphylaxis.",
+      "relevant_doc_ids": [
+        "doc_amoxicillin"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q158",
+      "question": "Through which enzyme pathway does ibuprofen produce both its pain relief and its gastrointestinal harm?",
+      "expected_answer": "It inhibits cyclooxygenase (COX-1 and COX-2), reducing prostaglandin synthesis \u2014 responsible for both analgesia and GI toxicity.",
+      "relevant_doc_ids": [
+        "doc_ibuprofen"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q159",
+      "question": "Why are high-dose NSAIDs avoided long-term in patients with known coronary disease?",
+      "expected_answer": "Dose- and duration-dependent increases in myocardial infarction, heart failure, and stroke risk.",
+      "relevant_doc_ids": [
+        "doc_ibuprofen"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q160",
+      "question": "A patient takes low-dose aspirin after a stent and needs occasional ibuprofen. What timing rule preserves the antiplatelet effect?",
+      "expected_answer": "Take ibuprofen at least 2 hours after aspirin (or use another analgesic), because ibuprofen can antagonise aspirin's antiplatelet effect.",
+      "relevant_doc_ids": [
+        "doc_ibuprofen",
+        "doc_aspirin"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q161",
+      "question": "What constitutes high-intensity statin therapy and in which patients is it recommended?",
+      "expected_answer": "Atorvastatin 40-80 mg or rosuvastatin 20-40 mg; after myocardial infarction, stroke, and in high-risk patients.",
+      "relevant_doc_ids": [
+        "doc_atorvastatin"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q162",
+      "question": "Which rare but serious statin complication is more likely with macrolides, azole antifungals, or gemfibrozil co-prescription?",
+      "expected_answer": "Rhabdomyolysis, through CYP3A4 or OATP1B1 inhibition.",
+      "relevant_doc_ids": [
+        "doc_atorvastatin"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q163",
+      "question": "Which class of antihypertensive both slows the heart and reduces migraine frequency, but must be avoided in acute asthma?",
+      "expected_answer": "Beta blockers \u2014 used for rate control, migraine prophylaxis, and after MI, but they can provoke bronchospasm.",
+      "relevant_doc_ids": [
+        "doc_beta_blockers",
+        "doc_migraine"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q164",
+      "question": "A pregnant woman at 30 weeks has blood pressure of 165/110 with headache and visual disturbance. What is the condition, which drugs treat the hypertension, and which are avoided?",
+      "expected_answer": "Preeclampsia (possibly impending eclampsia); treat severe hypertension with labetalol, nifedipine, or methyldopa; avoid ACE inhibitors, ARBs, and diuretics; magnesium sulfate for seizures.",
+      "relevant_doc_ids": [
+        "doc_preeclampsia"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q165",
+      "question": "Which daily low-dose medication starting at 12 weeks reduces the risk of preeclampsia in high-risk pregnancies?",
+      "expected_answer": "Low-dose aspirin, 75 to 150 mg daily.",
+      "relevant_doc_ids": [
+        "doc_preeclampsia"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q166",
+      "question": "Which two drug classes are combined in the medical management of benign prostatic hyperplasia and how do their onsets differ?",
+      "expected_answer": "Alpha blockers such as tamsulosin (rapid, within days) and 5-alpha reductase inhibitors such as finasteride (3-6 months, for larger prostates).",
+      "relevant_doc_ids": [
+        "doc_bph"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q167",
+      "question": "A middle-aged man on codeine after surgery reports no bowel movement for five days. Which laxative strategy is recommended for opioid-induced constipation?",
+      "expected_answer": "Prevention with fluids and stimulant laxatives such as senna, often combined with an osmotic agent; naloxegol for refractory cases.",
+      "relevant_doc_ids": [
+        "doc_constipation"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q168",
+      "question": "A patient with known diverticulosis develops left lower quadrant pain and fever. What imaging confirms complicated versus uncomplicated diverticulitis?",
+      "expected_answer": "CT with intravenous contrast, which stages severity: wall thickening and fat stranding (uncomplicated) versus abscess, perforation, or fistula (complicated).",
+      "relevant_doc_ids": [
+        "doc_diverticulitis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q169",
+      "question": "Which daily intranasal medication is the most effective first-line treatment for persistent allergic rhinitis?",
+      "expected_answer": "Intranasal corticosteroids such as fluticasone or mometasone.",
+      "relevant_doc_ids": [
+        "doc_allergic_rhinitis"
+      ],
+      "difficulty": "easy",
+      "type": "single_doc"
+    },
+    {
+      "id": "q170",
+      "question": "What is the first-line antibiotic for acute otitis media needing treatment, and at what dose?",
+      "expected_answer": "High-dose amoxicillin, 80 to 90 mg/kg/day, for 5 to 7 days.",
+      "relevant_doc_ids": [
+        "doc_otitis_media"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q171",
+      "question": "A young man with type 1 diabetes asks whether the sugar-lowering tablet his mother takes for type 2 diabetes would help him. What is the correct response?",
+      "expected_answer": "Oral agents such as metformin are ineffective in type 1 diabetes because there is absolute insulin deficiency; insulin therapy is mandatory from diagnosis.",
+      "relevant_doc_ids": [
+        "doc_type1_diabetes",
+        "doc_metformin"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q172",
+      "question": "A hypertensive diabetic with protein in the urine develops a persistent cough while taking lisinopril. What class switch is indicated and what class is the alternative?",
+      "expected_answer": "Switch from the ACE inhibitor to an ARB such as losartan because of the cough; ARBs also provide renoprotection in diabetic kidney disease.",
+      "relevant_doc_ids": [
+        "doc_ace_inhibitors",
+        "doc_hypertension"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q173",
+      "question": "An asthmatic with atrial fibrillation needs ventricular rate control. Which drug class is risky in her airways and which class is used instead?",
+      "expected_answer": "Beta blockers can provoke bronchospasm and are avoided in acute asthma; non-dihydropyridine calcium channel blockers such as diltiazem or verapamil, or digoxin, provide rate control in AF.",
+      "relevant_doc_ids": [
+        "doc_beta_blockers",
+        "doc_calcium_channel_blockers",
+        "doc_asthma"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q174",
+      "question": "A woman with heart failure and type 2 diabetes has an eGFR of 35. Which medication class benefits both conditions and what caution applies to her current metformin dose?",
+      "expected_answer": "An SGLT2 inhibitor such as dapagliflozin slows CKD progression and reduces heart failure events; metformin remains permitted above an eGFR of 30 but renal function and dosing should be reviewed.",
+      "relevant_doc_ids": [
+        "doc_heart_failure",
+        "doc_ckd",
+        "doc_metformin"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q175",
+      "question": "A migraineur with a history of myocardial infarction asks about acute attack treatment. Which class of drugs is contraindicated and why?",
+      "expected_answer": "Triptans are contraindicated after previous stroke or in ischaemic heart disease because of vasoconstriction; propranolol, a beta blocker, is a preventive option that is also appropriate after MI.",
+      "relevant_doc_ids": [
+        "doc_migraine",
+        "doc_beta_blockers"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q176",
+      "question": "A gout patient on warfarin develops an acute joint flare. Which acute treatments carry particular risk and what is a safer option?",
+      "expected_answer": "NSAIDs increase bleeding risk with warfarin and colchicine interacts; corticosteroids are a safer option for the acute attack, with the INR monitored.",
+      "relevant_doc_ids": [
+        "doc_gout",
+        "doc_warfarin"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q177",
+      "question": "A patient with cirrhosis develops atrial fibrillation. What two opposing risks must be balanced before starting an anticoagulant?",
+      "expected_answer": "The bleeding risk from cirrhosis-related coagulopathy against the ischaemic stroke risk from AF (CHA2DS2-VASc); direct oral anticoagulants are preferred in non-valvular AF.",
+      "relevant_doc_ids": [
+        "doc_cirrhosis",
+        "doc_atrial_fibrillation"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q178",
+      "question": "An osteoporosis patient on weekly alendronate is prescribed omeprazole for reflux. Which long-term PPI effects are relevant to her bone health?",
+      "expected_answer": "Long-term PPI use reduces calcium absorption and is associated with a modest increase in hip fracture risk; bisphosphonate dosing itself requires upright posture for 30 minutes to prevent oesophageal irritation.",
+      "relevant_doc_ids": [
+        "doc_omeprazole",
+        "doc_osteoporosis"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q179",
+      "question": "A patient with chronic kidney disease develops acute gout. Which standard gout treatments are problematic in this setting and why?",
+      "expected_answer": "NSAIDs are nephrotoxic and avoided in CKD; colchicine needs dose reduction in renal impairment; corticosteroids are an option for the acute attack.",
+      "relevant_doc_ids": [
+        "doc_gout",
+        "doc_ckd"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q180",
+      "question": "A hypothyroid patient treated with levothyroxine is found to have iron deficiency and starts ferrous sulfate. What timing advice is needed for her thyroid tablet?",
+      "expected_answer": "Iron supplements reduce levothyroxine absorption; levothyroxine should be taken on an empty stomach 30-60 minutes before breakfast and separated from iron.",
+      "relevant_doc_ids": [
+        "doc_levothyroxine",
+        "doc_iron_deficiency_anemia"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q181",
+      "question": "A wheezing pregnant patient needs quick relief. Which reliever is appropriate and why is a controller more important for her?",
+      "expected_answer": "Inhaled salbutamol is the short-acting reliever of choice; poorly controlled asthma is a risk in pregnancy, so inhaled corticosteroids are the cornerstone controller.",
+      "relevant_doc_ids": [
+        "doc_salbutamol",
+        "doc_asthma"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q182",
+      "question": "A patient on simvastatin for high cholesterol is prescribed clarithromycin for pneumonia. What risk arises and how should the drugs be handled?",
+      "expected_answer": "Macrolides inhibit CYP3A4, raising statin levels and increasing the risk of rhabdomyolysis; the statin should be paused during the macrolide course or a non-interacting antibiotic chosen.",
+      "relevant_doc_ids": [
+        "doc_atorvastatin",
+        "doc_pneumonia"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q183",
+      "question": "A diabetic woman planning pregnancy has an HbA1c of 8.2 and takes an ACE inhibitor for hypertension. What changes are needed before conception?",
+      "expected_answer": "ACE inhibitors are contraindicated in pregnancy and should be switched (e.g., to labetalol, nifedipine, or methyldopa); glycaemic control should be optimised before conception because of teratogenicity and miscarriage risk.",
+      "relevant_doc_ids": [
+        "doc_ace_inhibitors",
+        "doc_preeclampsia",
+        "doc_diabetes_type2"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q184",
+      "question": "A patient with active tuberculosis and epilepsy is started on rifampicin while taking carbamazepine. What is the consequence for seizure control?",
+      "expected_answer": "Rifampicin is a potent enzyme inducer that accelerates carbamazepine metabolism, lowering levels and risking breakthrough seizures; levels should be monitored and doses adjusted.",
+      "relevant_doc_ids": [
+        "doc_tuberculosis",
+        "doc_epilepsy"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q185",
+      "question": "Which two conditions in the differential of a painful, swollen calf can be distinguished by D-dimer strategy and imaging, and what are their respective acute treatments?",
+      "expected_answer": "Deep vein thrombosis (anticoagulation with DOACs such as apixaban or rivaroxaban) and cellulitis (antibiotics such as flucloxacillin); DVT is excluded by a low Wells score with negative D-dimer and confirmed by ultrasound.",
+      "relevant_doc_ids": [
+        "doc_dvt",
+        "doc_cellulitis"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q186",
+      "question": "A man with obstructive sleep apnoea and resistant hypertension is on three agents. Which treatment for his sleep disorder may improve his blood pressure control?",
+      "expected_answer": "CPAP for OSA lowers blood pressure in patients with resistant hypertension; weight loss also improves both conditions.",
+      "relevant_doc_ids": [
+        "doc_sleep_apnea",
+        "doc_hypertension"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q187",
+      "question": "A patient with rheumatoid arthritis on methotrexate develops mouth ulcers. Which daily supplement reduces this toxicity and which blood count abnormality signals a more serious problem?",
+      "expected_answer": "Daily folic acid reduces methotrexate side effects including mouth ulcers; bone marrow suppression with cytopenias signals serious toxicity requiring dose adjustment.",
+      "relevant_doc_ids": [
+        "doc_rheumatoid_arthritis"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q188",
+      "question": "An elderly patient on multiple drugs has a first-ever seizure after starting tramadol. Is this epilepsy and what does the work-up need to exclude?",
+      "expected_answer": "Provoked seizures from drugs or metabolic disturbance are not epilepsy; blood tests including glucose and electrolytes, ECG, and imaging exclude causes such as hyponatraemia.",
+      "relevant_doc_ids": [
+        "doc_epilepsy"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q189",
+      "question": "A person with longstanding diabetes reports painless vision loss and needs brighter light to read; examination shows lens opacification. What is the diagnosis, what is the only definitive treatment, and when is it offered?",
+      "expected_answer": "Cataract; phacoemulsification with intraocular lens implantation, offered when visual symptoms impair daily activities.",
+      "relevant_doc_ids": [
+        "doc_cataracts"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    },
+    {
+      "id": "q190",
+      "question": "A patient with a mechanical mitral valve needs anticoagulation. What INR range is targeted and which agent is used because DOACs are not approved for this valve type?",
+      "expected_answer": "INR 2.5-3.5 with warfarin; DOACs are not indicated for mechanical mitral valves, so warfarin with regular INR monitoring is required.",
+      "relevant_doc_ids": [
+        "doc_warfarin",
+        "doc_atrial_fibrillation"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q191",
+      "question": "A patient with hepatitis C is cured with sofosbuvir-velpatasvir but had cirrhosis before treatment. What surveillance continues and why?",
+      "expected_answer": "Six-monthly ultrasound (and alpha-fetoprotein) surveillance for hepatocellular carcinoma continues even after cure in patients with advanced fibrosis or cirrhosis.",
+      "relevant_doc_ids": [
+        "doc_hepatitis_c",
+        "doc_cirrhosis"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q192",
+      "question": "A postmenopausal woman on an aromatase inhibitor is found to have a T-score of -2.8. Which drug class is first-line and which monitoring applies to its prolonged use?",
+      "expected_answer": "Bisphosphonates such as alendronate are first-line for osteoporosis (T-score -2.5 or below); a drug holiday is considered after 3 to 5 years because of rare atypical femoral fractures and osteonecrosis of the jaw.",
+      "relevant_doc_ids": [
+        "doc_osteoporosis"
+      ],
+      "difficulty": "hard",
+      "type": "single_doc"
+    },
+    {
+      "id": "q193",
+      "question": "A patient with type 2 diabetes and refractory hypertension is found to have loud snoring and daytime sleepiness. How does treating the sleep disorder affect each condition?",
+      "expected_answer": "Treating OSA with CPAP reduces blood pressure; OSA is a risk factor for both hypertension and atrial fibrillation, and weight loss improves glycaemic control, blood pressure, and OSA severity.",
+      "relevant_doc_ids": [
+        "doc_sleep_apnea",
+        "doc_hypertension",
+        "doc_diabetes_type2"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q194",
+      "question": "A patient with chronic kidney disease and anaemia has a ferritin of 450 and low transferrin saturation. What is the anaemia type and what does treatment target?",
+      "expected_answer": "Anaemia of chronic disease (with possible coexisting iron deficiency); treatment targets the underlying disease and uses erythropoiesis-stimulating agents with iron where deficiency coexists.",
+      "relevant_doc_ids": [
+        "doc_anemia_chronic_disease",
+        "doc_ckd"
+      ],
+      "difficulty": "hard",
+      "type": "multi_doc"
+    },
+    {
+      "id": "q195",
+      "question": "A child with sickle cell disease starts school. Which two preventive measures reduce her infection risk and why is infection a particular concern?",
+      "expected_answer": "Penicillin prophylaxis and vaccination against pneumococcus, H. influenzae, and meningococcus, because functional asplenia increases infection risk.",
+      "relevant_doc_ids": [
+        "doc_sickle_cell"
+      ],
+      "difficulty": "medium",
+      "type": "single_doc"
+    }
+  ]
+}
