@@ -53,106 +53,9 @@ function formatVisitForCard(v) {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-export default function MyHealth() {
-  const { user, logout } = useAuthStore()
-
-  const [profile, setProfile] = useState(null)
-  const [visits, setVisits] = useState([])
-  const [visitsLoading, setVisitsLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState('profile')
-  const [activePage, setActivePage] = useState('home')
-  const [vitalsRange, setVitalsRange] = useState('30d')
-  const [chatMessages, setChatMessages] = useState([])
-  const [chatInput, setChatInput] = useState('')
-  const [isChatLoading, setIsChatLoading] = useState(false)
-  const [showChat, setShowChat] = useState(true)
-  const recordingTimerRef = useRef(null)
-  const mediaRecorderRef = useRef(null)
-  const mediaStreamRef = useRef(null)
-  const recordingChunksRef = useRef([])
-
-  // ── Load profile ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    let mounted = true
-    getPatientProfile()
-      .then(data => { if (mounted && data) setProfile(data) })
-      .catch(err => console.warn('Could not load patient profile:', err))
-    return () => {
-      mounted = false
-      clearInterval(recordingTimerRef.current)
-      mediaRecorderRef.current?.state !== 'inactive' && mediaRecorderRef.current?.stop()
-      mediaStreamRef.current?.getTracks().forEach(track => track.stop())
-    }
-  }, [])
-
-  // ── Load real visits ──────────────────────────────────────────────────────
-  const loadVisits = useCallback(async () => {
-    setVisitsLoading(true)
-    try {
-      const data = await getMyVisits()
-      setVisits(data.map(formatVisitForCard))
-    } catch (err) {
-      console.warn('Could not load visits:', err)
-    } finally {
-      setVisitsLoading(false)
-    }
-  }, [])
-
-  useEffect(() => { loadVisits() }, [loadVisits])
-
-  const displayName = profile?.fullName || profile?.firstName
-    ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
-    : user?.displayName || 'Patient'
-  const displayGenderAge = [
-    profile?.gender || null,
-    profile?.age ? `${profile.age} y.o.` : null
-  ].filter(Boolean).join(', ') || ''
-
-  const [sessionId, setSessionId] = useState(null)
-
-  const sendChatMessage = async (text) => {
-    const question = text || chatInput.trim()
-    if (!question || isChatLoading) return
-
-    setChatMessages(prev => [...prev, { role: 'user', content: question }])
-    setChatInput('')
-    setIsChatLoading(true)
-
-    try {
-      const res = await sendPatientChat({ question, sessionId })
-      if (res?.sessionId) {
-        setSessionId(res.sessionId)
-      }
-      const answer = res?.answer || "I couldn't retrieve an answer at this moment."
-      setChatMessages(prev => [...prev, { role: 'assistant', content: answer, sources: res?.sources }])
-    } catch (err) {
-      console.warn('Patient RAG chat failed:', err)
-      let answer = ''
-      const q = question.toLowerCase()
-      if (visits.length === 0) {
-        answer = "You don't have any visits yet. Upload documents or record a visit to get started."
-      } else if (q.includes('diagnosis')) {
-        answer = `Your last reason for visit was: ${visits[0].diagnosis}`
-      } else if (q.includes('medicine') || q.includes('medication')) {
-        answer = `Please check your latest visit documents for medication details.`
-      } else if (q.includes('overview') || q.includes('health record')) {
-        answer = `You have ${visits.length} visit(s) recorded. Your most recent visit was on ${visits[0].visitDate}.`
-      } else {
-        answer = "Everything looks stable based on your latest visit. Follow your doctor's advice and reach out if symptoms worsen."
-      }
-      setChatMessages(prev => [...prev, { role: 'assistant', content: answer }])
-    } finally {
-      setIsChatLoading(false)
-    }
-  }
-
-  const getSuggestedQuestions = () => activePage === 'myhealth'
-    ? ["Give me an overview of my health record", "What are the key things in my medical history?", "Are there any concerning trends in my health data?"]
-    : ["What does my diagnosis mean in simple terms?", "Explain my medication and side effects", "What should I watch out for at home?"]
-
-  // ─── Visit Card ──────────────────────────────────────────────────────────
-  const VisitCard = ({ visit }) => (
+// ─── Visit Card ──────────────────────────────────────────────────────────
+function VisitCard({ visit }) {
+  return (
     <div className="border border-gray-200 rounded-xl bg-white hover:shadow-sm transition-all cursor-pointer">
       <div className="flex items-stretch">
         <div className="flex-shrink-0 p-4 flex items-start">
@@ -191,9 +94,20 @@ export default function MyHealth() {
       </div>
     </div>
   )
+}
 
-  // ─── Chat Panel ──────────────────────────────────────────────────────────
-  const ChatPanel = () => (
+// ─── Chat Panel ──────────────────────────────────────────────────────────
+function ChatPanel({
+  chatMessages,
+  chatInput,
+  setChatInput,
+  isChatLoading,
+  sendChatMessage,
+  activePage,
+  getSuggestedQuestions,
+  setShowChat,
+}) {
+  return (
     <div
       className="bg-white border border-gray-200 rounded-xl flex flex-col overflow-hidden"
       style={{ height: 'calc(100vh - 72px)' }}
@@ -277,9 +191,20 @@ export default function MyHealth() {
       </div>
     </div>
   )
+}
 
-  // ─── HOME PAGE ──────────────────────────────────────────────────────────
-  const HomePage = () => (
+// ─── HOME PAGE ──────────────────────────────────────────────────────────
+function HomePage({
+  displayName,
+  displayGenderAge,
+  profile,
+  user,
+  visits,
+  visitsLoading,
+  setActivePage,
+  sendChatMessage,
+}) {
+  return (
     <div className="space-y-3">
       {/* Profile Card */}
       <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3">
@@ -387,9 +312,22 @@ export default function MyHealth() {
       </div>
     </div>
   )
+}
 
-  // ─── MY HEALTH PAGE ──────────────────────────────────────────────────────
-  const MyHealthPage = () => (
+// ─── MY HEALTH PAGE ──────────────────────────────────────────────────────
+function MyHealthPage({
+  displayName,
+  profile,
+  user,
+  visits,
+  activeTab,
+  setActiveTab,
+  vitalsRange,
+  setVitalsRange,
+  setActivePage,
+  sendChatMessage,
+}) {
+  return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h1 className="text-sm font-semibold text-gray-900">My Health</h1>
@@ -613,24 +551,55 @@ export default function MyHealth() {
       </div>
     </div>
   )
+}
 
-  // ════════════════════════════════════════════════════════════════════════════
-  // ─── UPLOAD VISIT PAGE (4-step wizard) ──────────────────────────────────
-  // ════════════════════════════════════════════════════════════════════════════
-  const UploadVisitPage = () => {
-    const [step, setStep] = useState(1) // 1=Info, 2=Documents, 3=Audio, 4=Review
+// ─── Step progress bar ────────────────────────────────────────────────
+function StepBar({ step, steps }) {
+  return (
+    <div className="flex items-center gap-1 mb-6">
+      {steps.map((label, i) => {
+        const num = i + 1
+        const done = step > num
+        const active = step === num
+        return (
+          <React.Fragment key={i}>
+            <div className="flex flex-col items-center">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
+                done ? 'bg-emerald-500 text-white' : active ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-400'
+              }`}>
+                {done ? '✓' : num}
+              </div>
+              <div className={`text-[9px] mt-0.5 whitespace-nowrap ${active ? 'text-gray-800 font-semibold' : 'text-gray-400'}`}>
+                {label}
+              </div>
+            </div>
+            {i < steps.length - 1 && (
+              <div className={`flex-1 h-px mb-3.5 transition-all ${step > num ? 'bg-emerald-400' : 'bg-gray-200'}`} />
+            )}
+          </React.Fragment>
+        )
+      })}
+    </div>
+  )
+}
 
-    // Step 1 — visit info
-    const [visitDate, setVisitDate] = useState(new Date().toISOString().split('T')[0])
-    const [hospitalName, setHospitalName] = useState('')
-    const [doctorName, setDoctorName] = useState('')
-    const [chiefComplaint, setChiefComplaint] = useState('')
-    const [visitType, setVisitType] = useState('General')
-    const [notes, setNotes] = useState('')
+// ════════════════════════════════════════════════════════════════════════════
+// ─── UPLOAD VISIT PAGE (4-step wizard) ──────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+function UploadVisitPage({ setActivePage, loadVisits }) {
+  const [step, setStep] = useState(1) // 1=Info, 2=Documents, 3=Audio, 4=Review
 
-    // Step 2 — documents
-    const [docFiles, setDocFiles] = useState([]) // [{file, docType, id}]
-    const docInputRef = useRef(null)
+  // Step 1 — visit info
+  const [visitDate, setVisitDate] = useState(new Date().toISOString().split('T')[0])
+  const [hospitalName, setHospitalName] = useState('')
+  const [doctorName, setDoctorName] = useState('')
+  const [chiefComplaint, setChiefComplaint] = useState('')
+  const [visitType, setVisitType] = useState('General')
+  const [notes, setNotes] = useState('')
+
+  // Step 2 — documents
+  const [docFiles, setDocFiles] = useState([]) // [{file, docType, id}]
+  const docInputRef = useRef(null)
 
   // Step 3 — audio
   const [audioFile, setAudioFile] = useState(null)
@@ -638,536 +607,612 @@ export default function MyHealth() {
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
   const [recordingSeconds, setRecordingSeconds] = useState(0)
 
-    // Submission state
-    const [submitting, setSubmitting] = useState(false)
-    const [submitError, setSubmitError] = useState(null)
+  // Recording refs
+  const recordingTimerRef = useRef(null)
+  const mediaRecorderRef = useRef(null)
+  const mediaStreamRef = useRef(null)
+  const recordingChunksRef = useRef([])
 
-    const STEPS = ['Visit Info', 'Documents', 'Audio', 'Review & Submit']
+  // Submission state
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(null)
 
-    // ── Step 2 helpers ───────────────────────────────────────────────────
-    const handleDocFilePick = (e) => {
-      const picked = Array.from(e.target.files || [])
-      picked.forEach(f => {
-        const err = validateFile(f, DOC_FILE_TYPES, 10 * 1024 * 1024)
-        if (err) { toast.error(`${f.name}: ${err}`); return }
-        setDocFiles(prev => [...prev, { file: f, docType: 'OTHER', id: Math.random().toString(36).slice(2) }])
-      })
-      e.target.value = ''
-    }
+  const STEPS = ['Visit Info', 'Documents', 'Audio', 'Review & Submit']
 
-    const handleDocDrop = (e) => {
-      e.preventDefault()
-      const dropped = Array.from(e.dataTransfer.files || [])
-      dropped.forEach(f => {
-        const err = validateFile(f, DOC_FILE_TYPES, 10 * 1024 * 1024)
-        if (err) { toast.error(`${f.name}: ${err}`); return }
-        setDocFiles(prev => [...prev, { file: f, docType: 'OTHER', id: Math.random().toString(36).slice(2) }])
-      })
-    }
-
-    const removeDoc = (id) => setDocFiles(prev => prev.filter(d => d.id !== id))
-
-    const updateDocType = (id, docType) =>
-      setDocFiles(prev => prev.map(d => d.id === id ? { ...d, docType } : d))
-
-    // ── Step 3 helpers ───────────────────────────────────────────────────
-    const handleAudioPick = (e) => {
-      const f = e.target.files?.[0]
-      if (!f) return
-      if (!AUDIO_TYPES.includes(f.type)) {
-        toast.error('Please upload an audio file (MP3, WAV, M4A, OGG, WebM)')
-        return
-      }
-      if (f.size > 50 * 1024 * 1024) {
-        toast.error('Audio file must be under 50 MB')
-        return
-      }
-      setAudioFile(f)
-      e.target.value = ''
-    }
-
-    const handleAudioDrop = (e) => {
-      e.preventDefault()
-      const f = e.dataTransfer.files?.[0]
-      if (!f) return
-      if (!AUDIO_TYPES.includes(f.type)) { toast.error('Please upload an audio file'); return }
-      if (f.size > 50 * 1024 * 1024) { toast.error('Audio file must be under 50 MB'); return }
-      setAudioFile(f)
-    }
-
-    const stopLiveRecording = useCallback(() => {
+  useEffect(() => {
+    return () => {
       clearInterval(recordingTimerRef.current)
-      recordingTimerRef.current = null
-      setIsRecordingAudio(false)
-      setRecordingSeconds(0)
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
         mediaRecorderRef.current.stop()
       }
-    }, [])
-
-    const startLiveRecording = useCallback(async () => {
-      if (isRecordingAudio) return
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        mediaStreamRef.current = stream
-
-        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-          ? 'audio/webm;codecs=opus'
-          : MediaRecorder.isTypeSupported('audio/webm')
-            ? 'audio/webm'
-            : ''
-
-        const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined)
-        mediaRecorderRef.current = recorder
-        recordingChunksRef.current = []
-
-        recorder.ondataavailable = (event) => {
-          if (event.data.size > 0) recordingChunksRef.current.push(event.data)
-        }
-
-        recorder.onstop = () => {
-          const blob = new Blob(recordingChunksRef.current, {
-            type: recorder.mimeType || 'audio/webm',
-          })
-          recordingChunksRef.current = []
-          mediaStreamRef.current?.getTracks().forEach(track => track.stop())
-          mediaStreamRef.current = null
-          if (blob.size > 0) {
-            const file = new File([blob], 'live-recording.webm', {
-              type: blob.type || 'audio/webm',
-            })
-            setAudioFile(file)
-          }
-        }
-
-        recorder.start()
-        setIsRecordingAudio(true)
-        setRecordingSeconds(0)
-        recordingTimerRef.current = setInterval(() => {
-          setRecordingSeconds(prev => prev + 1)
-        }, 1000)
-      } catch (err) {
-        toast.error(err?.name === 'NotAllowedError'
-          ? 'Microphone access was denied'
-          : 'Could not start live recording')
-      }
-    }, [isRecordingAudio])
-
-    // ── Submit ─────────────────────────────────────────────────────────
-    const handleSubmit = async () => {
-      setSubmitting(true)
-      setSubmitError(null)
-      try {
-        // 1. Create visit
-        const created = await createPatientVisit({
-          visitDate,
-          hospitalName: hospitalName.trim() || undefined,
-          doctorName: doctorName.trim() || undefined,
-          chiefComplaint: chiefComplaint.trim() || undefined,
-          notes: notes.trim() || undefined,
-          visitType,
-        })
-        const visitId = created.visitId
-
-        // 2. A failed file fails the submission, so success is never misleading.
-        for (const { file, docType } of docFiles) {
-          await uploadVisitDocumentByPatient(visitId, file, docType)
-        }
-
-        // 3. Upload audio
-        if (audioFile) {
-          await uploadVisitDocumentByPatient(visitId, audioFile, 'OTHER')
-        }
-
-        toast.success('Visit uploaded successfully!')
-        await loadVisits()
-        setActivePage('home')
-      } catch (err) {
-        console.error('Submit failed:', err)
-        const msg = err?.response?.data?.message || err?.message || 'Upload failed. Please try again.'
-        setSubmitError(msg)
-        toast.error(msg)
-      } finally {
-        setSubmitting(false)
-      }
+      mediaStreamRef.current?.getTracks().forEach(track => track.stop())
     }
+  }, [])
 
-    const canProceedStep1 = !!visitDate
-    const totalFiles = docFiles.length + (audioFile ? 1 : 0)
+  // ── Step 2 helpers ───────────────────────────────────────────────────
+  const handleDocFilePick = (e) => {
+    const picked = Array.from(e.target.files || [])
+    picked.forEach(f => {
+      const err = validateFile(f, DOC_FILE_TYPES, 10 * 1024 * 1024)
+      if (err) { toast.error(`${f.name}: ${err}`); return }
+      setDocFiles(prev => [...prev, { file: f, docType: 'OTHER', id: Math.random().toString(36).slice(2) }])
+    })
+    e.target.value = ''
+  }
 
-    // ── Step progress bar ────────────────────────────────────────────────
-    const StepBar = () => (
-      <div className="flex items-center gap-1 mb-6">
-        {STEPS.map((label, i) => {
-          const num = i + 1
-          const done = step > num
-          const active = step === num
-          return (
-            <React.Fragment key={i}>
-              <div className="flex flex-col items-center">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
-                  done ? 'bg-emerald-500 text-white' : active ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-400'
-                }`}>
-                  {done ? '✓' : num}
-                </div>
-                <div className={`text-[9px] mt-0.5 whitespace-nowrap ${active ? 'text-gray-800 font-semibold' : 'text-gray-400'}`}>
-                  {label}
-                </div>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-px mb-3.5 transition-all ${step > num ? 'bg-emerald-400' : 'bg-gray-200'}`} />
-              )}
-            </React.Fragment>
-          )
-        })}
-      </div>
-    )
+  const handleDocDrop = (e) => {
+    e.preventDefault()
+    const dropped = Array.from(e.dataTransfer.files || [])
+    dropped.forEach(f => {
+      const err = validateFile(f, DOC_FILE_TYPES, 10 * 1024 * 1024)
+      if (err) { toast.error(`${f.name}: ${err}`); return }
+      setDocFiles(prev => [...prev, { file: f, docType: 'OTHER', id: Math.random().toString(36).slice(2) }])
+    })
+  }
 
-    return (
-      <div className="max-w-lg mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-4">
-          <button
-            onClick={() => step > 1 ? setStep(s => s - 1) : setActivePage('home')}
-            className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50"
-          >
-            <ChevronLeft size={13} className="text-gray-500" />
-          </button>
-          <div>
-            <h2 className="text-sm font-bold text-gray-900">Upload Medical Visit</h2>
-            <p className="text-[10px] text-gray-400">Step {step} of {STEPS.length}</p>
-          </div>
+  const removeDoc = (id) => setDocFiles(prev => prev.filter(d => d.id !== id))
+
+  const updateDocType = (id, docType) =>
+    setDocFiles(prev => prev.map(d => d.id === id ? { ...d, docType } : d))
+
+  // ── Step 3 helpers ───────────────────────────────────────────────────
+  const handleAudioPick = (e) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    if (!AUDIO_TYPES.includes(f.type)) {
+      toast.error('Please upload an audio file (MP3, WAV, M4A, OGG, WebM)')
+      return
+    }
+    if (f.size > 50 * 1024 * 1024) {
+      toast.error('Audio file must be under 50 MB')
+      return
+    }
+    setAudioFile(f)
+    e.target.value = ''
+  }
+
+  const handleAudioDrop = (e) => {
+    e.preventDefault()
+    const f = e.dataTransfer.files?.[0]
+    if (!f) return
+    if (!AUDIO_TYPES.includes(f.type)) { toast.error('Please upload an audio file'); return }
+    if (f.size > 50 * 1024 * 1024) { toast.error('Audio file must be under 50 MB'); return }
+    setAudioFile(f)
+  }
+
+  const stopLiveRecording = useCallback(() => {
+    clearInterval(recordingTimerRef.current)
+    recordingTimerRef.current = null
+    setIsRecordingAudio(false)
+    setRecordingSeconds(0)
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop()
+    }
+  }, [])
+
+  const startLiveRecording = useCallback(async () => {
+    if (isRecordingAudio) return
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaStreamRef.current = stream
+
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+          ? 'audio/webm'
+          : ''
+
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined)
+      mediaRecorderRef.current = recorder
+      recordingChunksRef.current = []
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) recordingChunksRef.current.push(event.data)
+      }
+
+      recorder.onstop = () => {
+        const blob = new Blob(recordingChunksRef.current, {
+          type: recorder.mimeType || 'audio/webm',
+        })
+        recordingChunksRef.current = []
+        mediaStreamRef.current?.getTracks().forEach(track => track.stop())
+        mediaStreamRef.current = null
+        if (blob.size > 0) {
+          const file = new File([blob], 'live-recording.webm', {
+            type: blob.type || 'audio/webm',
+          })
+          setAudioFile(file)
+        }
+      }
+
+      recorder.start()
+      setIsRecordingAudio(true)
+      setRecordingSeconds(0)
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds(prev => prev + 1)
+      }, 1000)
+    } catch (err) {
+      toast.error(err?.name === 'NotAllowedError'
+        ? 'Microphone access was denied'
+        : 'Could not start live recording')
+    }
+  }, [isRecordingAudio])
+
+  // ── Submit ─────────────────────────────────────────────────────────
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    setSubmitError(null)
+    try {
+      // 1. Create visit
+      const created = await createPatientVisit({
+        visitDate,
+        hospitalName: hospitalName.trim() || undefined,
+        doctorName: doctorName.trim() || undefined,
+        chiefComplaint: chiefComplaint.trim() || undefined,
+        notes: notes.trim() || undefined,
+        visitType,
+      })
+      const visitId = created.visitId
+
+      // 2. A failed file fails the submission, so success is never misleading.
+      for (const { file, docType } of docFiles) {
+        await uploadVisitDocumentByPatient(visitId, file, docType)
+      }
+
+      // 3. Upload audio
+      if (audioFile) {
+        await uploadVisitDocumentByPatient(visitId, audioFile, 'OTHER')
+      }
+
+      toast.success('Visit uploaded successfully!')
+      await loadVisits()
+      setActivePage('home')
+    } catch (err) {
+      console.error('Submit failed:', err)
+      const msg = err?.response?.data?.message || err?.message || 'Upload failed. Please try again.'
+      setSubmitError(msg)
+      toast.error(msg)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const canProceedStep1 = !!visitDate
+
+  return (
+    <div className="max-w-lg mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          onClick={() => step > 1 ? setStep(s => s - 1) : setActivePage('home')}
+          className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+        >
+          <ChevronLeft size={13} className="text-gray-500" />
+        </button>
+        <div>
+          <h2 className="text-sm font-bold text-gray-900">Upload Medical Visit</h2>
+          <p className="text-[10px] text-gray-400">Step {step} of {STEPS.length}</p>
         </div>
+      </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <StepBar />
+      <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <StepBar step={step} steps={STEPS} />
 
-          {/* ── STEP 1: Visit Info ── */}
-          {step === 1 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
-                  Visit Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="visit-date"
-                  type="date"
-                  value={visitDate}
-                  max={new Date().toISOString().split('T')[0]}
-                  onChange={e => setVisitDate(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Visit Type</label>
-                <select
-                  id="visit-type"
-                  value={visitType}
-                  onChange={e => setVisitType(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400 bg-white"
-                >
-                  {VISIT_TYPES.map(t => <option key={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Hospital / Clinic Name</label>
-                <input
-                  id="hospital-name"
-                  type="text"
-                  value={hospitalName}
-                  onChange={e => setHospitalName(e.target.value)}
-                  placeholder="e.g. City General Hospital"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Doctor Name</label>
-                <input
-                  id="doctor-name"
-                  type="text"
-                  value={doctorName}
-                  onChange={e => setDoctorName(e.target.value)}
-                  placeholder="e.g. Dr. Priya Sharma"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Chief Complaint / Reason for Visit</label>
-                <textarea
-                  id="chief-complaint"
-                  value={chiefComplaint}
-                  onChange={e => setChiefComplaint(e.target.value)}
-                  placeholder="Describe the main reason for this visit…"
-                  rows={3}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400 resize-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Additional Notes <span className="text-gray-400 font-normal">(optional)</span></label>
-                <textarea
-                  id="visit-notes"
-                  value={notes}
-                  onChange={e => setNotes(e.target.value)}
-                  placeholder="Any other notes about this visit…"
-                  rows={2}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400 resize-none"
-                />
-              </div>
-              <button
-                id="btn-step1-next"
-                onClick={() => setStep(2)}
-                disabled={!canProceedStep1}
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
-              >
-                Next: Add Documents <ArrowRight size={13} />
-              </button>
-            </div>
-          )}
-
-          {/* ── STEP 2: Documents ── */}
-          {step === 2 && (
-            <div className="space-y-4">
-              <p className="text-[11px] text-gray-500 leading-relaxed">
-                Upload prescriptions, lab reports, imaging scans, discharge summaries, or any other relevant medical document.
-              </p>
-
-              {/* Drop zone */}
-              <div
-                id="doc-drop-zone"
-                className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all"
-                onDragOver={e => e.preventDefault()}
-                onDrop={handleDocDrop}
-                onClick={() => docInputRef.current?.click()}
-              >
-                <Upload size={22} className="mx-auto text-gray-300 mb-2" />
-                <div className="text-[11px] text-gray-500">
-                  Drag & drop files here, or <span className="text-emerald-600 font-medium">browse</span>
-                </div>
-                <div className="text-[10px] text-gray-400 mt-1">PDF, JPG, PNG, WebP — max 10 MB per file</div>
-              </div>
+        {/* ── STEP 1: Visit Info ── */}
+        {step === 1 && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Visit Date <span className="text-red-500">*</span>
+              </label>
               <input
-                ref={docInputRef}
-                type="file"
-                multiple
-                accept=".pdf,.jpg,.jpeg,.png,.webp"
-                className="hidden"
-                onChange={handleDocFilePick}
+                id="visit-date"
+                type="date"
+                value={visitDate}
+                max={new Date().toISOString().split('T')[0]}
+                onChange={e => setVisitDate(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400"
               />
-
-              {/* File list */}
-              {docFiles.length > 0 && (
-                <div className="space-y-2">
-                  {docFiles.map(({ file, docType, id }) => (
-                    <div key={id} className="flex items-center gap-2 p-2.5 border border-gray-100 rounded-lg bg-gray-50">
-                      <FileText size={14} className="text-gray-400 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[11px] font-medium text-gray-800 truncate">{file.name}</div>
-                        <div className="text-[10px] text-gray-400">{(file.size / 1024).toFixed(1)} KB</div>
-                      </div>
-                      <select
-                        value={docType}
-                        onChange={e => updateDocType(id, e.target.value)}
-                        className="text-[10px] border border-gray-200 rounded px-1.5 py-0.5 bg-white text-gray-600 focus:outline-none flex-shrink-0"
-                      >
-                        {DOC_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                      </select>
-                      <button onClick={() => removeDoc(id)} className="text-gray-300 hover:text-red-400 flex-shrink-0">
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex gap-2">
-                <button
-                  id="btn-step2-skip"
-                  onClick={() => setStep(3)}
-                  className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-xs font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Skip for now
-                </button>
-                <button
-                  id="btn-step2-next"
-                  onClick={() => setStep(3)}
-                  className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
-                >
-                  {docFiles.length > 0 ? `Continue with ${docFiles.length} file${docFiles.length > 1 ? 's' : ''}` : 'Next'} <ArrowRight size={13} />
-                </button>
-              </div>
             </div>
-          )}
-
-          {/* ── STEP 3: Audio Recording ── */}
-          {step === 3 && (
-            <div className="space-y-4">
-              <p className="text-[11px] text-gray-500 leading-relaxed">
-                Upload an audio recording of your doctor consultation. This is optional — AI transcription will be available in a future update.
-              </p>
-
-              {/* Consent notice */}
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5">
-                <div className="text-[11px] font-semibold text-amber-700 mb-1 flex items-center gap-1.5">
-                  <AlertCircle size={12} /> Both parties must consent
-                </div>
-                <div className="text-[11px] text-amber-600 leading-relaxed">
-                  By uploading this recording, you confirm that both the healthcare provider and you have agreed to record this consultation.
-                </div>
-              </div>
-
-              {audioFile ? (
-                <div className="flex items-center gap-2 p-3 border border-gray-100 rounded-lg bg-gray-50">
-                  <Mic size={16} className="text-emerald-500 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[11px] font-medium text-gray-800 truncate">{audioFile.name}</div>
-                    <div className="text-[10px] text-gray-400">{(audioFile.size / (1024 * 1024)).toFixed(2)} MB</div>
-                  </div>
-                  <button onClick={() => setAudioFile(null)} className="text-gray-300 hover:text-red-400">
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <div
-                    id="audio-drop-zone"
-                    className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all"
-                    onDragOver={e => e.preventDefault()}
-                    onDrop={handleAudioDrop}
-                    onClick={() => audioInputRef.current?.click()}
-                  >
-                    <Mic size={22} className="mx-auto text-gray-300 mb-2" />
-                    <div className="text-[11px] text-gray-500">
-                      Drag & drop audio here, or <span className="text-emerald-600 font-medium">browse</span>
-                    </div>
-                    <div className="text-[10px] text-gray-400 mt-1">MP3, WAV, M4A, OGG, WebM — max 50 MB</div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={isRecordingAudio ? stopLiveRecording : startLiveRecording}
-                    className={`w-full py-2.5 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border ${
-                      isRecordingAudio
-                        ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
-                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {isRecordingAudio ? (
-                      <>
-                        <span className="relative flex items-center justify-center">
-                          <span className="absolute w-3 h-3 rounded-full bg-red-500 animate-ping opacity-75" />
-                          <span className="relative w-2 h-2 rounded-full bg-red-500" />
-                        </span>
-                        Stop Recording
-                        <span className="font-mono text-[11px] tabular-nums">
-                          {String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:
-                          {String(recordingSeconds % 60).padStart(2, '0')}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="w-2 h-2 rounded-full bg-red-500" />
-                        Record Live Audio
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Visit Type</label>
+              <select
+                id="visit-type"
+                value={visitType}
+                onChange={e => setVisitType(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400 bg-white"
+              >
+                {VISIT_TYPES.map(t => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Hospital / Clinic Name</label>
               <input
-                ref={audioInputRef}
-                type="file"
-                accept="audio/*"
-                className="hidden"
-                onChange={handleAudioPick}
+                id="hospital-name"
+                type="text"
+                value={hospitalName}
+                onChange={e => setHospitalName(e.target.value)}
+                placeholder="e.g. City General Hospital"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400"
               />
-
-              <div className="flex gap-2">
-                <button
-                  id="btn-step3-skip"
-                  onClick={() => setStep(4)}
-                  className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-xs font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Skip Audio
-                </button>
-                <button
-                  id="btn-step3-next"
-                  onClick={() => setStep(4)}
-                  className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
-                >
-                  Review &amp; Submit <ArrowRight size={13} />
-                </button>
-              </div>
             </div>
-          )}
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Doctor Name</label>
+              <input
+                id="doctor-name"
+                type="text"
+                value={doctorName}
+                onChange={e => setDoctorName(e.target.value)}
+                placeholder="e.g. Dr. Priya Sharma"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Chief Complaint / Reason for Visit</label>
+              <textarea
+                id="chief-complaint"
+                value={chiefComplaint}
+                onChange={e => setChiefComplaint(e.target.value)}
+                placeholder="Describe the main reason for this visit…"
+                rows={3}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400 resize-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Additional Notes <span className="text-gray-400 font-normal">(optional)</span></label>
+              <textarea
+                id="visit-notes"
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Any other notes about this visit…"
+                rows={2}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[11px] text-gray-700 focus:outline-none focus:border-emerald-400 resize-none"
+              />
+            </div>
+            <button
+              id="btn-step1-next"
+              onClick={() => setStep(2)}
+              disabled={!canProceedStep1}
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+            >
+              Next: Add Documents <ArrowRight size={13} />
+            </button>
+          </div>
+        )}
 
-          {/* ── STEP 4: Review & Submit ── */}
-          {step === 4 && (
-            <div className="space-y-4">
-              <h3 className="text-xs font-semibold text-gray-900">Review your submission</h3>
+        {/* ── STEP 2: Documents ── */}
+        {step === 2 && (
+          <div className="space-y-4">
+            <p className="text-[11px] text-gray-500 leading-relaxed">
+              Upload prescriptions, lab reports, imaging scans, discharge summaries, or any other relevant medical document.
+            </p>
 
-              {/* Visit summary */}
-              <div className="bg-gray-50 rounded-xl p-4 space-y-2.5">
-                {[
-                  { label: 'Visit Date', value: visitDate },
-                  { label: 'Visit Type', value: visitType },
-                  { label: 'Hospital', value: hospitalName || '—' },
-                  { label: 'Doctor', value: doctorName || '—' },
-                  { label: 'Chief Complaint', value: chiefComplaint || '—' },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex items-start justify-between gap-2">
-                    <span className="text-[10px] text-gray-400 uppercase tracking-wide flex-shrink-0">{label}</span>
-                    <span className="text-[11px] text-gray-800 font-medium text-right">{value}</span>
+            {/* Drop zone */}
+            <div
+              id="doc-drop-zone"
+              className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all"
+              onDragOver={e => e.preventDefault()}
+              onDrop={handleDocDrop}
+              onClick={() => docInputRef.current?.click()}
+            >
+              <Upload size={22} className="mx-auto text-gray-300 mb-2" />
+              <div className="text-[11px] text-gray-500">
+                Drag & drop files here, or <span className="text-emerald-600 font-medium">browse</span>
+              </div>
+              <div className="text-[10px] text-gray-400 mt-1">PDF, JPG, PNG, WebP — max 10 MB per file</div>
+            </div>
+            <input
+              ref={docInputRef}
+              type="file"
+              multiple
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
+              className="hidden"
+              onChange={handleDocFilePick}
+            />
+
+            {/* File list */}
+            {docFiles.length > 0 && (
+              <div className="space-y-2">
+                {docFiles.map(({ file, docType, id }) => (
+                  <div key={id} className="flex items-center gap-2 p-2.5 border border-gray-100 rounded-lg bg-gray-50">
+                    <FileText size={14} className="text-gray-400 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11px] font-medium text-gray-800 truncate">{file.name}</div>
+                      <div className="text-[10px] text-gray-400">{(file.size / 1024).toFixed(1)} KB</div>
+                    </div>
+                    <select
+                      value={docType}
+                      onChange={e => updateDocType(id, e.target.value)}
+                      className="text-[10px] border border-gray-200 rounded px-1.5 py-0.5 bg-white text-gray-600 focus:outline-none flex-shrink-0"
+                    >
+                      {DOC_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                    <button onClick={() => removeDoc(id)} className="text-gray-300 hover:text-red-400 flex-shrink-0">
+                      <Trash2 size={13} />
+                    </button>
                   </div>
                 ))}
               </div>
+            )}
 
-              {/* Files summary */}
-              <div className="flex gap-3">
-                <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-center">
-                  <div className="text-lg font-bold text-emerald-700">{docFiles.length}</div>
-                  <div className="text-[10px] text-emerald-600 mt-0.5">Document{docFiles.length !== 1 ? 's' : ''}</div>
-                </div>
-                <div className="flex-1 bg-blue-50 border border-blue-100 rounded-xl p-3 text-center">
-                  <div className="text-lg font-bold text-blue-700">{audioFile ? 1 : 0}</div>
-                  <div className="text-[10px] text-blue-600 mt-0.5">Audio Recording</div>
-                </div>
-              </div>
-
-              {/* Error */}
-              {submitError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-2">
-                  <AlertCircle size={13} className="text-red-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-[11px] text-red-600">{submitError}</div>
-                </div>
-              )}
-
-              {/* Submit button */}
+            <div className="flex gap-2">
               <button
-                id="btn-submit-visit"
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
-              >
-                {submitting ? (
-                  <><Loader2 size={14} className="animate-spin" /> Uploading…</>
-                ) : (
-                  <><CheckCircle2 size={14} /> Upload Visit</>
-                )}
-              </button>
-
-              <button
+                id="btn-step2-skip"
                 onClick={() => setStep(3)}
-                disabled={submitting}
-                className="w-full text-[11px] text-gray-400 hover:text-gray-600 text-center py-1"
+                className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-xs font-medium hover:bg-gray-50 transition-colors"
               >
-                ← Go back and edit
+                Skip for now
+              </button>
+              <button
+                id="btn-step2-next"
+                onClick={() => setStep(3)}
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+              >
+                {docFiles.length > 0 ? `Continue with ${docFiles.length} file${docFiles.length > 1 ? 's' : ''}` : 'Next'} <ArrowRight size={13} />
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* ── STEP 3: Audio Recording ── */}
+        {step === 3 && (
+          <div className="space-y-4">
+            <p className="text-[11px] text-gray-500 leading-relaxed">
+              Upload an audio recording of your doctor consultation. This is optional — AI transcription will be available in a future update.
+            </p>
+
+            {/* Consent notice */}
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5">
+              <div className="text-[11px] font-semibold text-amber-700 mb-1 flex items-center gap-1.5">
+                <AlertCircle size={12} /> Both parties must consent
+              </div>
+              <div className="text-[11px] text-amber-600 leading-relaxed">
+                By uploading this recording, you confirm that both the healthcare provider and you have agreed to record this consultation.
+              </div>
+            </div>
+
+            {audioFile ? (
+              <div className="flex items-center gap-2 p-3 border border-gray-100 rounded-lg bg-gray-50">
+                <Mic size={16} className="text-emerald-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[11px] font-medium text-gray-800 truncate">{audioFile.name}</div>
+                  <div className="text-[10px] text-gray-400">{(audioFile.size / (1024 * 1024)).toFixed(2)} MB</div>
+                </div>
+                <button onClick={() => setAudioFile(null)} className="text-gray-300 hover:text-red-400">
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div
+                  id="audio-drop-zone"
+                  className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-all"
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={handleAudioDrop}
+                  onClick={() => audioInputRef.current?.click()}
+                >
+                  <Mic size={22} className="mx-auto text-gray-300 mb-2" />
+                  <div className="text-[11px] text-gray-500">
+                    Drag & drop audio here, or <span className="text-emerald-600 font-medium">browse</span>
+                  </div>
+                  <div className="text-[10px] text-gray-400 mt-1">MP3, WAV, M4A, OGG, WebM — max 50 MB</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={isRecordingAudio ? stopLiveRecording : startLiveRecording}
+                  className={`w-full py-2.5 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border ${
+                    isRecordingAudio
+                      ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
+                      : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {isRecordingAudio ? (
+                    <>
+                      <span className="relative flex items-center justify-center">
+                        <span className="absolute w-3 h-3 rounded-full bg-red-500 animate-ping opacity-75" />
+                        <span className="relative w-2 h-2 rounded-full bg-red-500" />
+                      </span>
+                      Stop Recording
+                      <span className="font-mono text-[11px] tabular-nums">
+                        {String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:
+                        {String(recordingSeconds % 60).padStart(2, '0')}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-2 h-2 rounded-full bg-red-500" />
+                      Record Live Audio
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+            <input
+              ref={audioInputRef}
+              type="file"
+              accept="audio/*"
+              className="hidden"
+              onChange={handleAudioPick}
+            />
+
+            <div className="flex gap-2">
+              <button
+                id="btn-step3-skip"
+                onClick={() => setStep(4)}
+                className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-xs font-medium hover:bg-gray-50 transition-colors"
+              >
+                Skip Audio
+              </button>
+              <button
+                id="btn-step3-next"
+                onClick={() => setStep(4)}
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+              >
+                Review &amp; Submit <ArrowRight size={13} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 4: Review & Submit ── */}
+        {step === 4 && (
+          <div className="space-y-4">
+            <h3 className="text-xs font-semibold text-gray-900">Review your submission</h3>
+
+            {/* Visit summary */}
+            <div className="bg-gray-50 rounded-xl p-4 space-y-2.5">
+              {[
+                { label: 'Visit Date', value: visitDate },
+                { label: 'Visit Type', value: visitType },
+                { label: 'Hospital', value: hospitalName || '—' },
+                { label: 'Doctor', value: doctorName || '—' },
+                { label: 'Chief Complaint', value: chiefComplaint || '—' },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex items-start justify-between gap-2">
+                  <span className="text-[10px] text-gray-400 uppercase tracking-wide flex-shrink-0">{label}</span>
+                  <span className="text-[11px] text-gray-800 font-medium text-right">{value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Files summary */}
+            <div className="flex gap-3">
+              <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-center">
+                <div className="text-lg font-bold text-emerald-700">{docFiles.length}</div>
+                <div className="text-[10px] text-emerald-600 mt-0.5">Document{docFiles.length !== 1 ? 's' : ''}</div>
+              </div>
+              <div className="flex-1 bg-blue-50 border border-blue-100 rounded-xl p-3 text-center">
+                <div className="text-lg font-bold text-blue-700">{audioFile ? 1 : 0}</div>
+                <div className="text-[10px] text-blue-600 mt-0.5">Audio Recording</div>
+              </div>
+            </div>
+
+            {/* Error */}
+            {submitError && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-2">
+                <AlertCircle size={13} className="text-red-500 mt-0.5 flex-shrink-0" />
+                <div className="text-[11px] text-red-600">{submitError}</div>
+              </div>
+            )}
+
+            {/* Submit button */}
+            <button
+              id="btn-submit-visit"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
+            >
+              {submitting ? (
+                <><Loader2 size={14} className="animate-spin" /> Uploading…</>
+              ) : (
+                <><CheckCircle2 size={14} /> Upload Visit</>
+              )}
+            </button>
+
+            <button
+              onClick={() => setStep(3)}
+              disabled={submitting}
+              className="w-full text-[11px] text-gray-400 hover:text-gray-600 text-center py-1"
+            >
+              ← Go back and edit
+            </button>
+          </div>
+        )}
       </div>
-    )
+    </div>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+export default function MyHealth() {
+  const { user, logout } = useAuthStore()
+
+  const [profile, setProfile] = useState(null)
+  const [visits, setVisits] = useState([])
+  const [visitsLoading, setVisitsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('profile')
+  const [activePage, setActivePage] = useState('home')
+  const [vitalsRange, setVitalsRange] = useState('30d')
+  const [chatMessages, setChatMessages] = useState([])
+  const [chatInput, setChatInput] = useState('')
+  const [isChatLoading, setIsChatLoading] = useState(false)
+  const [showChat, setShowChat] = useState(true)
+  const [sessionId, setSessionId] = useState(null)
+
+  // ── Load profile ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    let mounted = true
+    getPatientProfile()
+      .then(data => { if (mounted && data) setProfile(data) })
+      .catch(err => console.warn('Could not load patient profile:', err))
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  // ── Load real visits ──────────────────────────────────────────────────────
+  const loadVisits = useCallback(async () => {
+    setVisitsLoading(true)
+    try {
+      const data = await getMyVisits()
+      setVisits(data.map(formatVisitForCard))
+    } catch (err) {
+      console.warn('Could not load visits:', err)
+    } finally {
+      setVisitsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { loadVisits() }, [loadVisits])
+
+  const displayName = profile?.fullName || profile?.firstName
+    ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
+    : user?.displayName || 'Patient'
+  const displayGenderAge = [
+    profile?.gender || null,
+    profile?.age ? `${profile.age} y.o.` : null
+  ].filter(Boolean).join(', ') || ''
+
+  const sendChatMessage = async (text) => {
+    const question = text || chatInput.trim()
+    if (!question || isChatLoading) return
+
+    setChatMessages(prev => [...prev, { role: 'user', content: question }])
+    setChatInput('')
+    setIsChatLoading(true)
+
+    try {
+      const res = await sendPatientChat({ question, sessionId })
+      if (res?.sessionId) {
+        setSessionId(res.sessionId)
+      }
+      const answer = res?.answer || "I couldn't retrieve an answer at this moment."
+      setChatMessages(prev => [...prev, { role: 'assistant', content: answer, sources: res?.sources }])
+    } catch (err) {
+      console.warn('Patient RAG chat failed:', err)
+      let answer = ''
+      const q = question.toLowerCase()
+      if (visits.length === 0) {
+        answer = "You don't have any visits yet. Upload documents or record a visit to get started."
+      } else if (q.includes('diagnosis')) {
+        answer = `Your last reason for visit was: ${visits[0].diagnosis}`
+      } else if (q.includes('medicine') || q.includes('medication')) {
+        answer = `Please check your latest visit documents for medication details.`
+      } else if (q.includes('overview') || q.includes('health record')) {
+        answer = `You have ${visits.length} visit(s) recorded. Your most recent visit was on ${visits[0].visitDate}.`
+      } else {
+        answer = "Everything looks stable based on your latest visit. Follow your doctor's advice and reach out if symptoms worsen."
+      }
+      setChatMessages(prev => [...prev, { role: 'assistant', content: answer }])
+    } finally {
+      setIsChatLoading(false)
+    }
   }
 
-  // ════════════════════════════════════════════════════════════════════════════
+  const getSuggestedQuestions = () => activePage === 'myhealth'
+    ? ["Give me an overview of my health record", "What are the key things in my medical history?", "Are there any concerning trends in my health data?"]
+    : ["What does my diagnosis mean in simple terms?", "Explain my medication and side effects", "What should I watch out for at home?"]
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
@@ -1224,14 +1269,52 @@ export default function MyHealth() {
       {/* Main layout */}
       <div className="max-w-[1400px] mx-auto flex gap-0 h-[calc(100vh-48px)]">
         <div className="flex-1 overflow-y-auto px-6 py-5">
-          {activePage === 'home' && <HomePage />}
-          {activePage === 'myhealth' && <MyHealthPage />}
-          {activePage === 'recordvisit' && <UploadVisitPage />}
+          {activePage === 'home' && (
+            <HomePage
+              displayName={displayName}
+              displayGenderAge={displayGenderAge}
+              profile={profile}
+              user={user}
+              visits={visits}
+              visitsLoading={visitsLoading}
+              setActivePage={setActivePage}
+              sendChatMessage={sendChatMessage}
+            />
+          )}
+          {activePage === 'myhealth' && (
+            <MyHealthPage
+              displayName={displayName}
+              profile={profile}
+              user={user}
+              visits={visits}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              vitalsRange={vitalsRange}
+              setVitalsRange={setVitalsRange}
+              setActivePage={setActivePage}
+              sendChatMessage={sendChatMessage}
+            />
+          )}
+          {activePage === 'recordvisit' && (
+            <UploadVisitPage
+              setActivePage={setActivePage}
+              loadVisits={loadVisits}
+            />
+          )}
         </div>
 
         <div className="w-[340px] flex-shrink-0 border-l border-gray-200 p-4 bg-gray-50 overflow-hidden">
           {showChat ? (
-            <ChatPanel />
+            <ChatPanel
+              chatMessages={chatMessages}
+              chatInput={chatInput}
+              setChatInput={setChatInput}
+              isChatLoading={isChatLoading}
+              sendChatMessage={sendChatMessage}
+              activePage={activePage}
+              getSuggestedQuestions={getSuggestedQuestions}
+              setShowChat={setShowChat}
+            />
           ) : (
             <button
               onClick={() => setShowChat(true)}
