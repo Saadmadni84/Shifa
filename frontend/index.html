@@ -55,16 +55,19 @@
       depend on fonts installed locally on the developer's machine.
     -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Lovers+Quarrel&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Match the branded Shifa wordmark even though the component keeps
-         its existing Great Vibes inline fallback declaration. -->
+    <!-- The screenshot's Shifa wordmark is an elegant italic serif/script,
+         not the connected Great Vibes-style cursive fallback. Force the
+         branded wordmark to use the explicitly loaded font on every machine. -->
     <style>
       h1[style*="Great Vibes"],
       span[style*="Great Vibes"] {
-        font-family: "Lovers Quarrel", cursive !important;
+        font-family: "Cormorant Garamond", Georgia, serif !important;
+        font-style: italic !important;
+        font-weight: 400 !important;
       }
     </style>
 
