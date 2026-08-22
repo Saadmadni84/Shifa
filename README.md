@@ -247,6 +247,26 @@ curl -X POST http://localhost:5050/api/v1/ingest/pdf \
 `-- .github/workflows/                  # CI and placeholder deployment workflow
 ```
 
+## RAG Research & Evaluation
+
+Beyond the application itself, `backend/rag-service2/evaluation/` is a
+self-contained **retrieval & generation research harness**: a 195-question
+medical QA benchmark (80 educational documents), BM25 / dense / hybrid (RRF)
+retrievers, token-based chunking, standard IR metrics (Recall@K, Precision@K,
+MRR, nDCG), and generation metrics (faithfulness, hallucination rate, answer
+and context relevance).
+
+```bash
+cd backend/rag-service2
+python -m evaluation.run_evaluation     # runs all 4 experiments → results/report.md
+python -m pytest evaluation/tests -q    # 31 unit tests, offline
+```
+
+Experiments compare retrieval methods, embedding models, and chunk sizes
+(256/512/768/1024 tokens), and evaluate the generation stage separately.
+Latest committed results: [`backend/rag-service2/evaluation/results/report.md`](backend/rag-service2/evaluation/results/report.md).
+Methodology and honest framing notes: [`backend/rag-service2/evaluation/README.md`](backend/rag-service2/evaluation/README.md).
+
 ## Testing
 
 Backend tests:
